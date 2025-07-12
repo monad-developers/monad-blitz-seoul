@@ -1,6 +1,8 @@
 defmodule MonadAppWeb.Router do
   use MonadAppWeb, :router
 
+  import MonadAppWeb.UserAuth
+
   pipeline :browser do
     plug :accepts, ["html"]
     plug :fetch_session
@@ -8,6 +10,7 @@ defmodule MonadAppWeb.Router do
     plug :put_root_layout, html: {MonadAppWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug :fetch_current_user
     plug Inertia.Plug
   end
 
@@ -41,5 +44,23 @@ defmodule MonadAppWeb.Router do
       live_dashboard "/dashboard", metrics: MonadAppWeb.Telemetry
       forward "/mailbox", Plug.Swoosh.MailboxPreview
     end
+  end
+
+  ## Authentication routes
+
+  scope "/", MonadAppWeb do
+    pipe_through [:browser, :redirect_if_user_is_authenticated]
+
+    post "/users/log_in", UserSessionController, :create
+  end
+
+  scope "/", MonadAppWeb do
+    pipe_through [:browser, :require_authenticated_user]
+  end
+
+  scope "/", MonadAppWeb do
+    pipe_through [:browser]
+
+    delete "/users/log_out", UserSessionController, :delete
   end
 end

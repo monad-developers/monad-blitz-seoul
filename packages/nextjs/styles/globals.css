@@ -1,0 +1,123 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+@theme {
+  --shadow-center: 0 0 12px -2px rgb(0 0 0 / 0.05);
+  --animate-pulse-fast: pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@plugin "daisyui" {
+  themes:
+    light,
+    dark --prefersdark;
+}
+
+@plugin "daisyui/theme" {
+  name: "light";
+
+  --color-primary: #ff6b35;
+  --color-primary-content: #ffffff;
+  --color-secondary: #ffa07a;
+  --color-secondary-content: #ffffff;
+  --color-accent: #32cd32;
+  --color-accent-content: #ffffff;
+  --color-neutral: #2d3748;
+  --color-neutral-content: #ffffff;
+  --color-base-100: #ffffff;
+  --color-base-200: #f7fafc;
+  --color-base-300: #edf2f7;
+  --color-base-content: #2d3748;
+  --color-info: #4299e1;
+  --color-success: #48bb78;
+  --color-warning: #ed8936;
+  --color-error: #f56565;
+
+  --radius-field: 9999rem;
+  --radius-box: 1rem;
+  --tt-tailw: 6px;
+}
+
+@plugin "daisyui/theme" {
+  name: "dark";
+
+  --color-primary: #ff6b35;
+  --color-primary-content: #ffffff;
+  --color-secondary: #ff8c69;
+  --color-secondary-content: #ffffff;
+  --color-accent: #32cd32;
+  --color-accent-content: #ffffff;
+  --color-neutral: #ffffff;
+  --color-neutral-content: #1a202c;
+  --color-base-100: #1a202c;
+  --color-base-200: #2d3748;
+  --color-base-300: #4a5568;
+  --color-base-content: #ffffff;
+  --color-info: #63b3ed;
+  --color-success: #68d391;
+  --color-warning: #fbb36b;
+  --color-error: #fc8181;
+
+  --radius-field: 9999rem;
+  --radius-box: 1rem;
+
+  --tt-tailw: 6px;
+  --tt-bg: var(--color-primary);
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+
+  p {
+    margin: 1rem 0;
+  }
+
+  body {
+    min-height: 100vh;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    margin-bottom: 0.5rem;
+    line-height: 1;
+  }
+}
+
+:root,
+[data-theme] {
+  background: var(--color-base-200);
+}
+
+.btn {
+  @apply shadow-md;
+}
+
+.btn.btn-ghost {
+  @apply shadow-none;
+}
+
+.link {
+  text-underline-offset: 2px;
+}
+
+.link:hover {
+  opacity: 80%;
+}

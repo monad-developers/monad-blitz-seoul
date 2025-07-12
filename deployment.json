@@ -1,0 +1,8 @@
+{
+  "contractAddress": "0x789b17D17a2a16542a4938fc063bae2ccee1FfE7",
+  "deployerAddress": "0x730e7AC0c9a6D2225B42ceBdcE8b8a89b9B70de3",
+  "network": "monadTestnet",
+  "deploymentTime": "2025-07-12T06:26:12.984Z",
+  "transactionHash": "0xd34ace9a97fff1dd0c2e279113be78ae0231e0b63233e8f1516b09b0de3ee503",
+  "gasUsed": "3000000"
+}

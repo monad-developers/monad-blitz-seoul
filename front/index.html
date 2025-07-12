@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataStorage Contract Interface</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.1/ethers.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            color: white;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ff4757;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.connected {
+            background: #2ed573;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .connect-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .connect-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .connect-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            font-size: 1.4em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e8ed;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            background: white;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn.secondary {
+            background: linear-gradient(45deg, #2ed573, #17c0eb);
+        }
+
+        .data-display {
+            grid-column: 1 / -1;
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .data-category {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .data-category h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e1e8ed;
+        }
+
+        .data-item:last-child {
+            border-bottom: none;
+        }
+
+        .data-key {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .data-value {
+            color: #333;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .contract-info {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗄️ DataStorage Contract Interface</h1>
+            <p>Connect to MetaMask and interact with your smart contract</p>
+        </div>
+
+        <div class="connection-status">
+            <div class="status-indicator" id="statusIndicator"></div>
+            <span id="connectionStatus">Not Connected</span>
+            <button class="connect-btn" id="connectBtn" onclick="connectWallet()">Connect MetaMask</button>
+        </div>
+
+        <div class="contract-info">
+            <strong>Contract Address:</strong> <span id="contractAddress">Not set</span><br>
+            <strong>Network:</strong> <span id="networkName">Not connected</span><br>
+            <strong>Your Address:</strong> <span id="userAddress">Not connected</span>
+        </div>
+
+        <div class="main-content">
+            <div class="section">
+                <h2>📝 Store Data</h2>
+                <div class="form-group">
+                    <label for="dataType">Data Type:</label>
+                    <select id="dataType">
+                        <option value="string">String</option>
+                        <option value="number">Number</option>
+                        <option value="boolean">Boolean</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="dataKey">Key:</label>
+                    <input type="text" id="dataKey" placeholder="Enter key name">
+                </div>
+                <div class="form-group">
+                    <label for="dataValue">Value:</label>
+                    <input type="text" id="dataValue" placeholder="Enter value">
+                </div>
+                <button class="btn" onclick="storeData()" id="storeBtn">Store Data</button>
+            </div>
+
+            <div class="section">
+                <h2>🔍 Retrieve Data</h2>
+                <div class="form-group">
+                    <label for="retrieveType">Data Type:</label>
+                    <select id="retrieveType">
+                        <option value="string">String</option>
+                        <option value="number">Number</option>
+                        <option value="boolean">Boolean</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="retrieveKey">Key:</label>
+                    <input type="text" id="retrieveKey" placeholder="Enter key to retrieve">
+                </div>
+                <button class="btn secondary" onclick="retrieveData()" id="retrieveBtn">Retrieve Data</button>
+                <div id="retrieveResult"></div>
+            </div>
+        </div>
+
+        <div class="data-display">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>📊 All Stored Data</h2>
+                <button class="btn secondary" onclick="loadAllData()" id="loadAllBtn">Refresh Data</button>
+            </div>
+            <div class="data-grid" id="dataGrid">
+                <div class="alert info">Connect your wallet and load data to see stored values</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Contract configuration - UPDATE THESE VALUES
+        const CONTRACT_ADDRESS = "0x789b17D17a2a16542a4938fc063bae2ccee1FfE7"; // Replace with your contract address
+        const CONTRACT_ABI = [
+            "function storeString(string memory _key, string memory _value) public",
+            "function getString(string memory _key) public view returns (string memory)",
+            "function storeNumber(string memory _key, uint256 _value) public",
+            "function getNumber(string memory _key) public view returns (uint256)",
+            "function storeBool(string memory _key, bool _value) public",
+            "function getBool(string memory _key) public view returns (bool)",
+            "function getStringKeys() public view returns (string[] memory)",
+            "function getNumberKeys() public view returns (string[] memory)",
+            "function getBoolKeys() public view returns (string[] memory)",
+            "function getTotalItemCount() public view returns (uint256)",
+            "function owner() public view returns (address)",
+            "event StringStored(string key, string value, address indexed sender)",
+            "event NumberStored(string key, uint256 value, address indexed sender)",
+            "event BoolStored(string key, bool value, address indexed sender)"
+        ];
+
+        let provider;
+        let signer;
+        let contract;
+        let userAccount;
+
+        // Initialize the app
+        window.addEventListener('load', async () => {
+            document.getElementById('contractAddress').textContent = CONTRACT_ADDRESS;
+            
+            // Check if MetaMask is installed
+            if (typeof window.ethereum !== 'undefined') {
+                // Check if already connected
+                const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+                if (accounts.length > 0) {
+                    await connectWallet();
+                }
+            } else {
+                showAlert('MetaMask is not installed. Please install MetaMask to use this app.', 'error');
+            }
+
+            // Listen for account changes
+            if (window.ethereum) {
+                window.ethereum.on('accountsChanged', (accounts) => {
+                    if (accounts.length === 0) {
+                        disconnectWallet();
+                    } else {
+                        connectWallet();
+                    }
+                });
+
+                window.ethereum.on('chainChanged', () => {
+                    window.location.reload();
+                });
+            }
+        });
+
+        async function connectWallet() {
+            try {
+                if (typeof window.ethereum === 'undefined') {
+                    throw new Error('MetaMask is not installed');
+                }
+
+                // Request account access
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                userAccount = accounts[0];
+
+                // Initialize ethers provider and signer
+                provider = new ethers.BrowserProvider(window.ethereum);
+                signer = await provider.getSigner();
+
+                // Initialize contract
+                contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+
+                // Get network info
+                const network = await provider.getNetwork();
+                
+                // Update UI
+                updateConnectionStatus(true);
+                document.getElementById('userAddress').textContent = userAccount;
+                document.getElementById('networkName').textContent = network.name || `Chain ID: ${network.chainId}`;
+
+                showAlert('Wallet connected successfully!', 'success');
+                
+                // Load existing data
+                await loadAllData();
+
+            } catch (error) {
+                console.error('Error connecting wallet:', error);
+                showAlert(`Failed to connect wallet: ${error.message}`, 'error');
+            }
+        }
+
+        function disconnectWallet() {
+            provider = null;
+            signer = null;
+            contract = null;
+            userAccount = null;
+
+            updateConnectionStatus(false);
+            document.getElementById('userAddress').textContent = 'Not connected';
+            document.getElementById('networkName').textContent = 'Not connected';
+            document.getElementById('dataGrid').innerHTML = '<div class="alert info">Connect your wallet to see stored data</div>';
+        }
+
+        function updateConnectionStatus(connected) {
+            const statusIndicator = document.getElementById('statusIndicator');
+            const connectionStatus = document.getElementById('connectionStatus');
+            const connectBtn = document.getElementById('connectBtn');
+
+            if (connected) {
+                statusIndicator.classList.add('connected');
+                connectionStatus.textContent = 'Connected';
+                connectBtn.textContent = 'Connected';
+                connectBtn.disabled = true;
+            } else {
+                statusIndicator.classList.remove('connected');
+                connectionStatus.textContent = 'Not Connected';
+                connectBtn.textContent = 'Connect MetaMask';
+                connectBtn.disabled = false;
+            }
+        }
+
+        async function storeData() {
+            if (!contract) {
+                showAlert('Please connect your wallet first', 'error');
+                return;
+            }
+
+            const dataType = document.getElementById('dataType').value;
+            const key = document.getElementById('dataKey').value.trim();
+            const value = document.getElementById('dataValue').value.trim();
+
+            if (!key || !value) {
+                showAlert('Please enter both key and value', 'error');
+                return;
+            }
+
+            const storeBtn = document.getElementById('storeBtn');
+            storeBtn.disabled = true;
+            storeBtn.innerHTML = '<span class="loading"></span>Storing...';
+
+            try {
+                let tx;
+                
+                if (dataType === 'string') {
+                    tx = await contract.storeString(key, value);
+                } else if (dataType === 'number') {
+                    const numValue = parseInt(value);
+                    if (isNaN(numValue)) {
+                        throw new Error('Invalid number format');
+                    }
+                    tx = await contract.storeNumber(key, numValue);
+                } else if (dataType === 'boolean') {
+                    const boolValue = value.toLowerCase() === 'true';
+                    tx = await contract.storeBool(key, boolValue);
+                }
+
+                showAlert('Transaction submitted. Waiting for confirmation...', 'info');
+                
+                const receipt = await tx.wait();
+                
+                showAlert(`Data stored successfully! Transaction: ${receipt.hash}`, 'success');
+                
+                // Clear form
+                document.getElementById('dataKey').value = '';
+                document.getElementById('dataValue').value = '';
+                
+                // Reload data
+                await loadAllData();
+
+            } catch (error) {
+                console.error('Error storing data:', error);
+                showAlert(`Failed to store data: ${error.message}`, 'error');
+            } finally {
+                storeBtn.disabled = false;
+                storeBtn.innerHTML = 'Store Data';
+            }
+        }
+
+        async function retrieveData() {
+            if (!contract) {
+                showAlert('Please connect your wallet first', 'error');
+                return;
+            }
+
+            const dataType = document.getElementById('retrieveType').value;
+            const key = document.getElementById('retrieveKey').value.trim();
+
+            if (!key) {
+                showAlert('Please enter a key to retrieve', 'error');
+                return;
+            }
+
+            const retrieveBtn = document.getElementById('retrieveBtn');
+            retrieveBtn.disabled = true;
+            retrieveBtn.innerHTML = '<span class="loading"></span>Retrieving...';
+
+            try {
+                let result;
+                
+                if (dataType === 'string') {
+                    result = await contract.getString(key);
+                } else if (dataType === 'number') {
+                    result = await contract.getNumber(key);
+                    result = result.toString();
+                } else if (dataType === 'boolean') {
+                    result = await contract.getBool(key);
+                    result = result.toString();
+                }
+
+                const resultDiv = document.getElementById('retrieveResult');
+                resultDiv.innerHTML = `
+                    <div class="alert success" style="margin-top: 15px;">
+                        <strong>Key:</strong> ${key}<br>
+                        <strong>Value:</strong> ${result}
+                    </div>
+                `;
+
+            } catch (error) {
+                console.error('Error retrieving data:', error);
+                showAlert(`Failed to retrieve data: ${error.message}`, 'error');
+            } finally {
+                retrieveBtn.disabled = false;
+                retrieveBtn.innerHTML = 'Retrieve Data';
+            }
+        }
+
+        async function loadAllData() {
+            if (!contract) {
+                return;
+            }
+
+            const loadAllBtn = document.getElementById('loadAllBtn');
+            loadAllBtn.disabled = true;
+            loadAllBtn.innerHTML = '<span class="loading"></span>Loading...';
+
+            try {
+                // Get all keys
+                const [stringKeys, numberKeys, boolKeys] = await Promise.all([
+                    contract.getStringKeys(),
+                    contract.getNumberKeys(),
+                    contract.getBoolKeys()
+                ]);
+
+                // Get all values
+                const stringData = {};
+                const numberData = {};
+                const boolData = {};
+
+                for (const key of stringKeys) {
+                    stringData[key] = await contract.getString(key);
+                }
+
+                for (const key of numberKeys) {
+                    const value = await contract.getNumber(key);
+                    numberData[key] = value.toString();
+                }
+
+                for (const key of boolKeys) {
+                    boolData[key] = await contract.getBool(key);
+                }
+
+                // Display data
+                displayAllData(stringData, numberData, boolData);
+
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showAlert(`Failed to load data: ${error.message}`, 'error');
+            } finally {
+                loadAllBtn.disabled = false;
+                loadAllBtn.innerHTML = 'Refresh Data';
+            }
+        }
+
+        function displayAllData(stringData, numberData, boolData) {
+            const dataGrid = document.getElementById('dataGrid');
+            
+            if (Object.keys(stringData).length === 0 && Object.keys(numberData).length === 0 && Object.keys(boolData).length === 0) {
+                dataGrid.innerHTML = '<div class="alert info">No data found. Store some data first!</div>';
+                return;
+            }
+
+            let html = '';
+
+            // String data
+            if (Object.keys(stringData).length > 0) {
+                html += `
+                    <div class="data-category">
+                        <h3>📝 String Data</h3>
+                        ${Object.entries(stringData).map(([key, value]) => `
+                            <div class="data-item">
+                                <span class="data-key">${key}</span>
+                                <span class="data-value">${value}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            // Number data
+            if (Object.keys(numberData).length > 0) {
+                html += `
+                    <div class="data-category">
+                        <h3>🔢 Number Data</h3>
+                        ${Object.entries(numberData).map(([key, value]) => `
+                            <div class="data-item">
+                                <span class="data-key">${key}</span>
+                                <span class="data-value">${value}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            // Boolean data
+            if (Object.keys(boolData).length > 0) {
+                html += `
+                    <div class="data-category">
+                        <h3>✅ Boolean Data</h3>
+                        ${Object.entries(boolData).map(([key, value]) => `
+                            <div class="data-item">
+                                <span class="data-key">${key}</span>
+                                <span class="data-value">${value ? 'true' : 'false'}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
+            dataGrid.innerHTML = html;
+        }
+
+        function showAlert(message, type) {
+            // Remove existing alerts
+            const existingAlerts = document.querySelectorAll('.alert');
+            existingAlerts.forEach(alert => {
+                if (alert.parentElement === document.querySelector('.container')) {
+                    alert.remove();
+                }
+            });
+
+            // Create new alert
+            const alert = document.createElement('div');
+            alert.className = `alert ${type}`;
+            alert.textContent = message;
+
+            // Insert after header
+            const header = document.querySelector('.header');
+            header.insertAdjacentElement('afterend', alert);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Update boolean input based on data type selection
+        document.getElementById('dataType').addEventListener('change', (e) => {
+            const valueInput = document.getElementById('dataValue');
+            if (e.target.value === 'boolean') {
+                valueInput.placeholder = 'Enter true or false';
+            } else if (e.target.value === 'number') {
+                valueInput.placeholder = 'Enter a number';
+            } else {
+                valueInput.placeholder = 'Enter value';
+            }
+        });
+    </script>
+</body>
+</html>

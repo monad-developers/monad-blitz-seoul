@@ -1,11 +1,52 @@
-# Monad Blitz Seoul Submission Process
+## 개요 
+MonaTx RPG - 트랜잭션 기반 자동 성장 RPG Gamification SaaS 플랫폼
+모든 DAPP을 게임으로 만드는 게이미피케이션 인프라
 
-1. Visit the `monad-blitz-seoul` repo (link [here](https://github.com/monad-developers/monad-blitz-seoul)) and fork it.
+현재 문제점 분석
+1.기존 DAPP의 한계
 
-<img width="1511" alt="Screenshot 2025-07-07 at 10 17 05 AM" src="https://github.com/user-attachments/assets/341c6774-f5ea-484d-a700-28e89eee9f95" />
 
-2. Give it your project name, a one-liner description, make sure you are forking `main` branch and click `Create Fork`.
+- 낮은 유저 참여도: 단순한 트랜잭션만으로는 재미 부족
+- 짧은 서비스 이용 시간: 일회성 사용 후 이탈
+- 높은 이탈율: 지속적인 참여 동기 부족
 
-<img width="1511" alt="Screenshot 2025-07-07 at 10 17 55 AM" src="https://github.com/user-attachments/assets/b4a60b3b-6fd9-42b8-ba38-77fd79f76986" />
+2. 기존 웹3 게임의 문제점
+- 진입 장벽: 돈을 지불해야만 게임 시작 가능
+- 시간 투자 필요: 직접 플레이해야 하는 부담
+- 별도 플랫폼: 기존 DAPP과 분리된 경험
 
-3. In your fork you can make all the changes you want, add code of your project, create branches, add information to `README.md`, you can change anything and everything.
+
+TxRPG 솔루션
+핵심 컨셉: "트랜잭션 = 게임 플레이"
+
+사용자가 DAPP을 사용할 때마다 자동으로 캐릭터가 성장하는 RPG 시스템
+
+작동 방식
+- 트랜잭션 트래킹 → 경험치 변환
+- 자동 몬스터 사냥 → 애니메이션과 함께 진행
+- 확률적 보상 시스템 → VRF 기반 랜덤 보상
+- 개인화된 캐릭터 → 성장에 따른 애착 형성
+
+
+문제 해결 방안: MonaTxRPG 솔루션
+1. 결과낮은 유저 행동 유도 > 트랜잭션 시 캐릭터 성장 > ⬆️ 액티브 유저 증가
+2. 짧은 서비스 이용 시간 > 자동 사냥으로 지속적 흥미 > ⬆️ 세션 시간 연장
+3. 높은 이탈율 > 개인화된 캐릭터 성장 > ⬇️ 이탈율 감소
+
+SaaS 비즈니스 모델
+1. 커스터마이징 옵션
+- 캐릭터 디자인: 브랜드에 맞는 캐릭터 형태
+- 몬스터 테마: 서비스 특성에 맞는 적 디자인
+- 성장 조건: 트랜잭션 유형별 경험치 가중치
+- 보상 설계: 브랜드 토큰 또는 NFT 보상
+
+2. 수익 구조
+- 월 구독 모델: 기본 게이미피케이션 서비스
+- 커스터마이징 비용: 브랜드 맞춤형 디자인
+- 트랜잭션 수수료: 보상 분배 시 일정 비율
+
+## 프로젝트 코드 
+- monad-game: 데모용 게임 관련 프론트 구현 프로젝트 
+- monad-contract: 데모용 컨트랙트 관련 구현 프로젝트 
+- monad-backend: 데모용 게임 백엔드 로직 구현 프로젝트 
+- mona-tx-saas-demo: saas 데모 예제를 위한 프론트 프로젝트 

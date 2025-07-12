@@ -1,0 +1,1 @@
+import{z as r}from"zod";const o=r.object({connections:r.array(r.object({provider_app_id:r.string(),provider_app_name:r.string(),provider_app_icon_url:r.string().url().nullable(),provider_app_custom_api_url:r.string().url().nullable(),read_only:r.boolean()}))});export{o as CrossAppConnectionsResponse};

@@ -1,0 +1,1 @@
+"use strict";var r=require("zod"),e=require("@privy-io/api-base");const t=r.z.object({test_account_id:r.z.string({required_error:"Test account ID must be provided",invalid_type_error:"Test account ID is not a valid string"}).min(1)}).catch((({error:r})=>{throw new e.InvalidInputError(r.message,e.PrivyErrorCode.INVALID_DATA)}));exports.TestAccountIdFromPath=t;

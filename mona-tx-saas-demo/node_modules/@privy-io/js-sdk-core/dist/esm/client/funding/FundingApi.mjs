@@ -1,0 +1,1 @@
+import o from"./CoinbaseOnRampApi.mjs";import i from"./MoonpayOnRampApi.mjs";import"@privy-io/public-api";import"fetch-retry";import"../../Error.mjs";import"../../funding/moonpay.mjs";import"@privy-io/chains";class p{constructor(p){this.moonpay=new i(p),this.coinbase=new o(p)}}export{p as default};

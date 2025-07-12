@@ -1,0 +1,1 @@
+import o from"zod";import{AuthenticateMode as t}from"./core.mjs";import"bs58";import"libphonenumber-js/max";import"viem";const r=o.object({token:o.string().optional()}).merge(t),m=o.object({token:o.string().optional()});export{r as AuthenticateJwtInput,m as LinkJwtInput};

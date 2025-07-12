@@ -1,0 +1,1 @@
+"use strict";exports.BICONOMY="biconomy",exports.COINBASE_SMART_WALLET="coinbase_smart_wallet",exports.KERNEL="kernel",exports.LIGHT_ACCOUNT="light_account",exports.SAFE="safe",exports.SUPPORTED_SMART_WALLET_TYPES=["safe","kernel","biconomy","light_account","coinbase_smart_wallet","thirdweb"],exports.THIRDWEB="thirdweb";

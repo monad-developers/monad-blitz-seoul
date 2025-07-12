@@ -1,0 +1,33 @@
+{
+  "name": "txrpg-monad-wallet",
+  "version": "1.0.0",
+  "description": "TxRPG Monad Testnet Wallet Connection with Privy",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "vite"
+  },
+  "dependencies": {
+    "@privy-io/react-auth": "^2.18.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "vite": "^4.4.0"
+  },
+  "keywords": [
+    "monad",
+    "privy",
+    "wallet",
+    "blockchain",
+    "rpg",
+    "txrpg"
+  ],
+  "author": "TxRPG Team",
+  "license": "MIT"
+}

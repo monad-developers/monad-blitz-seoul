@@ -1,0 +1,1 @@
+"use strict";var t=require("zod");const e=t.z.object({event_name:t.z.string().max(255),client_id:t.z.string().max(255).nullable(),payload:t.z.record(t.z.any()).optional()});exports.AnalyticsEventInput=e;

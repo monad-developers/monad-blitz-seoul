@@ -1,0 +1,1 @@
+const t=t=>t?t.linked_accounts.filter(e).sort(((t,e)=>t.wallet_index-e.wallet_index)):[];let e=t=>"wallet"===t.type&&"privy"===t.wallet_client_type&&"embedded"===t.connector_type&&("bitcoin-segwit"===t.chain_type||"bitcoin-taproot"===t.chain_type);export{t as getAllUserEmbeddedBitcoinWallets};

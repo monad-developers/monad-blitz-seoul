@@ -1,0 +1,1 @@
+"use strict";function e(e){return e&&"object"==typeof e&&"default"in e?e:{default:e}}var t=/*#__PURE__*/e(require("zod"));const n=t.default.object({chain:t.default.string(),asset:t.default.enum(["native-currency","USDC"]).optional()});exports.Currency=n;

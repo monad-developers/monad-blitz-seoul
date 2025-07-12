@@ -1,0 +1,13 @@
+.monster-hit {
+  filter: brightness(1.5) drop-shadow(0 0 10px red);
+  transform: scale(1.05) rotate(-5deg);
+  animation: shake 0.3s;
+}
+@keyframes shake {
+  0% { transform: translateX(0) rotate(0); }
+  20% { transform: translateX(-8px) rotate(-5deg);}
+  40% { transform: translateX(8px) rotate(5deg);}
+  60% { transform: translateX(-4px) rotate(-2deg);}
+  80% { transform: translateX(4px) rotate(2deg);}
+  100% { transform: translateX(0) rotate(0); }
+} 

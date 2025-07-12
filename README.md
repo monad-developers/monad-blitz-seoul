@@ -1,11 +1,76 @@
-# Monad Blitz Seoul Submission Process
+# ⛏️ MonaMiner
 
-1. Visit the `monad-blitz-seoul` repo (link [here](https://github.com/monad-developers/monad-blitz-seoul)) and fork it.
+**MonaMiner**는 Monad의 고성능 기능(속도, 높은 처리량, 낮은 거래 비용)을 체감할 수 있도록 설계된 **온체인 방치형 채굴 게임**입니다. 유저는 다양한 특성을 가진 NFT 기반 채굴기를 수집, 배치, 교체하며 트랜잭션을 발생시키고, 라운드마다 숨겨진 패턴을 추리해 **확률 기반의 채굴 경쟁**을 펼칩니다.
 
-<img width="1511" alt="Screenshot 2025-07-07 at 10 17 05 AM" src="https://github.com/user-attachments/assets/341c6774-f5ea-484d-a700-28e89eee9f95" />
+> "Build your miner. Detect the pattern. Mine smarter."
 
-2. Give it your project name, a one-liner description, make sure you are forking `main` branch and click `Create Fork`.
+---
 
-<img width="1511" alt="Screenshot 2025-07-07 at 10 17 55 AM" src="https://github.com/user-attachments/assets/b4a60b3b-6fd9-42b8-ba38-77fd79f76986" />
+## 🎯 프로젝트 개요
 
-3. In your fork you can make all the changes you want, add code of your project, create branches, add information to `README.md`, you can change anything and everything.
+- **체인**: Monad Testnet
+- **유형**: PoC 게임 (Hackathon version)
+- **기술 스택**: Solidity, Hardhat, React, Ethers.js
+- **PoW-like 구조**: 실제 해시 연산은 아니지만, 난수 제출 기반의 추론 + 반복 실행 게임 메커니즘으로 구성
+
+---
+
+## 🧩 게임 구조 요약
+
+### 1. 라운드 및 패턴
+
+- 각 라운드에는 **숨겨진 패턴**이 존재합니다. (예: 짝수, 소수, π 관련 수 등)
+- 유저는 자신의 채굴기가 생성한 난수가 **패턴에 부합하는지** 온체인 검증결과를 확인하며 채굴을 시도합니다.
+- 특정 라운드의 보상 토큰이 모두 소진되면 **자동으로 다음 라운드로 진입**합니다.
+
+### 2. 채굴기 (Miner NFT)
+
+- 각 채굴기는 NFT로 구성되며 고유한 특성(난수 범위, 주기, 성공률 등)을 가집니다.
+- 채굴기는 자동으로 난수를 제출하며, `isValid()` 함수에 의해 패턴 매칭 여부와 성공 여부를 판단받습니다.
+
+### 3. 채굴 보상
+
+- 채굴 성공 시 보상 토큰(`MM`)이 자동으로 유저에게 분배됩니다.
+- 패턴에 맞는 수를 제출했더라도 **채굴기마다 성공률이 다르기 때문에** 성공 여부가 달라집니다.
+
+---
+
+## MM 토큰 정보
+
+| 항목        | 정보                                      |
+| ----------- | ----------------------------------------- |
+| 이름        | MonaMiner Token                           |
+| 심볼        | $MM                                       |
+| 총 발행량   | 21,000,000 MM (비트코인 오마주)           |
+| 배포 방식   | 오직 게임 내 채굴 성공을 통해만 획득 가능 |
+| 반감기 구조 | 일정 라운드마다 채굴 보상이 50%로 감소    |
+
+### 사용처
+
+- 채굴기 강화
+- 새로운 채굴기 해금
+- 시즌 이벤트, PvP 채굴장 참가 비용 등
+
+---
+
+## 게임 흐름 요약
+
+1. **채굴기 배치**: 유저는 3개의 슬롯에 채굴기를 장착합니다. 각 채굴기는 고유한 특성(예: 쿨타임, 난수 범위, 패턴 특화)을 가집니다.
+2. **자동 제출**: 채굴기는 설정에 따라 자동으로 난수를 생성하고 트랜잭션을 보냅니다.
+3. **패턴 매칭**: 스마트컨트랙트에서 해당 숫자가 정답 조건에 부합하는지 검사합니다.
+4. **성공 시 보상**: 조건에 맞으면 보상으로 MM 토큰이 유저 지갑에 분배됩니다.
+5. **패턴 추론**: 유저는 성공 로그를 기반으로 패턴을 추론하고 채굴기 조합을 최적화합니다.
+
+---
+
+## 해커톤 MVP 목표
+
+- 총 3개의 라운드를 시연하며 서로 다른 패턴 적용 (예: 짝수, 소수, 파이 패턴)
+- 핵심 스마트컨트랙트 구현:
+  - `isValid(uint256 number)`: 해당 숫자가 현재 패턴 조건에 부합하는지 확인
+  - `submitGuess(minerId, uint256 guess)`: 채굴 시도 트랜잭션
+  - `distributeReward(minerId, address user)`: 채굴 성공 시 자동 보상 분배
+- 채굴기 자동 제출 로직 구현
+- 프론트엔드에서 채굴 로그, 성공률, 덱 구성 시각화 구현
+
+---

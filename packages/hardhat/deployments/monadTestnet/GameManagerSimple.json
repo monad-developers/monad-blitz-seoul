@@ -1,0 +1,706 @@
+{
+  "address": "0x124D4Fc12C8D24BC1b2EE6Bb6a9464a7fB7482F9",
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableInvalidOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableUnauthorizedAccount",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "roundId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "poolSize",
+          "type": "uint256"
+        }
+      ],
+      "name": "AnswerPoolGenerated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "roundId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum GameManagerSimple.PatternType",
+          "name": "pattern",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "minRange",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "maxRange",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "startTime",
+          "type": "uint256"
+        }
+      ],
+      "name": "NewRoundStarted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "roundId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "endTime",
+          "type": "uint256"
+        }
+      ],
+      "name": "RoundEnded",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "ANSWER_POOL_SIZE",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "ROUND_DURATION",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "checkRoundExpiry",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "currentRoundId",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "forceNewRound",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "roundId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getAnswerPool",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getCurrentRound",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "roundId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "startTime",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "endTime",
+              "type": "uint256"
+            },
+            {
+              "internalType": "enum GameManagerSimple.PatternType",
+              "name": "pattern",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minRange",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxRange",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "isActive",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "answerPool",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "bool",
+              "name": "answerPoolGenerated",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct GameManagerSimple.Round",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "roundId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getRound",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "roundId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "startTime",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "endTime",
+              "type": "uint256"
+            },
+            {
+              "internalType": "enum GameManagerSimple.PatternType",
+              "name": "pattern",
+              "type": "uint8"
+            },
+            {
+              "internalType": "uint256",
+              "name": "minRange",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "maxRange",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "isActive",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint256[]",
+              "name": "answerPool",
+              "type": "uint256[]"
+            },
+            {
+              "internalType": "bool",
+              "name": "answerPoolGenerated",
+              "type": "bool"
+            }
+          ],
+          "internalType": "struct GameManagerSimple.Round",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getRoundTimeRemaining",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "roundId",
+          "type": "uint256"
+        }
+      ],
+      "name": "isAnswerPoolGenerated",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "isRoundActive",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "rounds",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "roundId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "startTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "endTime",
+          "type": "uint256"
+        },
+        {
+          "internalType": "enum GameManagerSimple.PatternType",
+          "name": "pattern",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "minRange",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "maxRange",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "isActive",
+          "type": "bool"
+        },
+        {
+          "internalType": "bool",
+          "name": "answerPoolGenerated",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_duration",
+          "type": "uint256"
+        }
+      ],
+      "name": "setRoundDuration",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x558fa971d5b97333926258e49f33eef8788b6c82a3fceffd7204fcc866fb7665",
+  "receipt": {
+    "to": null,
+    "from": "0x038F9EFF208F4cefc0a7f856739a3405c419A147",
+    "contractAddress": "0x124D4Fc12C8D24BC1b2EE6Bb6a9464a7fB7482F9",
+    "transactionIndex": 7,
+    "gasUsed": "10459184",
+    "logsBloom": "0x00000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000001000000040100000000000000000000000000020000000000000000000800000000000000000000000000000000401000004000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000080000040000000000000000000000000000020000000100000000000000000000000400060000000000000000000000000000000000000000000080008002000080000000000",
+    "blockHash": "0xcaf96b54edd0f22791f7eab31d2c8a6d47541ab4c58f46a2998f9d95542f76a1",
+    "transactionHash": "0x558fa971d5b97333926258e49f33eef8788b6c82a3fceffd7204fcc866fb7665",
+    "logs": [
+      {
+        "transactionIndex": 7,
+        "blockNumber": 25865268,
+        "transactionHash": "0x558fa971d5b97333926258e49f33eef8788b6c82a3fceffd7204fcc866fb7665",
+        "address": "0x124D4Fc12C8D24BC1b2EE6Bb6a9464a7fB7482F9",
+        "topics": [
+          "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x000000000000000000000000038f9eff208f4cefc0a7f856739a3405c419a147"
+        ],
+        "data": "0x",
+        "logIndex": 21,
+        "blockHash": "0xcaf96b54edd0f22791f7eab31d2c8a6d47541ab4c58f46a2998f9d95542f76a1"
+      },
+      {
+        "transactionIndex": 7,
+        "blockNumber": 25865268,
+        "transactionHash": "0x558fa971d5b97333926258e49f33eef8788b6c82a3fceffd7204fcc866fb7665",
+        "address": "0x124D4Fc12C8D24BC1b2EE6Bb6a9464a7fB7482F9",
+        "topics": [
+          "0x4afb164e8b55fde2bc138f047ca800afc30b7bb1e2cff9764868e5b51fed19b9",
+          "0x0000000000000000000000000000000000000000000000000000000000000001"
+        ],
+        "data": "0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000c597000000000000000000000000000000000000000000000000000000000001393f000000000000000000000000000000000000000000000000000000006871fa11",
+        "logIndex": 22,
+        "blockHash": "0xcaf96b54edd0f22791f7eab31d2c8a6d47541ab4c58f46a2998f9d95542f76a1"
+      },
+      {
+        "transactionIndex": 7,
+        "blockNumber": 25865268,
+        "transactionHash": "0x558fa971d5b97333926258e49f33eef8788b6c82a3fceffd7204fcc866fb7665",
+        "address": "0x124D4Fc12C8D24BC1b2EE6Bb6a9464a7fB7482F9",
+        "topics": [
+          "0x49acbb2f6cf6b5f8d45bf745b9826c6fece211324520a3c8ecc6fe4ff8a9456e",
+          "0x0000000000000000000000000000000000000000000000000000000000000001"
+        ],
+        "data": "0x0000000000000000000000000000000000000000000000000000000000000064",
+        "logIndex": 23,
+        "blockHash": "0xcaf96b54edd0f22791f7eab31d2c8a6d47541ab4c58f46a2998f9d95542f76a1"
+      }
+    ],
+    "blockNumber": 25865268,
+    "cumulativeGasUsed": "11886702",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [],
+  "numDeployments": 1,
+  "solcInputHash": "8de372e5c10ab44225136f67a8c03987",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.20+commit.a1b79de6\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"OwnableInvalidOwner\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"OwnableUnauthorizedAccount\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"roundId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"poolSize\",\"type\":\"uint256\"}],\"name\":\"AnswerPoolGenerated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"roundId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"enum GameManagerSimple.PatternType\",\"name\":\"pattern\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"minRange\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"maxRange\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"startTime\",\"type\":\"uint256\"}],\"name\":\"NewRoundStarted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"roundId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"endTime\",\"type\":\"uint256\"}],\"name\":\"RoundEnded\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"ANSWER_POOL_SIZE\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"ROUND_DURATION\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"checkRoundExpiry\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"currentRoundId\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"forceNewRound\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"roundId\",\"type\":\"uint256\"}],\"name\":\"getAnswerPool\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getCurrentRound\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"roundId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"startTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endTime\",\"type\":\"uint256\"},{\"internalType\":\"enum GameManagerSimple.PatternType\",\"name\":\"pattern\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"minRange\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxRange\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isActive\",\"type\":\"bool\"},{\"internalType\":\"uint256[]\",\"name\":\"answerPool\",\"type\":\"uint256[]\"},{\"internalType\":\"bool\",\"name\":\"answerPoolGenerated\",\"type\":\"bool\"}],\"internalType\":\"struct GameManagerSimple.Round\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"roundId\",\"type\":\"uint256\"}],\"name\":\"getRound\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"roundId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"startTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endTime\",\"type\":\"uint256\"},{\"internalType\":\"enum GameManagerSimple.PatternType\",\"name\":\"pattern\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"minRange\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxRange\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isActive\",\"type\":\"bool\"},{\"internalType\":\"uint256[]\",\"name\":\"answerPool\",\"type\":\"uint256[]\"},{\"internalType\":\"bool\",\"name\":\"answerPoolGenerated\",\"type\":\"bool\"}],\"internalType\":\"struct GameManagerSimple.Round\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getRoundTimeRemaining\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"roundId\",\"type\":\"uint256\"}],\"name\":\"isAnswerPoolGenerated\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"isRoundActive\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"rounds\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"roundId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"startTime\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"endTime\",\"type\":\"uint256\"},{\"internalType\":\"enum GameManagerSimple.PatternType\",\"name\":\"pattern\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"minRange\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"maxRange\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isActive\",\"type\":\"bool\"},{\"internalType\":\"bool\",\"name\":\"answerPoolGenerated\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_duration\",\"type\":\"uint256\"}],\"name\":\"setRoundDuration\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"errors\":{\"OwnableInvalidOwner(address)\":[{\"details\":\"The owner is not a valid owner account. (eg. `address(0)`)\"}],\"OwnableUnauthorizedAccount(address)\":[{\"details\":\"The caller account is not authorized to perform an operation.\"}]},\"kind\":\"dev\",\"methods\":{\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/GameManagerSimple.sol\":\"GameManagerSimple\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/access/Ownable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v5.0.0) (access/Ownable.sol)\\n\\npragma solidity ^0.8.20;\\n\\nimport {Context} from \\\"../utils/Context.sol\\\";\\n\\n/**\\n * @dev Contract module which provides a basic access control mechanism, where\\n * there is an account (an owner) that can be granted exclusive access to\\n * specific functions.\\n *\\n * The initial owner is set to the address provided by the deployer. This can\\n * later be changed with {transferOwnership}.\\n *\\n * This module is used through inheritance. It will make available the modifier\\n * `onlyOwner`, which can be applied to your functions to restrict their use to\\n * the owner.\\n */\\nabstract contract Ownable is Context {\\n    address private _owner;\\n\\n    /**\\n     * @dev The caller account is not authorized to perform an operation.\\n     */\\n    error OwnableUnauthorizedAccount(address account);\\n\\n    /**\\n     * @dev The owner is not a valid owner account. (eg. `address(0)`)\\n     */\\n    error OwnableInvalidOwner(address owner);\\n\\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\\n\\n    /**\\n     * @dev Initializes the contract setting the address provided by the deployer as the initial owner.\\n     */\\n    constructor(address initialOwner) {\\n        if (initialOwner == address(0)) {\\n            revert OwnableInvalidOwner(address(0));\\n        }\\n        _transferOwnership(initialOwner);\\n    }\\n\\n    /**\\n     * @dev Throws if called by any account other than the owner.\\n     */\\n    modifier onlyOwner() {\\n        _checkOwner();\\n        _;\\n    }\\n\\n    /**\\n     * @dev Returns the address of the current owner.\\n     */\\n    function owner() public view virtual returns (address) {\\n        return _owner;\\n    }\\n\\n    /**\\n     * @dev Throws if the sender is not the owner.\\n     */\\n    function _checkOwner() internal view virtual {\\n        if (owner() != _msgSender()) {\\n            revert OwnableUnauthorizedAccount(_msgSender());\\n        }\\n    }\\n\\n    /**\\n     * @dev Leaves the contract without owner. It will not be possible to call\\n     * `onlyOwner` functions. Can only be called by the current owner.\\n     *\\n     * NOTE: Renouncing ownership will leave the contract without an owner,\\n     * thereby disabling any functionality that is only available to the owner.\\n     */\\n    function renounceOwnership() public virtual onlyOwner {\\n        _transferOwnership(address(0));\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Can only be called by the current owner.\\n     */\\n    function transferOwnership(address newOwner) public virtual onlyOwner {\\n        if (newOwner == address(0)) {\\n            revert OwnableInvalidOwner(address(0));\\n        }\\n        _transferOwnership(newOwner);\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Internal function without access restriction.\\n     */\\n    function _transferOwnership(address newOwner) internal virtual {\\n        address oldOwner = _owner;\\n        _owner = newOwner;\\n        emit OwnershipTransferred(oldOwner, newOwner);\\n    }\\n}\\n\",\"keccak256\":\"0xff6d0bb2e285473e5311d9d3caacb525ae3538a80758c10649a4d61029b017bb\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/Context.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v5.0.1) (utils/Context.sol)\\n\\npragma solidity ^0.8.20;\\n\\n/**\\n * @dev Provides information about the current execution context, including the\\n * sender of the transaction and its data. While these are generally available\\n * via msg.sender and msg.data, they should not be accessed in such a direct\\n * manner, since when dealing with meta-transactions the account sending and\\n * paying for execution may not be the actual sender (as far as an application\\n * is concerned).\\n *\\n * This contract is only required for intermediate, library-like contracts.\\n */\\nabstract contract Context {\\n    function _msgSender() internal view virtual returns (address) {\\n        return msg.sender;\\n    }\\n\\n    function _msgData() internal view virtual returns (bytes calldata) {\\n        return msg.data;\\n    }\\n\\n    function _contextSuffixLength() internal view virtual returns (uint256) {\\n        return 0;\\n    }\\n}\\n\",\"keccak256\":\"0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2\",\"license\":\"MIT\"},\"contracts/GameManagerSimple.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.19;\\n\\nimport \\\"@openzeppelin/contracts/access/Ownable.sol\\\";\\n\\ncontract GameManagerSimple is Ownable {\\n    enum PatternType {\\n        EVEN, // \\uc9dd\\uc218\\n        ODD, // \\ud640\\uc218\\n        PRIME, // \\uc18c\\uc218\\n        PI, // \\u03c0 \\uad00\\ub828 (314 \\ud3ec\\ud568/\\ubc30\\uc218)\\n        SQUARE // \\uc644\\uc804\\uc81c\\uacf1\\uc218\\n    }\\n\\n    struct Round {\\n        uint256 roundId;\\n        uint256 startTime;\\n        uint256 endTime;\\n        PatternType pattern;\\n        uint256 minRange;\\n        uint256 maxRange;\\n        bool isActive;\\n        uint256[] answerPool; // \\uc815\\ub2f5 \\ub09c\\uc218 \\ud480\\n        bool answerPoolGenerated; // \\uc815\\ub2f5 \\ud480 \\uc0dd\\uc131 \\uc644\\ub8cc \\uc5ec\\ubd80\\n    }\\n\\n    uint256 public currentRoundId;\\n    uint256 public constant ROUND_DURATION = 600; // 10\\ubd84\\n    uint256 public constant ANSWER_POOL_SIZE = 100; // \\uc815\\ub2f5 \\ud480 \\ud06c\\uae30\\n    \\n    mapping(uint256 => Round) public rounds;\\n\\n    event NewRoundStarted(\\n        uint256 indexed roundId,\\n        PatternType pattern,\\n        uint256 minRange,\\n        uint256 maxRange,\\n        uint256 startTime\\n    );\\n\\n    event RoundEnded(uint256 indexed roundId, uint256 endTime);\\n    \\n    event AnswerPoolGenerated(uint256 indexed roundId, uint256 poolSize);\\n\\n    constructor() Ownable(msg.sender) {\\n        _startNewRound();\\n    }\\n\\n    function _startNewRound() internal {\\n        // \\uc774\\uc804 \\ub77c\\uc6b4\\ub4dc \\uc885\\ub8cc\\n        if (currentRoundId > 0) {\\n            rounds[currentRoundId].isActive = false;\\n            rounds[currentRoundId].endTime = block.timestamp;\\n            emit RoundEnded(currentRoundId, block.timestamp);\\n        }\\n\\n        currentRoundId++;\\n        \\n        // \\uc0c8 \\ub77c\\uc6b4\\ub4dc \\uc124\\uc815 \\uc0dd\\uc131\\n        (PatternType pattern, uint256 minRange, uint256 maxRange) = _generateRoundSettings();\\n        \\n        rounds[currentRoundId] = Round({\\n            roundId: currentRoundId,\\n            startTime: block.timestamp,\\n            endTime: block.timestamp + ROUND_DURATION,\\n            pattern: pattern,\\n            minRange: minRange,\\n            maxRange: maxRange,\\n            isActive: true,\\n            answerPool: new uint256[](0),\\n            answerPoolGenerated: false\\n        });\\n\\n        emit NewRoundStarted(currentRoundId, pattern, minRange, maxRange, block.timestamp);\\n        \\n        // \\uc815\\ub2f5 \\ud480 \\uc989\\uc2dc \\uc0dd\\uc131 (Simple \\ubc84\\uc804)\\n        _generateAnswerPoolSimple(currentRoundId);\\n    }\\n\\n    function _generateRoundSettings() internal view returns (PatternType, uint256, uint256) {\\n        // \\uc720\\uc0ac \\ub79c\\ub364\\uac12 \\uc0dd\\uc131 (\\ube14\\ub85d \\ub370\\uc774\\ud130 \\uae30\\ubc18)\\n        uint256 randomValue = uint256(\\n            keccak256(abi.encodePacked(block.timestamp, blockhash(block.number - 1), currentRoundId))\\n        );\\n        \\n        // \\ud328\\ud134 \\uc120\\ud0dd (5\\uac00\\uc9c0 \\uc911 \\ud558\\ub098)\\n        PatternType pattern = PatternType(randomValue % 5);\\n        \\n        // \\ubc94\\uc704 \\uc124\\uc815\\n        uint256 baseMin = 30000 + (randomValue % 20000); // 30000-50000\\n        uint256 baseMax = 60000 + (randomValue % 20000); // 60000-80000\\n        \\n        // \\ud328\\ud134\\ubcc4 \\uc870\\uc815\\n        uint256 minRange = baseMin + ((randomValue / 100) % 10000);\\n        uint256 maxRange = baseMax + ((randomValue / 1000) % 10000);\\n        \\n        return (pattern, minRange, maxRange);\\n    }\\n\\n    function _generateAnswerPoolSimple(uint256 roundId) internal {\\n        Round storage round = rounds[roundId];\\n        \\n        // \\uc758\\uc0ac \\ub79c\\ub364 \\uc2dc\\ub4dc\\n        uint256 seed = uint256(\\n            keccak256(abi.encodePacked(block.timestamp, block.prevrandao, roundId, msg.sender))\\n        );\\n        \\n        uint256 generated = 0;\\n        uint256 attempts = 0;\\n        uint256 maxAttempts = (round.maxRange - round.minRange + 1) * 2; // \\ucda9\\ubd84\\ud55c \\uc2dc\\ub3c4 \\ud69f\\uc218\\n        \\n        while (generated < ANSWER_POOL_SIZE && attempts < maxAttempts) {\\n            uint256 randomNum = uint256(\\n                keccak256(abi.encodePacked(seed, attempts, generated))\\n            );\\n            \\n            uint256 candidate = round.minRange + (randomNum % (round.maxRange - round.minRange + 1));\\n            \\n            if (_checkPattern(candidate, round.pattern)) {\\n                round.answerPool.push(candidate);\\n                generated++;\\n            }\\n            \\n            attempts++;\\n        }\\n        \\n        round.answerPoolGenerated = true;\\n        emit AnswerPoolGenerated(roundId, round.answerPool.length);\\n    }\\n\\n    function _checkPattern(uint256 number, PatternType pattern) internal pure returns (bool) {\\n        if (pattern == PatternType.EVEN) {\\n            return number % 2 == 0;\\n        } else if (pattern == PatternType.ODD) {\\n            return number % 2 == 1;\\n        } else if (pattern == PatternType.PRIME) {\\n            return _isPrime(number);\\n        } else if (pattern == PatternType.PI) {\\n            return _isPiRelated(number);\\n        } else if (pattern == PatternType.SQUARE) {\\n            return _isPerfectSquare(number);\\n        }\\n        return false;\\n    }\\n\\n    function _isPrime(uint256 n) internal pure returns (bool) {\\n        if (n < 2) return false;\\n        if (n == 2) return true;\\n        if (n % 2 == 0) return false;\\n        \\n        for (uint256 i = 3; i * i <= n; i += 2) {\\n            if (n % i == 0) return false;\\n        }\\n        return true;\\n    }\\n\\n    function _isPiRelated(uint256 n) internal pure returns (bool) {\\n        // 314\\ub97c \\ud3ec\\ud568\\ud558\\uac70\\ub098 314\\uc758 \\ubc30\\uc218\\n        string memory numStr = _toString(n);\\n        return _contains(numStr, \\\"314\\\") || n % 314 == 0;\\n    }\\n\\n    function _isPerfectSquare(uint256 n) internal pure returns (bool) {\\n        if (n == 0) return true;\\n        uint256 sqrt = _sqrt(n);\\n        return sqrt * sqrt == n;\\n    }\\n\\n    function _sqrt(uint256 x) internal pure returns (uint256) {\\n        if (x == 0) return 0;\\n        uint256 result = 1;\\n        if (x >> 128 > 0) {\\n            x >>= 128;\\n            result <<= 64;\\n        }\\n        if (x >> 64 > 0) {\\n            x >>= 64;\\n            result <<= 32;\\n        }\\n        if (x >> 32 > 0) {\\n            x >>= 32;\\n            result <<= 16;\\n        }\\n        if (x >> 16 > 0) {\\n            x >>= 16;\\n            result <<= 8;\\n        }\\n        if (x >> 8 > 0) {\\n            x >>= 8;\\n            result <<= 4;\\n        }\\n        if (x >> 4 > 0) {\\n            x >>= 4;\\n            result <<= 2;\\n        }\\n        if (x >> 2 > 0) {\\n            result <<= 1;\\n        }\\n        return result;\\n    }\\n\\n    function _toString(uint256 value) internal pure returns (string memory) {\\n        if (value == 0) return \\\"0\\\";\\n        uint256 temp = value;\\n        uint256 digits;\\n        while (temp != 0) {\\n            digits++;\\n            temp /= 10;\\n        }\\n        bytes memory buffer = new bytes(digits);\\n        while (value != 0) {\\n            digits -= 1;\\n            buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));\\n            value /= 10;\\n        }\\n        return string(buffer);\\n    }\\n\\n    function _contains(string memory str, string memory substr) internal pure returns (bool) {\\n        bytes memory strBytes = bytes(str);\\n        bytes memory substrBytes = bytes(substr);\\n        \\n        if (substrBytes.length > strBytes.length) return false;\\n        \\n        for (uint256 i = 0; i <= strBytes.length - substrBytes.length; i++) {\\n            bool found = true;\\n            for (uint256 j = 0; j < substrBytes.length; j++) {\\n                if (strBytes[i + j] != substrBytes[j]) {\\n                    found = false;\\n                    break;\\n                }\\n            }\\n            if (found) return true;\\n        }\\n        return false;\\n    }\\n\\n    // Public functions\\n    function getCurrentRound() external view returns (Round memory) {\\n        return rounds[currentRoundId];\\n    }\\n\\n    function getRound(uint256 roundId) external view returns (Round memory) {\\n        return rounds[roundId];\\n    }\\n\\n    function isRoundActive() external view returns (bool) {\\n        return rounds[currentRoundId].isActive && block.timestamp < rounds[currentRoundId].endTime;\\n    }\\n\\n    function getRoundTimeRemaining() external view returns (uint256) {\\n        if (!rounds[currentRoundId].isActive) return 0;\\n        if (block.timestamp >= rounds[currentRoundId].endTime) return 0;\\n        return rounds[currentRoundId].endTime - block.timestamp;\\n    }\\n\\n    function getAnswerPool(uint256 roundId) external view returns (uint256[] memory) {\\n        return rounds[roundId].answerPool;\\n    }\\n\\n    function isAnswerPoolGenerated(uint256 roundId) external view returns (bool) {\\n        return rounds[roundId].answerPoolGenerated;\\n    }\\n\\n    function checkRoundExpiry() external {\\n        if (rounds[currentRoundId].isActive && block.timestamp >= rounds[currentRoundId].endTime) {\\n            _startNewRound();\\n        }\\n    }\\n\\n    // Admin functions\\n    function forceNewRound() external onlyOwner {\\n        _startNewRound();\\n    }\\n\\n    function setRoundDuration(uint256 _duration) external onlyOwner {\\n        // Note: This would need to be implemented if we want dynamic durations\\n        // For now, ROUND_DURATION is constant\\n    }\\n}\",\"keccak256\":\"0x37a9ceb4a2b6b9c582c84854eb6517dc193fcb14b8986fcb4f7f4acc12711448\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x60806040523480156200001157600080fd5b5033806200003957604051631e4fbdf760e01b81526000600482015260240160405180910390fd5b620000448162000055565b506200004f620000a5565b62000c4a565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b600154156200011157600180546000908152600260208181526040808420600601805460ff1916905584548452928390204292018290559254915190815290917f8868888cc18628a149bc88cc32a91976ab30e2cd9aececb0cfe184a73fe551f9910160405180910390a25b60018054906000620001238362000b23565b9091555060009050808062000137620002e6565b92509250925060405180610120016040528060015481526020014281526020016102584262000167919062000b3f565b815260200184600481111562000181576200018162000b55565b81526020810184905260408101839052600160608201526080016000604051908082528060200260200182016040528015620001c7578160200160208202803683370190505b508152600060209182018190526001805482526002808452604092839020855181559385015184830155918401519183019190915560608301516003830180549192909160ff19169083600481111562000225576200022562000b55565b02179055506080820151600482015560a0820151600582015560c082015160068201805460ff191691151591909117905560e082015180516200027391600784019160209091019062000aa6565b5061010091909101516008909101805460ff19169115159190911790556001546040517f4afb164e8b55fde2bc138f047ca800afc30b7bb1e2cff9764868e5b51fed19b990620002cb90869086908690429062000b81565b60405180910390a2600154620002e190620003ff565b505050565b600080808042620002f960014362000bc0565b600154604080516020810194909452914091830191909152606082015260800160408051601f198184030181529190528051602090910120905060006200034260058362000bec565b600481111562000356576200035662000b55565b9050600062000368614e208462000bec565b620003769061753062000b3f565b9050600062000388614e208562000bec565b620003969061ea6062000b3f565b90506000612710620003aa60648762000c03565b620003b6919062000bec565b620003c2908462000b3f565b90506000612710620003d76103e88862000c03565b620003e3919062000bec565b620003ef908462000b3f565b9499919850939650945050505050565b6000818152600260209081526040808320815142818501524481840152606080820187905233901b6001600160601b0319166080820152825180820360740181526094909101909252815191909201206004820154600583015492939192829182916200046d919062000bc0565b6200047a90600162000b3f565b6200048790600262000c1a565b90505b6064831080156200049a57508082105b1562000572576040805160208082018790528183018590526060808301879052835180840390910181526080909201909252805191012060048601546005870154600091620004e99162000bc0565b620004f690600162000b3f565b62000502908362000bec565b876004015462000513919062000b3f565b60038801549091506200052b90829060ff16620005ca565b156200055b57600787018054600181018255600091825260209091200181905584620005578162000b23565b9550505b83620005678162000b23565b94505050506200048a565b60088501805460ff19166001179055600785015460405187917f49acbb2f6cf6b5f8d45bf745b9826c6fece211324520a3c8ecc6fe4ff8a9456e91620005ba91815260200190565b60405180910390a2505050505050565b600080826004811115620005e257620005e262000b55565b03620005fe57620005f560028462000bec565b159050620006b7565b600182600481111562000615576200061562000b55565b0362000633576200062860028462000bec565b6001149050620006b7565b60028260048111156200064a576200064a62000b55565b0362000663576200065b83620006bd565b9050620006b7565b60038260048111156200067a576200067a62000b55565b036200068b576200065b8362000750565b6004826004811115620006a257620006a262000b55565b03620006b3576200065b83620007ab565b5060005b92915050565b60006002821015620006d157506000919050565b81600203620006e257506001919050565b620006ef60028362000bec565b600003620006ff57506000919050565b60035b826200070f828062000c1a565b11620007475762000721818462000bec565b600003620007325750600092915050565b6200073f60028262000b3f565b905062000702565b50600192915050565b6000806200075e83620007e2565b90506200078d81604051806040016040528060038152602001620ccc4d60ea1b8152506200090260201b60201c565b80620007a45750620007a261013a8462000bec565b155b9392505050565b600081600003620007be57506001919050565b6000620007cb83620009f9565b905082620007da828062000c1a565b149392505050565b6060816000036200080a5750506040805180820190915260018152600360fc1b602082015290565b8160005b81156200083a5780620008218162000b23565b9150620008329050600a8362000c03565b91506200080e565b6000816001600160401b0381111562000857576200085762000b6b565b6040519080825280601f01601f19166020018201604052801562000882576020820181803683370190505b5090505b8415620008fa576200089a60018362000bc0565b9150620008a9600a8662000bec565b620008b690603062000b3f565b60f81b818381518110620008ce57620008ce62000c34565b60200101906001600160f81b031916908160001a905350620008f2600a8662000c03565b945062000886565b949350505050565b815181516000918491849110156200092057600092505050620006b7565b60005b8151835162000933919062000bc0565b8111620009ed57600160005b8351811015620009c1578381815181106200095e576200095e62000c34565b01602001516001600160f81b031916856200097a838662000b3f565b815181106200098d576200098d62000c34565b01602001516001600160f81b03191614620009ac5760009150620009c1565b80620009b88162000b23565b9150506200093f565b508015620009d7576001945050505050620006b7565b5080620009e48162000b23565b91505062000923565b50600095945050505050565b60008160000362000a0c57506000919050565b6001608083901c1562000a245760809290921c9160401b5b604083901c1562000a3a5760409290921c9160201b5b602083901c1562000a505760209290921c9160101b5b601083901c1562000a665760109290921c9160081b5b600883901c1562000a7c5760089290921c9160041b5b600483901c1562000a925760049290921c9160021b5b600283901c15620006b75760011b92915050565b82805482825590600052602060002090810192821562000ae4579160200282015b8281111562000ae457825182559160200191906001019062000ac7565b5062000af292915062000af6565b5090565b5b8082111562000af2576000815560010162000af7565b634e487b7160e01b600052601160045260246000fd5b60006001820162000b385762000b3862000b0d565b5060010190565b80820180821115620006b757620006b762000b0d565b634e487b7160e01b600052602160045260246000fd5b634e487b7160e01b600052604160045260246000fd5b608081016005861062000ba457634e487b7160e01b600052602160045260246000fd5b9481526020810193909352604083019190915260609091015290565b81810381811115620006b757620006b762000b0d565b634e487b7160e01b600052601260045260246000fd5b60008262000bfe5762000bfe62000bd6565b500690565b60008262000c155762000c1562000bd6565b500490565b8082028115828204841417620006b757620006b762000b0d565b634e487b7160e01b600052603260045260246000fd5b6113e88062000c5a6000396000f3fe608060405234801561001057600080fd5b50600436106101005760003560e01c80638c65c81f116100975780639cbe5efd116100665780639cbe5efd1461025d578063a32bf59714610266578063e4fc0d7f1461026e578063f2fde38b1461027657600080fd5b80638c65c81f146101ac5780638d13f7de1461021a5780638da5cb5b146102225780638f1327c01461023d57600080fd5b806345945a45116100d357806345945a451461017d5780636641ea0814610185578063714490151461019c578063715018a6146101a457600080fd5b806316807ad11461010557806326c4ef9c1461010f57806336c92c3f1461014a578063426464831461015d575b600080fd5b61010d610289565b005b61013561011d3660046110e3565b60009081526002602052604090206008015460ff1690565b60405190151581526020015b60405180910390f35b61010d6101583660046110e3565b6102d1565b61017061016b3660046110e3565b6102dc565b60405161014191906110fc565b610135610341565b61018e61025881565b604051908152602001610141565b61018e606481565b61010d61037e565b6102066101ba3660046110e3565b600260208190526000918252604090912080546001820154928201546003830154600484015460058501546006860154600890960154949695939460ff93841694929391928216911688565b604051610141989796959493929190611178565b61018e610390565b6000546040516001600160a01b039091168152602001610141565b61025061024b3660046110e3565b6103f5565b60405161014191906111fe565b61018e60015481565b610250610504565b61010d610615565b61010d61028436600461128a565b610625565b60015460009081526002602052604090206006015460ff1680156102c25750600154600090815260026020819052604090912001544210155b156102cf576102cf610665565b565b6102d9610891565b50565b60008181526002602090815260409182902060070180548351818402810184019094528084526060939283018282801561033557602002820191906000526020600020905b815481526020019060010190808311610321575b50505050509050919050565b60015460009081526002602052604081206006015460ff16801561037957506001546000908152600260208190526040909120015442105b905090565b610386610891565b6102cf60006108be565b60015460009081526002602052604081206006015460ff166103b25750600090565b6001546000908152600260208190526040909120015442106103d45750600090565b600154600090815260026020819052604090912001546103799042906112c9565b6103fd611027565b6000828152600260208181526040928390208351610120810185528154815260018201549281019290925291820154928101929092526003810154606083019060ff16600481111561045157610451611140565b600481111561046257610462611140565b815260200160048201548152602001600582015481526020016006820160009054906101000a900460ff16151515158152602001600782018054806020026020016040519081016040528092919081815260200182805480156104e457602002820191906000526020600020905b8154815260200190600101908083116104d0575b50505091835250506008919091015460ff16151560209091015292915050565b61050c611027565b6001805460009081526002602081815260409283902083516101208101855281548152948101549185019190915290810154918301919091526003810154606083019060ff16600481111561056357610563611140565b600481111561057457610574611140565b815260200160048201548152602001600582015481526020016006820160009054906101000a900460ff16151515158152602001600782018054806020026020016040519081016040528092919081815260200182805480156105f657602002820191906000526020600020905b8154815260200190600101908083116105e2575b50505091835250506008919091015460ff161515602090910152919050565b61061d610891565b6102cf610665565b61062d610891565b6001600160a01b03811661065c57604051631e4fbdf760e01b8152600060048201526024015b60405180910390fd5b6102d9816108be565b600154156106d057600180546000908152600260208181526040808420600601805460ff1916905584548452928390204292018290559254915190815290917f8868888cc18628a149bc88cc32a91976ab30e2cd9aececb0cfe184a73fe551f9910160405180910390a25b600180549060006106e0836112dc565b919050555060008060006106f261090e565b92509250925060405180610120016040528060015481526020014281526020016102584261072091906112f5565b815260200184600481111561073757610737611140565b8152602081018490526040810183905260016060820152608001600060405190808252806020026020018201604052801561077c578160200160208202803683370190505b508152600060209182018190526001805482526002808452604092839020855181559385015184830155918401519183019190915560608301516003830180549192909160ff1916908360048111156107d7576107d7611140565b02179055506080820151600482015560a0820151600582015560c082015160068201805460ff191691151591909117905560e08201518051610823916007840191602090910190611083565b5061010091909101516008909101805460ff19169115159190911790556001546040517f4afb164e8b55fde2bc138f047ca800afc30b7bb1e2cff9764868e5b51fed19b99061087990869086908690429061131e565b60405180910390a261088c600154610a0c565b505050565b6000546001600160a01b031633146102cf5760405163118cdaa760e01b8152336004820152602401610653565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b60008080804261091f6001436112c9565b600154604080516020810194909452914091830191909152606082015260800160408051601f1981840301815291905280516020909101209050600061096660058361135d565b600481111561097757610977611140565b90506000610987614e208461135d565b610993906175306112f5565b905060006109a3614e208561135d565b6109af9061ea606112f5565b905060006127106109c1606487611371565b6109cb919061135d565b6109d590846112f5565b905060006127106109e86103e888611371565b6109f2919061135d565b6109fc90846112f5565b9499919850939650945050505050565b6000818152600260209081526040808320815142818501524481840152606080820187905233901b6bffffffffffffffffffffffff1916608082015282518082036074018152609490910190925281519190920120600482015460058301549293919282918291610a7d91906112c9565b610a889060016112f5565b610a93906002611385565b90505b606483108015610aa557508082105b15610b6c576040805160208082018790528183018590526060808301879052835180840390910181526080909201909252805191012060048601546005870154600091610af1916112c9565b610afc9060016112f5565b610b06908361135d565b8760040154610b1591906112f5565b6003880154909150610b2b90829060ff16610bc3565b15610b5857600787018054600181018255600091825260209091200181905584610b54816112dc565b9550505b83610b62816112dc565b9450505050610a96565b60088501805460ff19166001179055600785015460405187917f49acbb2f6cf6b5f8d45bf745b9826c6fece211324520a3c8ecc6fe4ff8a9456e91610bb391815260200190565b60405180910390a2505050505050565b600080826004811115610bd857610bd8611140565b03610bf057610be860028461135d565b159050610c8f565b6001826004811115610c0457610c04611140565b03610c1e57610c1460028461135d565b6001149050610c8f565b6002826004811115610c3257610c32611140565b03610c4757610c4083610c95565b9050610c8f565b6003826004811115610c5b57610c5b611140565b03610c6957610c4083610d1a565b6004826004811115610c7d57610c7d611140565b03610c8b57610c4083610d68565b5060005b92915050565b60006002821015610ca857506000919050565b81600203610cb857506001919050565b610cc360028361135d565b600003610cd257506000919050565b60035b82610ce08280611385565b11610d1157610cef818461135d565b600003610cff5750600092915050565b610d0a6002826112f5565b9050610cd5565b50600192915050565b600080610d2683610d9a565b9050610d4d81604051806040016040528060038152602001620ccc4d60ea1b815250610ea3565b80610d615750610d5f61013a8461135d565b155b9392505050565b600081600003610d7a57506001919050565b6000610d8583610f82565b905082610d928280611385565b149392505050565b606081600003610dc15750506040805180820190915260018152600360fc1b602082015290565b8160005b8115610deb5780610dd5816112dc565b9150610de49050600a83611371565b9150610dc5565b60008167ffffffffffffffff811115610e0657610e06611308565b6040519080825280601f01601f191660200182016040528015610e30576020820181803683370190505b5090505b8415610e9b57610e456001836112c9565b9150610e52600a8661135d565b610e5d9060306112f5565b60f81b818381518110610e7257610e7261139c565b60200101906001600160f81b031916908160001a905350610e94600a86611371565b9450610e34565b949350505050565b81518151600091849184911015610ebf57600092505050610c8f565b60005b81518351610ed091906112c9565b8111610f7657600160005b8351811015610f4f57838181518110610ef657610ef661139c565b01602001516001600160f81b03191685610f1083866112f5565b81518110610f2057610f2061139c565b01602001516001600160f81b03191614610f3d5760009150610f4f565b80610f47816112dc565b915050610edb565b508015610f63576001945050505050610c8f565b5080610f6e816112dc565b915050610ec2565b50600095945050505050565b600081600003610f9457506000919050565b6001608083901c15610fab5760809290921c9160401b5b604083901c15610fc05760409290921c9160201b5b602083901c15610fd55760209290921c9160101b5b601083901c15610fea5760109290921c9160081b5b600883901c15610fff5760089290921c9160041b5b600483901c156110145760049290921c9160021b5b600283901c15610c8f5760011b92915050565b6040518061012001604052806000815260200160008152602001600081526020016000600481111561105b5761105b611140565b8152600060208201819052604082018190526060808301829052608083015260a09091015290565b8280548282559060005260206000209081019282156110be579160200282015b828111156110be5782518255916020019190600101906110a3565b506110ca9291506110ce565b5090565b5b808211156110ca57600081556001016110cf565b6000602082840312156110f557600080fd5b5035919050565b6020808252825182820181905260009190848201906040850190845b8181101561113457835183529284019291840191600101611118565b50909695505050505050565b634e487b7160e01b600052602160045260246000fd5b6005811061117457634e487b7160e01b600052602160045260246000fd5b9052565b8881526020810188905260408101879052610100810161119b6060830188611156565b608082019590955260a081019390935290151560c0830152151560e090910152949350505050565b600081518084526020808501945080840160005b838110156111f3578151875295820195908201906001016111d7565b509495945050505050565b60208152815160208201526020820151604082015260408201516060820152600060608301516112316080840182611156565b50608083015160a083015260a083015160c083015260c083015161125960e084018215159052565b5060e083015161012061010081818601526112786101408601846111c3565b95015115159301929092525090919050565b60006020828403121561129c57600080fd5b81356001600160a01b0381168114610d6157600080fd5b634e487b7160e01b600052601160045260246000fd5b81810381811115610c8f57610c8f6112b3565b6000600182016112ee576112ee6112b3565b5060010190565b80820180821115610c8f57610c8f6112b3565b634e487b7160e01b600052604160045260246000fd5b6080810161132c8287611156565b84602083015283604083015282606083015295945050505050565b634e487b7160e01b600052601260045260246000fd5b60008261136c5761136c611347565b500690565b60008261138057611380611347565b500490565b8082028115828204841417610c8f57610c8f6112b3565b634e487b7160e01b600052603260045260246000fdfea2646970667358221220e478fa608d045a7fead0b169b1ebe8182270f29f5b575f73aa21684b1cb4c36a64736f6c63430008140033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106101005760003560e01c80638c65c81f116100975780639cbe5efd116100665780639cbe5efd1461025d578063a32bf59714610266578063e4fc0d7f1461026e578063f2fde38b1461027657600080fd5b80638c65c81f146101ac5780638d13f7de1461021a5780638da5cb5b146102225780638f1327c01461023d57600080fd5b806345945a45116100d357806345945a451461017d5780636641ea0814610185578063714490151461019c578063715018a6146101a457600080fd5b806316807ad11461010557806326c4ef9c1461010f57806336c92c3f1461014a578063426464831461015d575b600080fd5b61010d610289565b005b61013561011d3660046110e3565b60009081526002602052604090206008015460ff1690565b60405190151581526020015b60405180910390f35b61010d6101583660046110e3565b6102d1565b61017061016b3660046110e3565b6102dc565b60405161014191906110fc565b610135610341565b61018e61025881565b604051908152602001610141565b61018e606481565b61010d61037e565b6102066101ba3660046110e3565b600260208190526000918252604090912080546001820154928201546003830154600484015460058501546006860154600890960154949695939460ff93841694929391928216911688565b604051610141989796959493929190611178565b61018e610390565b6000546040516001600160a01b039091168152602001610141565b61025061024b3660046110e3565b6103f5565b60405161014191906111fe565b61018e60015481565b610250610504565b61010d610615565b61010d61028436600461128a565b610625565b60015460009081526002602052604090206006015460ff1680156102c25750600154600090815260026020819052604090912001544210155b156102cf576102cf610665565b565b6102d9610891565b50565b60008181526002602090815260409182902060070180548351818402810184019094528084526060939283018282801561033557602002820191906000526020600020905b815481526020019060010190808311610321575b50505050509050919050565b60015460009081526002602052604081206006015460ff16801561037957506001546000908152600260208190526040909120015442105b905090565b610386610891565b6102cf60006108be565b60015460009081526002602052604081206006015460ff166103b25750600090565b6001546000908152600260208190526040909120015442106103d45750600090565b600154600090815260026020819052604090912001546103799042906112c9565b6103fd611027565b6000828152600260208181526040928390208351610120810185528154815260018201549281019290925291820154928101929092526003810154606083019060ff16600481111561045157610451611140565b600481111561046257610462611140565b815260200160048201548152602001600582015481526020016006820160009054906101000a900460ff16151515158152602001600782018054806020026020016040519081016040528092919081815260200182805480156104e457602002820191906000526020600020905b8154815260200190600101908083116104d0575b50505091835250506008919091015460ff16151560209091015292915050565b61050c611027565b6001805460009081526002602081815260409283902083516101208101855281548152948101549185019190915290810154918301919091526003810154606083019060ff16600481111561056357610563611140565b600481111561057457610574611140565b815260200160048201548152602001600582015481526020016006820160009054906101000a900460ff16151515158152602001600782018054806020026020016040519081016040528092919081815260200182805480156105f657602002820191906000526020600020905b8154815260200190600101908083116105e2575b50505091835250506008919091015460ff161515602090910152919050565b61061d610891565b6102cf610665565b61062d610891565b6001600160a01b03811661065c57604051631e4fbdf760e01b8152600060048201526024015b60405180910390fd5b6102d9816108be565b600154156106d057600180546000908152600260208181526040808420600601805460ff1916905584548452928390204292018290559254915190815290917f8868888cc18628a149bc88cc32a91976ab30e2cd9aececb0cfe184a73fe551f9910160405180910390a25b600180549060006106e0836112dc565b919050555060008060006106f261090e565b92509250925060405180610120016040528060015481526020014281526020016102584261072091906112f5565b815260200184600481111561073757610737611140565b8152602081018490526040810183905260016060820152608001600060405190808252806020026020018201604052801561077c578160200160208202803683370190505b508152600060209182018190526001805482526002808452604092839020855181559385015184830155918401519183019190915560608301516003830180549192909160ff1916908360048111156107d7576107d7611140565b02179055506080820151600482015560a0820151600582015560c082015160068201805460ff191691151591909117905560e08201518051610823916007840191602090910190611083565b5061010091909101516008909101805460ff19169115159190911790556001546040517f4afb164e8b55fde2bc138f047ca800afc30b7bb1e2cff9764868e5b51fed19b99061087990869086908690429061131e565b60405180910390a261088c600154610a0c565b505050565b6000546001600160a01b031633146102cf5760405163118cdaa760e01b8152336004820152602401610653565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b60008080804261091f6001436112c9565b600154604080516020810194909452914091830191909152606082015260800160408051601f1981840301815291905280516020909101209050600061096660058361135d565b600481111561097757610977611140565b90506000610987614e208461135d565b610993906175306112f5565b905060006109a3614e208561135d565b6109af9061ea606112f5565b905060006127106109c1606487611371565b6109cb919061135d565b6109d590846112f5565b905060006127106109e86103e888611371565b6109f2919061135d565b6109fc90846112f5565b9499919850939650945050505050565b6000818152600260209081526040808320815142818501524481840152606080820187905233901b6bffffffffffffffffffffffff1916608082015282518082036074018152609490910190925281519190920120600482015460058301549293919282918291610a7d91906112c9565b610a889060016112f5565b610a93906002611385565b90505b606483108015610aa557508082105b15610b6c576040805160208082018790528183018590526060808301879052835180840390910181526080909201909252805191012060048601546005870154600091610af1916112c9565b610afc9060016112f5565b610b06908361135d565b8760040154610b1591906112f5565b6003880154909150610b2b90829060ff16610bc3565b15610b5857600787018054600181018255600091825260209091200181905584610b54816112dc565b9550505b83610b62816112dc565b9450505050610a96565b60088501805460ff19166001179055600785015460405187917f49acbb2f6cf6b5f8d45bf745b9826c6fece211324520a3c8ecc6fe4ff8a9456e91610bb391815260200190565b60405180910390a2505050505050565b600080826004811115610bd857610bd8611140565b03610bf057610be860028461135d565b159050610c8f565b6001826004811115610c0457610c04611140565b03610c1e57610c1460028461135d565b6001149050610c8f565b6002826004811115610c3257610c32611140565b03610c4757610c4083610c95565b9050610c8f565b6003826004811115610c5b57610c5b611140565b03610c6957610c4083610d1a565b6004826004811115610c7d57610c7d611140565b03610c8b57610c4083610d68565b5060005b92915050565b60006002821015610ca857506000919050565b81600203610cb857506001919050565b610cc360028361135d565b600003610cd257506000919050565b60035b82610ce08280611385565b11610d1157610cef818461135d565b600003610cff5750600092915050565b610d0a6002826112f5565b9050610cd5565b50600192915050565b600080610d2683610d9a565b9050610d4d81604051806040016040528060038152602001620ccc4d60ea1b815250610ea3565b80610d615750610d5f61013a8461135d565b155b9392505050565b600081600003610d7a57506001919050565b6000610d8583610f82565b905082610d928280611385565b149392505050565b606081600003610dc15750506040805180820190915260018152600360fc1b602082015290565b8160005b8115610deb5780610dd5816112dc565b9150610de49050600a83611371565b9150610dc5565b60008167ffffffffffffffff811115610e0657610e06611308565b6040519080825280601f01601f191660200182016040528015610e30576020820181803683370190505b5090505b8415610e9b57610e456001836112c9565b9150610e52600a8661135d565b610e5d9060306112f5565b60f81b818381518110610e7257610e7261139c565b60200101906001600160f81b031916908160001a905350610e94600a86611371565b9450610e34565b949350505050565b81518151600091849184911015610ebf57600092505050610c8f565b60005b81518351610ed091906112c9565b8111610f7657600160005b8351811015610f4f57838181518110610ef657610ef661139c565b01602001516001600160f81b03191685610f1083866112f5565b81518110610f2057610f2061139c565b01602001516001600160f81b03191614610f3d5760009150610f4f565b80610f47816112dc565b915050610edb565b508015610f63576001945050505050610c8f565b5080610f6e816112dc565b915050610ec2565b50600095945050505050565b600081600003610f9457506000919050565b6001608083901c15610fab5760809290921c9160401b5b604083901c15610fc05760409290921c9160201b5b602083901c15610fd55760209290921c9160101b5b601083901c15610fea5760109290921c9160081b5b600883901c15610fff5760089290921c9160041b5b600483901c156110145760049290921c9160021b5b600283901c15610c8f5760011b92915050565b6040518061012001604052806000815260200160008152602001600081526020016000600481111561105b5761105b611140565b8152600060208201819052604082018190526060808301829052608083015260a09091015290565b8280548282559060005260206000209081019282156110be579160200282015b828111156110be5782518255916020019190600101906110a3565b506110ca9291506110ce565b5090565b5b808211156110ca57600081556001016110cf565b6000602082840312156110f557600080fd5b5035919050565b6020808252825182820181905260009190848201906040850190845b8181101561113457835183529284019291840191600101611118565b50909695505050505050565b634e487b7160e01b600052602160045260246000fd5b6005811061117457634e487b7160e01b600052602160045260246000fd5b9052565b8881526020810188905260408101879052610100810161119b6060830188611156565b608082019590955260a081019390935290151560c0830152151560e090910152949350505050565b600081518084526020808501945080840160005b838110156111f3578151875295820195908201906001016111d7565b509495945050505050565b60208152815160208201526020820151604082015260408201516060820152600060608301516112316080840182611156565b50608083015160a083015260a083015160c083015260c083015161125960e084018215159052565b5060e083015161012061010081818601526112786101408601846111c3565b95015115159301929092525090919050565b60006020828403121561129c57600080fd5b81356001600160a01b0381168114610d6157600080fd5b634e487b7160e01b600052601160045260246000fd5b81810381811115610c8f57610c8f6112b3565b6000600182016112ee576112ee6112b3565b5060010190565b80820180821115610c8f57610c8f6112b3565b634e487b7160e01b600052604160045260246000fd5b6080810161132c8287611156565b84602083015283604083015282606083015295945050505050565b634e487b7160e01b600052601260045260246000fd5b60008261136c5761136c611347565b500690565b60008261138057611380611347565b500490565b8082028115828204841417610c8f57610c8f6112b3565b634e487b7160e01b600052603260045260246000fdfea2646970667358221220e478fa608d045a7fead0b169b1ebe8182270f29f5b575f73aa21684b1cb4c36a64736f6c63430008140033",
+  "devdoc": {
+    "errors": {
+      "OwnableInvalidOwner(address)": [
+        {
+          "details": "The owner is not a valid owner account. (eg. `address(0)`)"
+        }
+      ],
+      "OwnableUnauthorizedAccount(address)": [
+        {
+          "details": "The caller account is not authorized to perform an operation."
+        }
+      ]
+    },
+    "kind": "dev",
+    "methods": {
+      "owner()": {
+        "details": "Returns the address of the current owner."
+      },
+      "renounceOwnership()": {
+        "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner."
+      },
+      "transferOwnership(address)": {
+        "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 8,
+        "contract": "contracts/GameManagerSimple.sol:GameManagerSimple",
+        "label": "_owner",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_address"
+      },
+      {
+        "astId": 4771,
+        "contract": "contracts/GameManagerSimple.sol:GameManagerSimple",
+        "label": "currentRoundId",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 4782,
+        "contract": "contracts/GameManagerSimple.sol:GameManagerSimple",
+        "label": "rounds",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_mapping(t_uint256,t_struct(Round)4769_storage)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_array(t_uint256)dyn_storage": {
+        "base": "t_uint256",
+        "encoding": "dynamic_array",
+        "label": "uint256[]",
+        "numberOfBytes": "32"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_enum(PatternType)4748": {
+        "encoding": "inplace",
+        "label": "enum GameManagerSimple.PatternType",
+        "numberOfBytes": "1"
+      },
+      "t_mapping(t_uint256,t_struct(Round)4769_storage)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => struct GameManagerSimple.Round)",
+        "numberOfBytes": "32",
+        "value": "t_struct(Round)4769_storage"
+      },
+      "t_struct(Round)4769_storage": {
+        "encoding": "inplace",
+        "label": "struct GameManagerSimple.Round",
+        "members": [
+          {
+            "astId": 4750,
+            "contract": "contracts/GameManagerSimple.sol:GameManagerSimple",
+            "label": "roundId",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 4752,
+            "contract": "contracts/GameManagerSimple.sol:GameManagerSimple",
+            "label": "startTime",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 4754,
+            "contract": "contracts/GameManagerSimple.sol:GameManagerSimple",
+            "label": "endTime",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 4757,
+            "contract": "contracts/GameManagerSimple.sol:GameManagerSimple",
+            "label": "pattern",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_enum(PatternType)4748"
+          },
+          {
+            "astId": 4759,
+            "contract": "contracts/GameManagerSimple.sol:GameManagerSimple",
+            "label": "minRange",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 4761,
+            "contract": "contracts/GameManagerSimple.sol:GameManagerSimple",
+            "label": "maxRange",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 4763,
+            "contract": "contracts/GameManagerSimple.sol:GameManagerSimple",
+            "label": "isActive",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_bool"
+          },
+          {
+            "astId": 4766,
+            "contract": "contracts/GameManagerSimple.sol:GameManagerSimple",
+            "label": "answerPool",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_array(t_uint256)dyn_storage"
+          },
+          {
+            "astId": 4768,
+            "contract": "contracts/GameManagerSimple.sol:GameManagerSimple",
+            "label": "answerPoolGenerated",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_bool"
+          }
+        ],
+        "numberOfBytes": "288"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}

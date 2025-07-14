@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+  --monad-primary: #6c54f8;
+  --monad-purple-light: #8b6ffb;
+  --monad-purple-dark: #4f3cd4;
+  --monad-bg-dark: #0a0a0f;
+  --monad-bg-card: rgba(255, 255, 255, 0.05);
+  --monad-border: rgba(255, 255, 255, 0.1);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1628 50%, #2a1a3f 70%, #0a0a0f 100%);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Responsive container improvements */
+.container {
+  width: 100%;
+  padding-right: 1rem;
+  padding-left: 1rem;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+@media (min-width: 640px) {
+  .container {
+    max-width: 640px;
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1280px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .container {
+    max-width: 1600px;
+  }
+}
+
+.monad-gradient {
+  background: linear-gradient(135deg, var(--monad-primary) 0%, var(--monad-purple-light) 100%);
+}
+
+.monad-glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.monad-glow {
+  box-shadow: 0 0 20px rgba(108, 84, 248, 0.3);
+}
+
+.monad-pattern {
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(108, 84, 248, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(139, 111, 251, 0.1) 0%, transparent 50%);
+  background-size: 100px 100px;
+  background-position: 0 0, 50px 50px;
+}
+
+.canvas-glow {
+  filter: drop-shadow(0 0 20px rgba(108, 84, 248, 0.4));
+}
+
+.pixel-border {
+  border: 0.5px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease;
+}
+
+.pixel-border:hover {
+  border-color: rgba(108, 84, 248, 0.8);
+  box-shadow: 0 0 10px rgba(108, 84, 248, 0.3);
+}

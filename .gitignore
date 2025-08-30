@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+.env
+.env.*
+
+# Node
+node_modules/
+build/
+dist/
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# VSCode
+.vscode/
+.history/
+
+# Docker
+*.log
+docker-compose.override.yml
+mysql/data/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# React
+frontend/.env
+frontend/.env.*
+frontend/.cache/
+
+# Nginx
+nginx/*.log
+
+# 기타
+*.swp
+*.swo

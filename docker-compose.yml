@@ -1,0 +1,44 @@
+version: '3.8'
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: always
+  backend:
+    build: ./backend
+    command: gunicorn -b 0.0.0.0:8123 app:app
+    volumes:
+      - ./backend:/app
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=example
+      - MYSQL_DB=appdb
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8123:8123"
+    depends_on:
+      - mysql
+    restart: always
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
+    restart: always
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: appdb
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+    restart: always

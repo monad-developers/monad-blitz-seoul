@@ -1,0 +1,11 @@
+flask
+gunicorn
+flask_sqlalchemy
+sqlalchemy
+pymysql
+cryptography
+PyJWT
+qrcode
+pillow
+web3
+python-dotenv

@@ -1,11 +1,185 @@
-# Monad Blitz Seoul Submission Process
+# Monad Blitz Debutler 🎯
 
-1. Visit the `monad-blitz-seoul` repo (link [here](https://github.com/monad-developers/monad-blitz-seoul)) and fork it.
+> **블록체인 기반 이벤트 응모 및 추첨 시스템**
 
-<img width="1511" alt="Screenshot 2025-07-07 at 10 17 05 AM" src="https://github.com/user-attachments/assets/341c6774-f5ea-484d-a700-28e89eee9f95" />
+Monad Blitz Debutler는 Web3 기술을 활용하여 투명하고 공정한 이벤트 응모 및 추첨 서비스를 제공하는 플랫폼입니다. 관리자는 이벤트를 생성하고, 참가자들은 QR 코드를 통해 응모하며, 블록체인의 VRF(Verifiable Random Function)를 통해 공정한 추첨을 진행합니다.
 
-2. Give it your project name, a one-liner description, make sure you are forking `main` branch and click `Create Fork`.
+## 🔥 대규모 이벤트를 위한 고성능 블록체인
 
-<img width="1511" alt="Screenshot 2025-07-07 at 10 17 55 AM" src="https://github.com/user-attachments/assets/b4a60b3b-6fd9-42b8-ba38-77fd79f76986" />
+### Monad의 병렬 EVM이 필요한 이유
 
-3. In your fork you can make all the changes you want, add code of your project, create branches, add information to `README.md`, you can change anything and everything.
+**기존 블록체인의 한계**
+
+- 이더리움: ~15 TPS → 100명 동시 응모 시 7분 소요
+- 콘서트, 페스티벌 현장에서 실시간 처리 불가능
+
+**Monad의 병렬 EVM 솔루션**
+
+- **10,000 TPS 달성**: 100명이 동시에 응모해도 1초 내 처리
+- **독립적 트랜잭션 병렬 실행**: 각 응모자의 서명을 동시에 검증
+- **0.5초 블록 타임 + 1초 완결성**: 즉시 응모 확정
+
+### 스마트한 배치 처리 시스템
+
+**Dynamic Batch Processing**
+
+- 응모량에 따라 배치 크기 자동 조절
+- 병렬 처리로 각 배치를 독립적으로 실행
+- 모나드의 저가스비로 빈번한 배치 처리 경제적
+
+**상태 충돌 자동 해결**
+
+- 동시 응모 시 상태 변수 충돌 자동 감지
+- 충돌 발생 시 자동 재실행으로 데이터 무결성 보장
+
+## 🔒 검증 가능한 공정성
+
+### Chainlink VRF를 선택한 이유
+
+**암호학적 검증의 골드 스탠더드**
+
+- 업계에서 가장 신뢰받는 VRF 솔루션
+- 수학적으로 증명 가능한 무작위성
+- 오라클 네트워크의 탈중앙화 보안
+
+**투명성 + 재미**
+
+- VRF로 실제 무작위 추첨 실행
+- 핀볼/룰렛으로 시각적 연출
+- 블록체인에 모든 과정 영구 기록
+
+## 🎯 완벽한 기술 조합
+
+### 실시간 대규모 이벤트 처리
+
+**시나리오: 오프라인 밋업 경품 이벤트**
+
+1. **대량 응모 처리** (Monad 병렬 EVM)
+
+   - 동시에 QR 스캔 → 메타마스크 서명
+   - 병렬 처리로 30초 내 모든 응모 완료
+   - 가스비 총 $20 미만으로 경제적
+
+2. **실시간 게임 연출** (Marble Roulette)
+
+   - 모든 참가자가 동시에 같은 핀볼 게임 관람
+
+3. **공정한 추첨** (Chainlink VRF)
+   - 게임 연출과 동시에 VRF 실행
+   - 체인링크 오라클 네트워크로 검증된 무작위성
+   - 블록체인에 영구 증명 저장
+
+## 🚀 주요 기능
+
+### 📋 이벤트 관리
+
+- **이벤트 생성**: 이름, 기간, 참가자 제한 설정
+- **참가자 관리**: CSV 파일 업로드를 통한 대량 참가자 등록
+- **이벤트 상태 관리**: 초안, 진행중, 마감, 추첨중, 완료 등 단계별 관리
+
+### 🎁 경품 관리
+
+- **경품 등록**: 이름, 설명, 이미지, 당첨자 수 설정
+- **경품 이미지**: 파일 업로드를 통한 시각적 표현
+- **당첨자 할당**: 자동 당첨자 선정 및 관리
+
+### 🔐 보안 및 인증
+
+- **JWT 기반 인증**: 관리자 계정 보안
+- **지갑 주소 연동**: Web3 지갑 주소를 통한 참가자 식별
+- **서명 검증**: 블록체인 서명을 통한 참가자 인증
+
+### 📱 참가자 경험
+
+- **QR 코드 응모**: 모바일 친화적인 응모 방식
+- **실시간 상태 확인**: 응모 상태 및 당첨 결과 실시간 조회
+- **폼 설정**: 이벤트별 맞춤형 응모 폼 구성
+
+### ⛓️ 블록체인 통합
+
+- **VRF 서비스**: Gelato, Chainlink 등 VRF 제공자 연동
+- **스마트 컨트랙트**: Monad 테스트넷 기반 컨트랙트 실행
+- **트랜잭션 추적**: 모든 블록체인 활동 로깅 및 모니터링
+
+## 🏗️ 기술 스택
+
+### Frontend
+
+- **React 18** + **TypeScript**: 현대적인 UI 개발
+- **Tailwind CSS**: 반응형 디자인 및 스타일링
+- **React Router**: SPA 라우팅 및 네비게이션
+- **Context API**: 전역 상태 관리
+
+### Backend
+
+- **Python Flask**: RESTful API 서버
+- **SQLAlchemy 2.0**: ORM 및 데이터베이스 관리
+- **JWT**: 사용자 인증 및 세션 관리
+- **Gunicorn**: 프로덕션 WSGI 서버
+
+### Database
+
+- **MySQL 8.0**: 관계형 데이터베이스
+- **JSON 필드**: 유연한 메타데이터 저장
+- **인덱싱**: 성능 최적화된 쿼리 처리
+
+### Infrastructure
+
+- **Docker Compose**: 컨테이너 오케스트레이션
+- **Nginx**: 리버스 프록시 및 정적 파일 서빙
+- **QR Code**: Python qrcode 라이브러리
+
+## 📱 주요 페이지
+
+### 관리자 페이지
+
+- **관리자 로그인/회원가입**: 계정 관리 및 인증
+- **이벤트 목록**: 생성된 이벤트 전체 조회
+- **이벤트 생성**: 새로운 이벤트 설정 및 CSV 업로드
+- **경품 관리**: 경품 등록, 수정, 삭제
+- **필드 설정**: 응모 폼 커스터마이징
+- **응모 현황**: 실시간 참가자 통계 및 상태
+- **최종 결과**: 당첨자 발표 및 결과 관리
+
+### 참가자 페이지
+
+- **QR 응모**: QR 코드 스캔을 통한 간편 응모
+- **응모 상태**: 개인 응모 현황 및 결과 확인
+
+## 🔧 설치 및 실행
+
+### 1. 저장소 클론
+
+```bash
+git clone <repository-url>
+cd monad-blitz-debutler
+```
+
+### 2. 프론트엔드 의존성 설치
+
+```bash
+cd frontend
+npm install
+```
+
+### 3. Docker Compose로 전체 서비스 실행
+
+```bash
+docker-compose up --build
+```
+
+### 4. 서비스 접속
+
+- **메인 페이지**: http://localhost
+- **API 서버**: http://localhost:8123
+- **데이터베이스**: localhost:3306
+
+## 🚀 향후 계획
+
+- **Chainlink VRF 연결**: Chainlink vrf 기능 지원 시 추가 예정
+- **실시간 알림**: WebSocket 기반 실시간 업데이트
+- **재미 요소 추가**: 핀볼 게임에 VRF를 연동하여 실시간 추첨 진행 
+
+---
+
+**Monad Blitz Debutler** - 블록체인의 투명성과 공정성을 이벤트에 적용하세요! 🎉

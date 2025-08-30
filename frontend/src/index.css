@@ -1,0 +1,80 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* CSS Reset for text direction issues */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  direction: ltr;
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+}
+
+/* 커스텀 스타일 */
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  /* 스크롤바 스타일링 */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+}
+
+@layer components {
+  /* 앱 전체 컨테이너 - 화면이 커져도 중앙 정렬 유지 */
+  .app-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background: white;
+  }
+  
+  .app-container.dark {
+    background: #111827;
+  }
+
+  /* 자주 사용되는 컴포넌트 스타일 */
+  .btn-primary {
+    @apply px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-2xl hover:from-purple-600 hover:to-pink-600 transition-all duration-300 hover:scale-105 hover:shadow-xl font-semibold;
+  }
+
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 backdrop-blur-sm;
+  }
+
+  .input-field {
+    @apply w-full px-6 py-4 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-300;
+  }
+
+  .auto-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .auto-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+  }
+}

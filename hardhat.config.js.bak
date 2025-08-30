@@ -1,0 +1,18 @@
+import "dotenv/config";
+import "@nomicfoundation/hardhat-toolbox";
+
+const { RPC_URL, PRIVATE_KEY } = process.env;
+
+export default {
+  solidity: {
+    version: "0.8.24",
+    settings: { optimizer: { enabled: true, runs: 200 } }
+  },
+  networks: {
+    monad: {
+      url: RPC_URL,
+      chainId: 10143,
+      accounts: PRIVATE_KEY ? [PRIVATE_KEY] : []
+    }
+  }
+};

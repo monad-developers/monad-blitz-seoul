@@ -1,0 +1,15 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+metadata = true
+metadata_hash = "none"  # disable ipfs
+use_literal_content = true # store source code in the json file directly
+
+[rpc_endpoints]
+sepolia = "${SEPOLIA_RPC_URL}"
+monad = "${MONAD_RPC_URL}"
+
+[etherscan]
+sepolia = { key = "${ETHERSCAN_API_KEY}" }
+

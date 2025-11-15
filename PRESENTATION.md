@@ -268,13 +268,15 @@ function verifyAndSend(address nftContract, address monadAddress) external {
     require(IERC721(nftContract).balanceOf(msg.sender) > 0);
 
     // 2. CCIP 메시지 구성
-    Client.EVM2AnyMessage memory message = Client.EVM2AnyMessage({
-        receiver: abi.encode(monadReceiverAddress),
-        data: abi.encode(monadAddress),  // 인증할 주소
-        tokenAmounts: new Client.EVMTokenAmount[](0),
-        feeToken: linkToken,
-        extraArgs: ""
-    });
+    bytes memory data = abi.encode(
+        attestation.nftContract,
+        attestation.tokenId,
+        attestation.owner,
+        attestation.timestamp,
+        attestation.blockNumber,
+        attestation.sourceChainSelector,
+        attestationId
+    );
 
     // 3. CCIP Router로 전송
     bytes32 messageId = IRouterClient(ccipRouter).ccipSend(
@@ -290,9 +292,29 @@ function verifyAndSend(address nftContract, address monadAddress) external {
 function _ccipReceive(Client.Any2EVMMessage memory message) internal override {
     address monadAddress = abi.decode(message.data, (address));
 
-    // attestation 저장
-    attestations[monadAddress] = true;
-    attestationTimestamps[monadAddress] = block.timestamp;
+    // 송신자 주소 디코딩
+    address sender = abi.decode(message.sender, (address));
+
+    // 신뢰할 수 있는 Verifier인지 확인
+    require(
+        trustedVerifiers[message.sourceChainSelector][sender],
+        "Untrusted verifier"
+    );
+
+    // Attestation 데이터 디코딩
+    (
+        address nftContract,
+        uint256 tokenId,
+        address owner,
+        uint256 timestamp,
+        uint256 blockNumber,
+        uint64 sourceChainSelector,
+        bytes32 attestationId
+    ) = abi.decode(
+        message.data,
+        (address, uint256, address, uint256, uint256, uint64, bytes32)
+    );
+
 
     emit AttestationRecorded(monadAddress);
 }
@@ -570,9 +592,6 @@ A: 네! ERC721 표준을 따르는 모든 NFT가 가능합니다. CCIP가 지원
 
 **Q: AI 스킨 생성 비용은?**
 A: Claude Haiku 4.5는 요청당 ~$0.001 수준으로 매우 저렴하며, Supabase 캐싱으로 재생성을 방지합니다.
-
-**Q: Monad 메인넷 출시 시 마이그레이션은?**
-A: 테스트넷과 동일한 컨트랙트를 메인넷에 배포하며, CCIP 설정만 업데이트하면 됩니다.
 
 ---
 

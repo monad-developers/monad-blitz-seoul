@@ -392,9 +392,15 @@ function renderSkinFromColorScheme(colorScheme) {
     const skinDark = colorScheme.head.skinShadow || colorScheme.head.skin;
     const skinLight = colorScheme.head.skinHighlight || colorScheme.head.skin;
 
-    Object.values(UV_COORDS.head).slice(0, 6).forEach((coord) => {
+    // 앞면을 제외한 5개 면에만 디더링 적용 (얼굴은 나중에 그림)
+    [UV_COORDS.head.top, UV_COORDS.head.bottom, UV_COORDS.head.back, UV_COORDS.head.right, UV_COORDS.head.left].forEach((coord) => {
         fillRectWithDithering(ctx, coord.x, coord.y, coord.w, coord.h, skinBase, skinDark, skinLight);
     });
+
+    // 앞면은 단색으로 (얼굴을 위해)
+    const headFront = UV_COORDS.head.front;
+    ctx.fillStyle = skinBase;
+    ctx.fillRect(headFront.x, headFront.y, headFront.w, headFront.h);
 
     // 머리카락/모자 오버레이
     if (colorScheme.head.hair || colorScheme.accessories?.hat) {
@@ -407,19 +413,19 @@ function renderSkinFromColorScheme(colorScheme) {
         });
     }
 
-    // 눈
+    // 눈 - 더 크고 명확하게 (2x2 픽셀, 간격 1픽셀)
     if (colorScheme.head.eyes) {
         ctx.fillStyle = colorScheme.head.eyes;
-        const headFront = UV_COORDS.head.front;
-        ctx.fillRect(headFront.x + 2, headFront.y + 2, 2, 2);
-        ctx.fillRect(headFront.x + 4, headFront.y + 2, 2, 2);
+        // 왼쪽 눈 (1, 2)부터 2x2
+        ctx.fillRect(headFront.x + 1, headFront.y + 2, 2, 2);
+        // 오른쪽 눈 (5, 2)부터 2x2
+        ctx.fillRect(headFront.x + 5, headFront.y + 2, 2, 2);
     }
 
-    // 입
+    // 입 - 더 두껍고 명확하게 (4x2 픽셀)
     if (colorScheme.head.mouth) {
         ctx.fillStyle = colorScheme.head.mouth;
-        const headFront = UV_COORDS.head.front;
-        ctx.fillRect(headFront.x + 2, headFront.y + 5, 4, 1);
+        ctx.fillRect(headFront.x + 2, headFront.y + 5, 4, 2);
     }
 
     // 몸통 - 디더링 적용

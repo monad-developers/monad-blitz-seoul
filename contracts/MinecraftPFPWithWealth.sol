@@ -52,6 +52,12 @@ contract MinecraftPFPWithWealth is ERC721URIStorage, Ownable {
     /// @notice Mapping from owner address to token ID
     mapping(address => uint256) public ownerToToken;
 
+    /// @notice CCIP Receiver contract address
+    address public ccipReceiver;
+
+    /// @notice Mapping from token ID to CCIP bonus status
+    mapping(uint256 => bool) public hasCCIPBonus;
+
     /**
      * @dev Mint snapshot structure
      * 민팅 시점의 자산 정보를 온체인에 영구 저장
@@ -85,6 +91,11 @@ contract MinecraftPFPWithWealth is ERC721URIStorage, Ownable {
         uint256 usdcValue,
         uint256 totalValue,
         uint8 tier
+    );
+
+    event CCIPBonusGranted(
+        uint256 indexed tokenId,
+        address indexed owner
     );
 
     // ========== Constructor ==========
@@ -259,6 +270,31 @@ contract MinecraftPFPWithWealth is ERC721URIStorage, Ownable {
         _safeMint(msg.sender, tokenId);
         _setTokenURI(tokenId, ipfsUri);
 
+        // CCIP Attestation 체크
+        if (ccipReceiver != address(0)) {
+            // MonadCCIPReceiver 인터페이스를 통해 attestation 확인
+            (bool success, bytes memory data) = ccipReceiver.staticcall(
+                abi.encodeWithSignature("hasValidAttestation(address)", msg.sender)
+            );
+
+            if (success && data.length > 0) {
+                bool hasAttestation = abi.decode(data, (bool));
+
+                if (hasAttestation) {
+                    hasCCIPBonus[tokenId] = true;
+
+                    // Attestation 사용 처리
+                    (bool markSuccess, ) = ccipReceiver.call(
+                        abi.encodeWithSignature("markAttestationUsed(address)", msg.sender)
+                    );
+
+                    if (markSuccess) {
+                        emit CCIPBonusGranted(tokenId, msg.sender);
+                    }
+                }
+            }
+        }
+
         // 스냅샷 저장
         mintSnapshots[tokenId] = MintSnapshot({
             totalWealthUSD: totalValueUSD,
@@ -275,6 +311,28 @@ contract MinecraftPFPWithWealth is ERC721URIStorage, Ownable {
         emit WealthCalculated(msg.sender, ethValueUSD, usdtValueUSD, usdcValueUSD, totalValueUSD, tier);
 
         return tokenId;
+    }
+
+    // ========== CCIP Functions ==========
+
+    /**
+     * @notice CCIP Receiver 주소 설정
+     * @dev Only owner can set the CCIP receiver contract
+     * @param _ccipReceiver MonadCCIPReceiver 컨트랙트 주소
+     */
+    function setCCIPReceiver(address _ccipReceiver) external onlyOwner {
+        require(_ccipReceiver != address(0), "Invalid CCIP receiver address");
+        ccipReceiver = _ccipReceiver;
+    }
+
+    /**
+     * @notice 토큰의 CCIP 보너스 상태 조회
+     * @param tokenId 조회할 토큰 ID
+     * @return CCIP 보너스 여부
+     */
+    function getTokenCCIPStatus(uint256 tokenId) external view returns (bool) {
+        require(_ownerOf(tokenId) != address(0), "Token does not exist");
+        return hasCCIPBonus[tokenId];
     }
 
     // ========== Query Functions ==========

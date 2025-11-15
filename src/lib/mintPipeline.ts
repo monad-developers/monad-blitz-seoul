@@ -32,7 +32,7 @@ export interface MintPipelineResult {
 /**
  * 전체 민팅 파이프라인 실행
  *
- * 1. Trait 생성
+ * 1. 스킨 데이터 가져오기 (DB 또는 생성)
  * 2. 3D 모델 렌더링
  * 3. 애니메이션 프레임 캡처
  * 4. GIF 생성
@@ -44,11 +44,40 @@ export async function executeMintPipeline(
     options: MintPipelineOptions
 ): Promise<MintPipelineResult> {
     try {
-        console.log('🎨 1. Trait 생성 중...');
-        const traits = generateTraits(options.address);
+        console.log('🎨 1. 스킨 데이터 가져오기 중...');
 
-        console.log('🖼️ 2. 스킨 텍스처 생성 중...');
-        const textureCanvas = createSkinTexture(traits);
+        // DB에서 저장된 스킨 데이터 가져오기 (API 호출)
+        let traits: SkinTraits;
+        let skinImageUrl: string | null = null;
+
+        try {
+            const response = await fetch(`/api/skin/${options.address}`);
+            if (response.ok) {
+                const data = await response.json();
+                traits = data.traits;
+                skinImageUrl = data.imageUrl;
+                console.log('✅ DB에서 스킨 데이터 가져옴:', data.cached ? '캐시됨' : '새로 생성됨');
+            } else {
+                console.warn('⚠️ API 호출 실패, 로컬에서 생성');
+                traits = generateTraits(options.address);
+            }
+        } catch (fetchError) {
+            console.warn('⚠️ API 호출 에러, 로컬에서 생성:', fetchError);
+            traits = generateTraits(options.address);
+        }
+
+        console.log('🖼️ 2. 스킨 텍스처 준비 중...');
+        let textureCanvas: HTMLCanvasElement;
+
+        if (skinImageUrl) {
+            // DB에 저장된 이미지 사용 (AI 생성 또는 기존 스킨)
+            console.log('📥 DB 이미지 로드 중:', skinImageUrl);
+            textureCanvas = await loadImageToCanvas(skinImageUrl);
+        } else {
+            // 로컬에서 텍스처 생성 (폴백)
+            console.log('🎨 로컬에서 텍스처 생성 중...');
+            textureCanvas = createSkinTexture(traits);
+        }
 
         console.log('🎬 3. 3D 씬 설정 중...');
         const renderCanvas = document.createElement('canvas');
@@ -110,11 +139,40 @@ export async function executePreviewPipeline(
     gifBlob: Blob;
 }> {
     try {
-        console.log('🎨 Trait 생성 중...');
-        const traits = generateTraits(address);
+        console.log('🎨 스킨 데이터 가져오기 중...');
 
-        console.log('🖼️ 스킨 텍스처 생성 중...');
-        const textureCanvas = createSkinTexture(traits);
+        // DB에서 저장된 스킨 데이터 가져오기 (API 호출)
+        let traits: SkinTraits;
+        let skinImageUrl: string | null = null;
+
+        try {
+            const response = await fetch(`/api/skin/${address}`);
+            if (response.ok) {
+                const data = await response.json();
+                traits = data.traits;
+                skinImageUrl = data.imageUrl;
+                console.log('✅ DB에서 스킨 데이터 가져옴:', data.cached ? '캐시됨' : '새로 생성됨');
+            } else {
+                console.warn('⚠️ API 호출 실패, 로컬에서 생성');
+                traits = generateTraits(address);
+            }
+        } catch (fetchError) {
+            console.warn('⚠️ API 호출 에러, 로컬에서 생성:', fetchError);
+            traits = generateTraits(address);
+        }
+
+        console.log('🖼️ 스킨 텍스처 준비 중...');
+        let textureCanvas: HTMLCanvasElement;
+
+        if (skinImageUrl) {
+            // DB에 저장된 이미지 사용 (AI 생성 또는 기존 스킨)
+            console.log('📥 DB 이미지 로드 중:', skinImageUrl);
+            textureCanvas = await loadImageToCanvas(skinImageUrl);
+        } else {
+            // 로컬에서 텍스처 생성 (폴백)
+            console.log('🎨 로컬에서 텍스처 생성 중...');
+            textureCanvas = createSkinTexture(traits);
+        }
 
         console.log('🎬 3D 씬 설정 중...');
         const renderCanvas = document.createElement('canvas');
@@ -140,4 +198,35 @@ export async function executePreviewPipeline(
         console.error('❌ 미리보기 실패:', error);
         throw error;
     }
+}
+
+/**
+ * 이미지 URL을 캔버스로 로드
+ */
+async function loadImageToCanvas(imageUrl: string): Promise<HTMLCanvasElement> {
+    return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = 'anonymous'; // CORS 설정
+
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                reject(new Error('Canvas context를 가져올 수 없습니다'));
+                return;
+            }
+
+            ctx.drawImage(img, 0, 0);
+            resolve(canvas);
+        };
+
+        img.onerror = () => {
+            reject(new Error(`이미지 로드 실패: ${imageUrl}`));
+        };
+
+        img.src = imageUrl;
+    });
 }

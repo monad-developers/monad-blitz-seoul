@@ -71,7 +71,7 @@ export const EventCard = ({ event }: EventCardProps) => {
 
         <div className="card-actions justify-between items-center mt-4">
           <div className="text-2xl font-bold monad-gradient-text font-mono">
-            {event.minPrice.toFixed(2)} ETH
+            {event.minPrice.toFixed(2)} ETH-
           </div>
           <Link
             href={`/seats/${event.eventId.toString()}`}

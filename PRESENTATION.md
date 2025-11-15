@@ -44,37 +44,104 @@ canvasWidth: 980
 
 ---
 
-## 🏗️ 아키텍처 개요
+## 🎲 핵심 아이디어: 주소 = 운명
 
+### "당신의 지갑 주소가 곧 당신의 캐릭터입니다"
+
+**결정론적 생성 (Deterministic Generation)**
+- 같은 주소 → 언제나 같은 캐릭터
+- 수학적으로 보장된 유일성
+- 랜덤 없음, 예측 가능, 재생성 가능
+
+---
+
+## 🧬 EVM 주소 → Trait 변환 원리
+
+### 20 Bytes 주소를 5개 세그먼트로 분할
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'fontSize':'14px'}}}%%
+graph TB
+    A["EVM 주소 (20 bytes)<br/>0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb5"]
+
+    A --> B["Bytes 0-3<br/>0x742d35Cc"]
+    A --> C["Bytes 4-7<br/>0x6634C053"]
+    A --> D["Bytes 8-11<br/>0x2925a3b8"]
+    A --> E["Bytes 12-15<br/>0x44Bc9e75"]
+    A --> F["Bytes 16-19<br/>0x95f0bEb5"]
+
+    B --> G["🎩 Hat<br/>Style, Color, Opacity"]
+    C --> H["👕 Clothes<br/>Style, Color, Opacity"]
+    D --> I["👟 Shoes<br/>Style, Color, Opacity"]
+    E --> J["👖 Pants<br/>Style, Color, Opacity"]
+    F --> K["👤 Skin<br/>Tone, Shade"]
+
+    G --> L["완전히 고유한<br/>Minecraft 캐릭터"]
+    H --> L
+    I --> L
+    J --> L
+    K --> L
+
+    style A fill:#e1f5ff,stroke:#0288d1,stroke-width:2px
+    style L fill:#c8e6c9,stroke:#388e3c,stroke-width:3px
 ```
-┌─────────────────┐
-│  Sepolia NFT    │
-│  (Any ERC721)   │
-└────────┬────────┘
-         │ 소유권 검증
-         ▼
-┌─────────────────────────┐
-│ NFTOwnershipVerifier    │ ◄─── Chainlink CCIP 발신
-│ (Sepolia)               │
-└────────┬────────────────┘
-         │ CCIP Message
-         ▼
-┌─────────────────────────┐
-│ Chainlink CCIP Router   │ ◄─── 크로스체인 메시징
-│ (Decentralized Oracle) │
-└────────┬────────────────┘
-         │ ccipReceive()
-         ▼
-┌─────────────────────────┐
-│ MonadCCIPReceiver       │ ◄─── attestation 기록
-│ (Monad Testnet)         │
-└────────┬────────────────┘
-         │
-         ▼
-┌─────────────────────────┐
-│ AI Skin Generator       │ ◄─── Golden Crown 렌더링
-│ (Claude Haiku 4.5)      │
-└─────────────────────────┘
+
+---
+
+## 🔢 Trait 생성 알고리즘
+
+### 각 세그먼트를 uint32로 변환 후 속성 결정
+
+```solidity
+// 예시: Hat Traits 생성
+bytes4 segment1 = bytes4(address)[0:4];  // 0x742d35Cc
+uint32 value = uint32(segment1);         // 1949128140
+
+// 속성 추출
+hatStyle = value % 10;                    // 0-9 (10가지 스타일)
+hatColor = getColorFamily(value);         // 0-5 (6가지 색상 계열)
+hatOpacity = (value >> 8) % 156 + 100;   // 100-255 (투명도)
+```
+
+### 색상 계열 결정 (소수 체크)
+
+```solidity
+function getColorFamily(uint32 segment) pure returns (uint8) {
+    if (segment % 3 == 0) return BLUE;      // 파란색 계열
+    if (segment % 5 == 0) return YELLOW;    // 노란색 계열
+    if (segment % 7 == 0) return RED;       // 빨간색 계열
+    if (segment % 11 == 0) return GREEN;    // 초록색 계열
+    if (segment % 13 == 0) return PURPLE;   // 보라색 계열
+    return NEUTRAL;                         // 중립 (회색/갈색)
+}
+```
+
+---
+
+## 🎨 Trait → AI 스킨 생성
+
+### 결정론적 Trait를 AI가 시각화
+
+```mermaid
+%%{init: {'theme':'base', 'themeVariables': { 'fontSize':'14px'}}}%%
+graph TB
+    A["주소에서 추출한 Trait<br/>hatStyle=3, clothesColor=BLUE..."]
+    B["AI 프롬프트 변환<br/>'Blue hoodie, red sneakers...'"]
+    C["Claude Haiku 4.5<br/>색상 스킴 생성"]
+    D["64×64 Canvas 렌더링<br/>Minecraft UV 매핑"]
+    E["디더링 픽셀 아트<br/>3D 깊이감 추가"]
+    F["Supabase 캐싱<br/>재생성 불필요"]
+    G["완성된 스킨 PNG"]
+
+    A --> B
+    B --> C
+    C --> D
+    D --> E
+    E --> F
+    F --> G
+
+    style C fill:#ff9800,stroke:#e65100,stroke-width:2px
+    style G fill:#4caf50,stroke:#2e7d32,stroke-width:2px
 ```
 
 ---
@@ -118,7 +185,38 @@ function calculateTotalWealth(address owner) public view returns (
 
 ---
 
-### CCIP 아키텍처 개요
+### 🏗️ CCIP 아키텍처 개요
+
+```
+┌─────────────────┐
+│  Sepolia NFT    │
+│  (Any ERC721)   │
+└────────┬────────┘
+         │ 소유권 검증
+         ▼
+┌─────────────────────────┐
+│ NFTOwnershipVerifier    │ ◄─── Chainlink CCIP 발신
+│ (Sepolia)               │
+└────────┬────────────────┘
+         │ CCIP Message
+         ▼
+┌─────────────────────────┐
+│ Chainlink CCIP Router   │ ◄─── 크로스체인 메시징
+│ (Decentralized Oracle) │
+└────────┬────────────────┘
+         │ ccipReceive()
+         ▼
+┌─────────────────────────┐
+│ MonadCCIPReceiver       │ ◄─── attestation 기록
+│ (Monad Testnet)         │
+└────────┬────────────────┘
+         │
+         ▼
+┌─────────────────────────┐
+│ AI Skin Generator       │ ◄─── Golden Crown 렌더링
+│ (Claude Haiku 4.5)      │
+└─────────────────────────┘
+```
 
 ```mermaid
 %%{init: {'theme':'base', 'themeVariables': { 'fontSize':'14px'}}}%%
@@ -338,62 +436,6 @@ const skinTexture = renderSkinFromColorScheme(colorScheme);
 
 ---
 
-## 🎮 데모 시연
-
-### 시나리오: "Alice의 NFT 여정"
-
-```mermaid
-journey
-    title Alice의 크로스체인 NFT 민팅 여정
-    section 지갑 연결
-      지갑 연결: 5: Alice
-      Trait 자동 생성: 5: System
-      파란 모자, 빨간 신발: 4: Alice
-    section AI 스킨 생성
-      API 호출: 5: Alice
-      Claude AI 생성: 5: System
-      Supabase 캐싱: 4: System
-    section Wealth Tier
-      Chainlink Price Feeds: 5: System
-      자산 $75K → Gold Tier: 5: Alice
-      Diamond Sword 획득: 5: Alice
-    section CCIP 검증
-      Sepolia NFT 확인: 5: Alice
-      CCIP 메시지 전송: 5: System
-      Monad에서 수신: 5: System
-      Golden Crown 획득: 5: Alice
-    section 민팅
-      NFT 발행: 5: Alice
-      완벽한 캐릭터 완성: 5: Alice
-```
-
-### 단계별 상세
-
-1. **Alice, 지갑 연결** (`0xAlice...`)
-   - Trait 자동 생성: 파란 모자, 빨간 신발, 황갈색 피부
-
-2. **AI 스킨 생성 API 호출**
-   ```
-   GET /api/skin/0xAlice...
-   → Claude가 픽셀 아트 생성
-   → Supabase에 캐싱
-   ```
-
-3. **Wealth Tier 확인**
-   - Chainlink Price Feeds로 자산 조회
-   - Alice = $75,000 → **Gold Tier** → Diamond Sword 획득
-
-4. **CCIP 검증 (선택)**
-   - Sepolia에 Bored Ape NFT 소유
-   - NFTOwnershipVerifier로 검증 요청
-   - CCIP 메시지 → Monad
-   - **Golden Crown** 획득! 👑
-
-5. **민팅 완료**
-   - 스킨 + Wealth Tier + CCIP Crown 모두 반영된 NFT 발행
-
----
-
 ## 🛠️ 기술 스택
 
 ### Smart Contracts
@@ -412,43 +454,6 @@ journey
 - **Viem** (컨트랙트 상호작용)
 
 ---
-
-## 📊 CCIP의 가치: 왜 중요한가?
-
-### 기존 방식 vs CCIP 비교
-
-```mermaid
-graph TB
-    subgraph "기존 중앙화 브릿지"
-        A1[Chain A]
-        B1[중앙 서버<br/>⚠️ 단일 장애점]
-        C1[Chain B]
-        A1 -->|메시지| B1
-        B1 -->|메시지| C1
-        style B1 fill:#ff6b6b,stroke:#c92a2a,stroke-width:2px
-    end
-
-    subgraph "Chainlink CCIP"
-        A2[Chain A]
-        B2[Oracle Network<br/>✓ 탈중앙화]
-        D2[Risk Management<br/>✓ 이중 보안]
-        C2[Chain B]
-        A2 -->|메시지| B2
-        B2 -->|검증| D2
-        D2 -->|승인| C2
-        style B2 fill:#f9d71c,stroke:#333,stroke-width:2px
-        style D2 fill:#51cf66,stroke:#333,stroke-width:2px
-    end
-```
-
-| 항목 | 기존 브릿지 | Chainlink CCIP |
-|------|------------|----------------|
-| **중앙화** | ❌ 중앙 서버 의존 | ✅ 탈중앙화 오라클 네트워크 |
-| **보안** | ⚠️ 해킹 위험 높음 | ✅ Risk Management 이중 검증 |
-| **표준화** | ❌ 체인마다 다른 방식 | ✅ 통일된 인터페이스 |
-| **확장성** | ⚠️ 체인 추가 시 재개발 | ✅ 플러그앤플레이 |
-| **신뢰** | ❌ 운영자 신뢰 필요 | ✅ 코드로 검증 가능 |
-
 ### 우리 프로젝트에서의 활용
 
 ```mermaid
@@ -494,98 +499,6 @@ mindmap
 ### 4. **효율적인 캐싱 시스템**
 - Supabase로 AI 생성 비용 절감
 - 동일 주소 재요청 시 즉시 반환
-
----
-
-## 🚀 향후 계획
-
-```mermaid
-timeline
-    title 프로젝트 로드맵
-    section Q1 2025
-        더 많은 체인 통합 : Polygon
-                            : Arbitrum
-                            : Base
-        메타데이터 업데이트 : 동적 NFT
-        커뮤니티 기능 : 스킨 갤러리
-    section Q2 2025
-        DAO 거버넌스 : 특별 아이템 투표
-        P2E 게임 통합 : Minecraft 서버 연동
-        멀티체인 Inventory : CCIP 기반 아이템 관리
-    section Q3-Q4 2025
-        Chainlink Functions : AI 스킨 자동 업데이트
-        NFT Rental/Lending : CCIP 크로스체인 대여
-        메인넷 출시 : Monad Mainnet 마이그레이션
-```
-
-### 단기 (1-2개월)
-- [ ] 더 많은 체인 CCIP 통합 (Polygon, Arbitrum)
-- [ ] NFT 메타데이터 업데이트 기능
-- [ ] 커뮤니티 스킨 갤러리
-
-### 중기 (3-6개월)
-- [ ] DAO 거버넌스 (특별 아이템 투표)
-- [ ] P2E 게임 통합 (스킨을 게임에서 사용)
-- [ ] CCIP를 활용한 멀티체인 Inventory 시스템
-
-### 장기 (6개월+)
-- [ ] Chainlink Functions로 동적 AI 스킨 업데이트
-- [ ] CCIP 기반 NFT Rental/Lending 프로토콜
-
----
-
-### CCIP 확장 계획
-
-```mermaid
-%%{init: {'theme':'base', 'themeVariables': { 'fontSize':'14px'}}}%%
-graph TB
-    V1[현재 V1]
-    V2[단기 V2]
-    V3[중기 V3]
-
-    V1 --> V2
-    V2 --> V3
-
-    subgraph V1_Chains["V1: 현재 (2개 체인)"]
-        S1[Sepolia Testnet]
-        M1[Monad Testnet]
-        S1 <-->|CCIP| M1
-    end
-
-    subgraph V2_Chains["V2: 단기 (4개 체인)"]
-        M2[Monad Hub]
-        S2[Sepolia]
-        P2[Polygon]
-        A2[Arbitrum]
-
-        M2 <-->|CCIP| S2
-        M2 <-->|CCIP| P2
-        M2 <-->|CCIP| A2
-    end
-
-    subgraph V3_Chains["V3: 중기 (6개 체인)"]
-        M3[Monad Hub]
-        S3[Sepolia]
-        P3[Polygon]
-        A3[Arbitrum]
-        B3[Base]
-        O3[Optimism]
-
-        M3 <-->|CCIP| S3
-        M3 <-->|CCIP| P3
-        M3 <-->|CCIP| A3
-        M3 <-->|CCIP| B3
-        M3 <-->|CCIP| O3
-    end
-
-    V1 -.-> V1_Chains
-    V2 -.-> V2_Chains
-    V3 -.-> V3_Chains
-
-    style M1 fill:#51cf66,stroke:#333
-    style M2 fill:#51cf66,stroke:#333
-    style M3 fill:#51cf66,stroke:#333
-```
 
 ---
 

@@ -18,50 +18,50 @@
 @plugin "daisyui/theme" {
   name: "light";
 
-  --color-primary: #93bbfb;
-  --color-primary-content: #212638;
-  --color-secondary: #dae8ff;
-  --color-secondary-content: #212638;
-  --color-accent: #93bbfb;
-  --color-accent-content: #212638;
-  --color-neutral: #212638;
+  --color-primary: #6E54FF;
+  --color-primary-content: #ffffff;
+  --color-secondary: #DDD7FE;
+  --color-secondary-content: #0E091C;
+  --color-accent: #85E6FF;
+  --color-accent-content: #0E091C;
+  --color-neutral: #0E091C;
   --color-neutral-content: #ffffff;
   --color-base-100: #ffffff;
-  --color-base-200: #f4f8ff;
-  --color-base-300: #dae8ff;
-  --color-base-content: #212638;
-  --color-info: #93bbfb;
+  --color-base-200: #f8f7ff;
+  --color-base-300: #DDD7FE;
+  --color-base-content: #0E091C;
+  --color-info: #85E6FF;
   --color-success: #34eeb6;
-  --color-warning: #ffcf72;
-  --color-error: #ff8863;
+  --color-warning: #FFAE45;
+  --color-error: #FF8EE4;
 
-  --radius-field: 9999rem;
-  --radius-box: 1rem;
+  --radius-field: 1rem;
+  --radius-box: 1.5rem;
   --tt-tailw: 6px;
 }
 
 @plugin "daisyui/theme" {
   name: "dark";
 
-  --color-primary: #212638;
-  --color-primary-content: #f9fbff;
-  --color-secondary: #323f61;
-  --color-secondary-content: #f9fbff;
-  --color-accent: #4969a6;
-  --color-accent-content: #f9fbff;
-  --color-neutral: #f9fbff;
-  --color-neutral-content: #385183;
-  --color-base-100: #385183;
-  --color-base-200: #2a3655;
-  --color-base-300: #212638;
-  --color-base-content: #f9fbff;
-  --color-info: #385183;
+  --color-primary: #6E54FF;
+  --color-primary-content: #ffffff;
+  --color-secondary: #2a1f5a;
+  --color-secondary-content: #DDD7FE;
+  --color-accent: #85E6FF;
+  --color-accent-content: #0E091C;
+  --color-neutral: #DDD7FE;
+  --color-neutral-content: #0E091C;
+  --color-base-100: #0E091C;
+  --color-base-200: #1a1330;
+  --color-base-300: #2a1f5a;
+  --color-base-content: #DDD7FE;
+  --color-info: #85E6FF;
   --color-success: #34eeb6;
-  --color-warning: #ffcf72;
-  --color-error: #ff8863;
+  --color-warning: #FFAE45;
+  --color-error: #FF8EE4;
 
-  --radius-field: 9999rem;
-  --radius-box: 1rem;
+  --radius-field: 1rem;
+  --radius-box: 1.5rem;
 
   --tt-tailw: 6px;
   --tt-bg: var(--color-primary);
@@ -121,4 +121,36 @@
 .link:hover {
   opacity: 80%;
 }
-  
+
+/* Monad Glassmorphism Utilities */
+.glass-card {
+  @apply backdrop-blur-xl bg-white/10 dark:bg-white/5 border border-white/20 dark:border-white/10 shadow-2xl;
+}
+
+.glass-card-strong {
+  @apply backdrop-blur-2xl bg-white/20 dark:bg-white/10 border border-white/30 dark:border-white/20 shadow-2xl;
+}
+
+.glass-button {
+  @apply backdrop-blur-lg bg-white/10 dark:bg-white/5 border border-white/20 hover:bg-white/20 dark:hover:bg-white/10 transition-all;
+}
+
+.monad-gradient {
+  background: linear-gradient(135deg, #6E54FF 0%, #85E6FF 100%);
+}
+
+.monad-gradient-text {
+  background: linear-gradient(135deg, #6E54FF 0%, #85E6FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.monad-glow {
+  box-shadow: 0 0 30px rgba(110, 84, 255, 0.3);
+}
+
+.monad-glow-strong {
+  box-shadow: 0 0 50px rgba(110, 84, 255, 0.5), 0 0 100px rgba(133, 230, 255, 0.3);
+}
+

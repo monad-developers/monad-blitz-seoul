@@ -88,20 +88,16 @@ canvasWidth: 980
 **해결**: Chainlink Price Feeds로 실시간 자산 가치 계산!
 
 ```solidity
-// ETH, USDT, USDC 잔액을 USD로 환산
+// SOL 잔액을 USD로 환산
 function calculateTotalWealth(address owner) public view returns (
-    uint256 ethBalance,
-    uint256 usdtBalance,
-    uint256 usdcBalance,
+    uint256 solBalance,,
     uint256 totalValueUSD
 ) {
     // Chainlink Price Feed 조회
-    (, int256 ethPrice,,,) = ethUsdPriceFeed.latestRoundData();
-    (, int256 usdtPrice,,,) = usdtUsdPriceFeed.latestRoundData();
+    (, int256 solPrice,,,) = solUsdPriceFeed.latestRoundData(););
 
     // USD 가치 계산
-    totalValueUSD = (ethBalance * ethPrice) +
-                    (usdtBalance * usdtPrice) + ...;
+    totalValueUSD = (solPrice) + ...;
 }
 ```
 
@@ -124,11 +120,9 @@ function calculateTotalWealth(address owner) public view returns (
 
 ### CCIP 아키텍처 개요
 
-<div style="transform: scale(0.8); transform-origin: top center; width: 125%; margin-left: -12.5%;">
-
 ```mermaid
 %%{init: {'theme':'base', 'themeVariables': { 'fontSize':'14px'}}}%%
-graph LR
+graph TB
     subgraph "Source Chain - Sepolia"
         A[User Wallet<br/>NFT 소유자]
         B[Any ERC721 NFT<br/>예: Bored Ape]
@@ -163,8 +157,6 @@ graph LR
     style F fill:#f9d71c,stroke:#333,stroke-width:3px
     style J fill:#ffd700,stroke:#333,stroke-width:2px
 ```
-
-</div>
 
 ---
 
@@ -222,8 +214,6 @@ if (hasCCIPAttestation) {
 
 ### CCIP 메시지 전달 과정 (시퀀스)
 
-<div style="transform: scale(0.75); transform-origin: top center; width: 133%; margin-left: -16.5%;">
-
 ```mermaid
 %%{init: {'theme':'base', 'themeVariables': { 'fontSize':'12px'}}}%%
 sequenceDiagram
@@ -266,13 +256,9 @@ sequenceDiagram
     end
 ```
 
-</div>
-
 ---
 
 ### CCIP 상태 변화
-
-<div style="transform: scale(0.85); transform-origin: top center; width: 118%; margin-left: -9%;">
 
 ```mermaid
 %%{init: {'theme':'base', 'themeVariables': { 'fontSize':'13px'}}}%%
@@ -310,8 +296,6 @@ stateDiagram-v2
     end note
 ```
 
-</div>
-
 ---
 
 ## 🎨 AI 스킨 생성 파이프라인
@@ -344,8 +328,7 @@ const skinTexture = renderSkinFromColorScheme(colorScheme);
 ## 🔗 Chainlink 통합 하이라이트
 
 ### 1. **Data Feeds** (자산 가치 계산)
-- **ETH/USD**: `0x694AA1769357215DE4FAC081bf1f309aDC325306`
-- **USDT/USD**: `0xA2F78ab2355fe2f984D808B5CeE7FD0A93D5270E`
+- **SOL/USD**: `0x1c2f27C736aC97886F017AbdEedEd81C3C8Af7Be``
 - **사용 사례**: 민팅 시점의 자산 스냅샷 저장
 
 ### 2. **CCIP** (크로스체인 메시징) ⭐
@@ -435,17 +418,24 @@ journey
 ### 기존 방식 vs CCIP 비교
 
 ```mermaid
-graph LR
+graph TB
     subgraph "기존 중앙화 브릿지"
-        A1[Chain A] -->|메시지| B1[중앙 서버<br/>⚠️ 단일 장애점]
-        B1 -->|메시지| C1[Chain B]
+        A1[Chain A]
+        B1[중앙 서버<br/>⚠️ 단일 장애점]
+        C1[Chain B]
+        A1 -->|메시지| B1
+        B1 -->|메시지| C1
         style B1 fill:#ff6b6b,stroke:#c92a2a,stroke-width:2px
     end
 
     subgraph "Chainlink CCIP"
-        A2[Chain A] -->|메시지| B2[Oracle Network<br/>✓ 탈중앙화]
-        B2 -->|검증| D2[Risk Management<br/>✓ 이중 보안]
-        D2 -->|승인| C2[Chain B]
+        A2[Chain A]
+        B2[Oracle Network<br/>✓ 탈중앙화]
+        D2[Risk Management<br/>✓ 이중 보안]
+        C2[Chain B]
+        A2 -->|메시지| B2
+        B2 -->|검증| D2
+        D2 -->|승인| C2
         style B2 fill:#f9d71c,stroke:#333,stroke-width:2px
         style D2 fill:#51cf66,stroke:#333,stroke-width:2px
     end
@@ -546,58 +536,56 @@ timeline
 
 ### CCIP 확장 계획
 
-<div style="transform: scale(0.7); transform-origin: top center; width: 143%; margin-left: -21.5%;">
-
 ```mermaid
-%%{init: {'theme':'base', 'themeVariables': { 'fontSize':'12px'}}}%%
-graph LR
-    subgraph V1["현재 (V1)"]
+%%{init: {'theme':'base', 'themeVariables': { 'fontSize':'14px'}}}%%
+graph TB
+    V1[현재 V1]
+    V2[단기 V2]
+    V3[중기 V3]
+
+    V1 --> V2
+    V2 --> V3
+
+    subgraph V1_Chains["V1: 현재 (2개 체인)"]
         S1[Sepolia Testnet]
         M1[Monad Testnet]
         S1 <-->|CCIP| M1
     end
 
-    subgraph V2["단기 (V2)"]
+    subgraph V2_Chains["V2: 단기 (4개 체인)"]
+        M2[Monad Hub]
         S2[Sepolia]
-        M2[Monad]
         P2[Polygon]
         A2[Arbitrum]
 
-        S2 <-->|CCIP| M2
-        S2 <-->|CCIP| P2
-        S2 <-->|CCIP| A2
+        M2 <-->|CCIP| S2
         M2 <-->|CCIP| P2
         M2 <-->|CCIP| A2
     end
 
-    subgraph V3["중기 (V3)"]
+    subgraph V3_Chains["V3: 중기 (6개 체인)"]
+        M3[Monad Hub]
         S3[Sepolia]
-        M3[Monad]
         P3[Polygon]
         A3[Arbitrum]
         B3[Base]
         O3[Optimism]
 
-        S3 <-->|CCIP| M3
-        S3 <-->|CCIP| P3
-        S3 <-->|CCIP| A3
-        S3 <-->|CCIP| B3
-        S3 <-->|CCIP| O3
-        M3 <-->|CCIP Hub| P3
-        M3 <-->|CCIP Hub| A3
-        M3 <-->|CCIP Hub| B3
-        M3 <-->|CCIP Hub| O3
+        M3 <-->|CCIP| S3
+        M3 <-->|CCIP| P3
+        M3 <-->|CCIP| A3
+        M3 <-->|CCIP| B3
+        M3 <-->|CCIP| O3
     end
 
-    V1 --> V2
-    V2 --> V3
+    V1 -.-> V1_Chains
+    V2 -.-> V2_Chains
+    V3 -.-> V3_Chains
 
     style M1 fill:#51cf66,stroke:#333
     style M2 fill:#51cf66,stroke:#333
     style M3 fill:#51cf66,stroke:#333
 ```
-
-</div>
 
 ---
 
@@ -649,14 +637,11 @@ https://ccip.chain.link
 ## 🙏 감사합니다!
 
 ### Contact
-- **Team**: [Your Team Name]
-- **Email**: your@email.com
-- **Twitter**: @yourhandle
+- **Team**: [NadCraft-PFP]
 
 ### Special Thanks
 - **Chainlink** for incredible oracle infrastructure
 - **Monad** for high-performance testnet
-- **Anthropic** for Claude AI API
 
 ---
 

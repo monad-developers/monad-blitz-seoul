@@ -75,9 +75,7 @@ export interface MintPreview {
     totalWealthUSD: number;
     wealthTier: WealthTier;
     specialItem: number;
-    ethValueUSD: number;
-    usdtValueUSD: number;
-    usdcValueUSD: number;
+    solValueUSD: number;
 }
 
 /**
@@ -86,9 +84,7 @@ export interface MintPreview {
 export interface MintSnapshot {
     totalWealthUSD: bigint;
     wealthTier: number;
-    ethBalance: bigint;
-    usdtBalance: bigint;
-    usdcBalance: bigint;
+    solBalance: bigint;
     timestamp: bigint;
 }
 

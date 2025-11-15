@@ -13,9 +13,7 @@ interface TraitPreviewProps {
     wealthTier: WealthTier;
     specialItem: number;
     totalWealthUSD: number;
-    ethValueUSD: number;
-    usdtValueUSD: number;
-    usdcValueUSD: number;
+    solValueUSD: number;
     isLoading?: boolean;
 }
 
@@ -24,9 +22,7 @@ export function TraitPreview({
     wealthTier,
     specialItem,
     totalWealthUSD,
-    ethValueUSD,
-    usdtValueUSD,
-    usdcValueUSD,
+    solValueUSD,
     isLoading = false,
 }: TraitPreviewProps) {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -124,16 +120,8 @@ export function TraitPreview({
 
                     <div className="bg-[#3C3C3C] border-2 border-t-[#1C1C1C] border-l-[#1C1C1C] border-r-[#5C5C5C] border-b-[#5C5C5C] p-4 space-y-2">
                         <div className="flex justify-between">
-                            <span className="minecraft-font text-[#AAAAAA] text-xs">MON:</span>
-                            <span className="minecraft-font text-white text-xs">${ethValueUSD.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="minecraft-font text-[#AAAAAA] text-xs">USDT:</span>
-                            <span className="minecraft-font text-white text-xs">${usdtValueUSD.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="minecraft-font text-[#AAAAAA] text-xs">USDC:</span>
-                            <span className="minecraft-font text-white text-xs">${usdcValueUSD.toLocaleString()}</span>
+                            <span className="minecraft-font text-[#AAAAAA] text-xs">SOL:</span>
+                            <span className="minecraft-font text-white text-xs">${solValueUSD.toLocaleString()}</span>
                         </div>
                         <div className="flex justify-between pt-2 border-t-2 border-[#555555]">
                             <span className="minecraft-font text-white text-sm">총 자산:</span>

@@ -19,40 +19,24 @@ async function main() {
     console.log(`💰 Balance: ${ethers.formatEther(balance)} ETH\n`);
 
     // Price Feed 주소 설정 (네트워크별)
-    let ethUsdFeed;
-    let usdtUsdFeed;
-    let usdcUsdFeed;
-    let usdt;
-    let usdc;
+    let solUsdFeed;
+    let sol;
 
     if (network.chainId === 1n) {
-        // Ethereum Mainnet
-        console.log('🌐 Ethereum Mainnet 설정 사용');
-        ethUsdFeed = '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419';
-        usdtUsdFeed = '0x3E7d1eAB13ad0104d273B42c5c5a4e3F3A9b6d3e';
-        usdcUsdFeed = '0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6';
-        usdt = '0xdAC17F958D2ee523a2206206994597C13D831ec7';
-        usdc = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+        // Ethereum Mainnet (사용 안 함)
+        throw new Error('❌ Mainnet에서는 지원되지 않습니다. Monad Testnet을 사용하세요.');
     } else if (network.chainId === 11155111n) {
-        // Sepolia Testnet
-        console.log('🧪 Sepolia Testnet 설정 사용');
-        ethUsdFeed = '0x694AA1769357215DE4FAC081bf1f309aDC325306';
-        usdtUsdFeed = '0xA2F78ab2355fe2f984D808B5CeE7FD0A93D5270E';
-        usdcUsdFeed = '0xA2F78ab2355fe2f984D808B5CeE7FD0A93D5270E';
-        usdt = '0x7169D38820dfd117C3FA1f22a697dBA58d90BA06';
-        usdc = '0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8';
+        // Sepolia Testnet (사용 안 함)
+        throw new Error('❌ Sepolia에서는 지원되지 않습니다. Monad Testnet을 사용하세요.');
     } else if (network.chainId === 10143n) {
-        // Monad Testnet
-        console.log('🔷 Monad Testnet - Chainlink Price Feeds 사용\n');
+        // Monad Testnet - SOL/USD Price Feed 사용
+        console.log('🔷 Monad Testnet - SOL/USD Price Feed 사용\n');
 
         // Config에서 설정 가져오기
         const config = getMonadDeployConfig();
 
-        ethUsdFeed = config.ethUsdFeed;
-        usdtUsdFeed = config.usdtUsdFeed;
-        usdcUsdFeed = config.usdcUsdFeed;
-        usdt = config.usdt;
-        usdc = config.usdc;
+        solUsdFeed = config.solUsdFeed;
+        sol = config.sol;
 
         // 토큰 주소 검증
         const validation = validateMonadTokens();
@@ -66,16 +50,13 @@ async function main() {
     }
 
     console.log('\n📋 설정 정보:');
-    console.log(`  ETH/USD Feed: ${ethUsdFeed}`);
-    console.log(`  USDT/USD Feed: ${usdtUsdFeed}`);
-    console.log(`  USDC/USD Feed: ${usdcUsdFeed}`);
-    console.log(`  USDT: ${usdt}`);
-    console.log(`  USDC: ${usdc}\n`);
+    console.log(`  SOL/USD Feed: ${solUsdFeed}`);
+    console.log(`  SOL: ${sol}\n`);
 
     // 컨트랙트 배포
     console.log('⏳ 컨트랙트 배포 중...');
     const MinecraftPFP = await ethers.getContractFactory('MinecraftPFPWithWealth');
-    const contract = await MinecraftPFP.deploy(ethUsdFeed, usdtUsdFeed, usdcUsdFeed, usdt, usdc);
+    const contract = await MinecraftPFP.deploy(solUsdFeed, sol);
 
     await contract.waitForDeployment();
 
@@ -90,13 +71,10 @@ async function main() {
         deployer: deployer.address,
         timestamp: new Date().toISOString(),
         priceFeeds: {
-            ethUsd: ethUsdFeed,
-            usdtUsd: usdtUsdFeed,
-            usdcUsd: usdcUsdFeed,
+            solUsd: solUsdFeed,
         },
         tokens: {
-            usdt: usdt,
-            usdc: usdc,
+            sol: sol,
         },
     };
 
@@ -117,7 +95,7 @@ async function main() {
 
     // Etherscan 검증 안내
     console.log('\n🔍 Etherscan 검증 명령어:');
-    console.log(`npx hardhat verify --network ${network.name} ${address} ${ethUsdFeed} ${usdtUsdFeed} ${usdcUsdFeed} ${usdt} ${usdc}`);
+    console.log(`npx hardhat verify --network ${network.name} ${address} ${solUsdFeed} ${sol}`);
 
     console.log('\n✨ 배포 완료!');
 }

@@ -23,14 +23,11 @@ contract MinecraftPFPWithWealth is ERC721URIStorage, Ownable {
 
     // ========== Immutable Variables ==========
 
-    /// @notice Chainlink Price Feeds
-    AggregatorV3Interface public immutable ethUsdPriceFeed;
-    AggregatorV3Interface public immutable usdtUsdPriceFeed;
-    AggregatorV3Interface public immutable usdcUsdPriceFeed;
+    /// @notice Chainlink Price Feed - SOL/USD
+    AggregatorV3Interface public immutable solUsdPriceFeed;
 
-    /// @notice Stablecoin addresses
-    address public immutable USDT;
-    address public immutable USDC;
+    /// @notice SOL token address
+    address public immutable SOL;
 
     // ========== Constants ==========
 
@@ -65,9 +62,7 @@ contract MinecraftPFPWithWealth is ERC721URIStorage, Ownable {
     struct MintSnapshot {
         uint256 totalWealthUSD;  // 총 자산 (USD, 8 decimals)
         uint8 wealthTier;         // 자산 등급 (0-5)
-        uint256 ethBalance;       // ETH 잔액 (wei)
-        uint256 usdtBalance;      // USDT 잔액 (6 decimals)
-        uint256 usdcBalance;      // USDC 잔액 (6 decimals)
+        uint256 solBalance;       // SOL 잔액 (decimals: 18)
         uint256 timestamp;        // 민팅 시각
     }
 
@@ -86,9 +81,7 @@ contract MinecraftPFPWithWealth is ERC721URIStorage, Ownable {
 
     event WealthCalculated(
         address indexed owner,
-        uint256 ethValue,
-        uint256 usdtValue,
-        uint256 usdcValue,
+        uint256 solValue,
         uint256 totalValue,
         uint8 tier
     );
@@ -102,102 +95,54 @@ contract MinecraftPFPWithWealth is ERC721URIStorage, Ownable {
 
     /**
      * @dev 컨트랙트 초기화
-     * @param _ethUsdPriceFeed ETH/USD Chainlink Price Feed 주소
-     * @param _usdtUsdPriceFeed USDT/USD Chainlink Price Feed 주소
-     * @param _usdcUsdPriceFeed USDC/USD Chainlink Price Feed 주소
-     * @param _usdt USDT 토큰 주소
-     * @param _usdc USDC 토큰 주소
+     * @param _solUsdPriceFeed SOL/USD Chainlink Price Feed 주소
+     * @param _sol SOL 토큰 주소
      */
     constructor(
-        address _ethUsdPriceFeed,
-        address _usdtUsdPriceFeed,
-        address _usdcUsdPriceFeed,
-        address _usdt,
-        address _usdc
+        address _solUsdPriceFeed,
+        address _sol
     ) ERC721("MinecraftPFP", "MCPFP") Ownable(msg.sender) {
-        require(_ethUsdPriceFeed != address(0), "Invalid ETH price feed");
-        require(_usdtUsdPriceFeed != address(0), "Invalid USDT price feed");
-        require(_usdcUsdPriceFeed != address(0), "Invalid USDC price feed");
-        require(_usdt != address(0), "Invalid USDT address");
-        require(_usdc != address(0), "Invalid USDC address");
+        require(_solUsdPriceFeed != address(0), "Invalid SOL price feed");
+        require(_sol != address(0), "Invalid SOL address");
 
-        ethUsdPriceFeed = AggregatorV3Interface(_ethUsdPriceFeed);
-        usdtUsdPriceFeed = AggregatorV3Interface(_usdtUsdPriceFeed);
-        usdcUsdPriceFeed = AggregatorV3Interface(_usdcUsdPriceFeed);
-        USDT = _usdt;
-        USDC = _usdc;
+        solUsdPriceFeed = AggregatorV3Interface(_solUsdPriceFeed);
+        SOL = _sol;
     }
 
     // ========== Price Feed Functions ==========
 
     /**
-     * @dev ETH/USD 가격 조회
-     * @return ETH 가격 (8 decimals)
+     * @dev SOL/USD 가격 조회
+     * @return SOL 가격 (8 decimals)
      */
-    function getETHPriceUSD() public view returns (uint256) {
-        (, int256 price, , uint256 updatedAt, ) = ethUsdPriceFeed.latestRoundData();
-        require(price > 0, "Invalid ETH price");
-        require(block.timestamp - updatedAt < PRICE_STALENESS_THRESHOLD, "Stale ETH price");
-        return uint256(price);
-    }
-
-    /**
-     * @dev USDT/USD 가격 조회
-     * @return USDT 가격 (8 decimals)
-     */
-    function getUSDTPriceUSD() public view returns (uint256) {
-        (, int256 price, , uint256 updatedAt, ) = usdtUsdPriceFeed.latestRoundData();
-        require(price > 0, "Invalid USDT price");
-        require(block.timestamp - updatedAt < PRICE_STALENESS_THRESHOLD, "Stale USDT price");
-        return uint256(price);
-    }
-
-    /**
-     * @dev USDC/USD 가격 조회
-     * @return USDC 가격 (8 decimals)
-     */
-    function getUSDCPriceUSD() public view returns (uint256) {
-        (, int256 price, , uint256 updatedAt, ) = usdcUsdPriceFeed.latestRoundData();
-        require(price > 0, "Invalid USDC price");
-        require(block.timestamp - updatedAt < PRICE_STALENESS_THRESHOLD, "Stale USDC price");
+    function getSOLPriceUSD() public view returns (uint256) {
+        (, int256 price, , uint256 updatedAt, ) = solUsdPriceFeed.latestRoundData();
+        require(price > 0, "Invalid SOL price");
+        require(block.timestamp - updatedAt < PRICE_STALENESS_THRESHOLD, "Stale SOL price");
         return uint256(price);
     }
 
     // ========== Wealth Calculation ==========
 
     /**
-     * @dev 주소의 총 자산 가치 계산 (ETH + USDT + USDC)
+     * @dev 주소의 총 자산 가치 계산 (SOL)
      * @param owner 조회할 주소
-     * @return ethValueUSD ETH의 USD 가치 (8 decimals)
-     * @return usdtValueUSD USDT의 USD 가치 (8 decimals)
-     * @return usdcValueUSD USDC의 USD 가치 (8 decimals)
+     * @return solValueUSD SOL의 USD 가치 (8 decimals)
      * @return totalValueUSD 총 자산의 USD 가치 (8 decimals)
      */
     function calculateTotalWealth(address owner) public view returns (
-        uint256 ethValueUSD,
-        uint256 usdtValueUSD,
-        uint256 usdcValueUSD,
+        uint256 solValueUSD,
         uint256 totalValueUSD
     ) {
-        // ETH 가치 계산
-        uint256 ethBalance = owner.balance;
-        uint256 ethPrice = getETHPriceUSD();
-        ethValueUSD = (ethBalance * ethPrice) / 1e18;
-
-        // USDT 가치 계산
-        uint256 usdtBalance = IERC20(USDT).balanceOf(owner);
-        uint256 usdtPrice = getUSDTPriceUSD();
-        usdtValueUSD = (usdtBalance * usdtPrice) / 1e6;
-
-        // USDC 가치 계산
-        uint256 usdcBalance = IERC20(USDC).balanceOf(owner);
-        uint256 usdcPrice = getUSDCPriceUSD();
-        usdcValueUSD = (usdcBalance * usdcPrice) / 1e6;
+        // SOL 가치 계산
+        uint256 solBalance = IERC20(SOL).balanceOf(owner);
+        uint256 solPrice = getSOLPriceUSD();
+        solValueUSD = (solBalance * solPrice) / 1e18;
 
         // 총 자산 계산
-        totalValueUSD = ethValueUSD + usdtValueUSD + usdcValueUSD;
+        totalValueUSD = solValueUSD;
 
-        return (ethValueUSD, usdtValueUSD, usdcValueUSD, totalValueUSD);
+        return (solValueUSD, totalValueUSD);
     }
 
     /**
@@ -253,9 +198,7 @@ contract MinecraftPFPWithWealth is ERC721URIStorage, Ownable {
 
         // 자산 가치 계산
         (
-            uint256 ethValueUSD,
-            uint256 usdtValueUSD,
-            uint256 usdcValueUSD,
+            uint256 solValueUSD,
             uint256 totalValueUSD
         ) = calculateTotalWealth(msg.sender);
 
@@ -299,16 +242,14 @@ contract MinecraftPFPWithWealth is ERC721URIStorage, Ownable {
         mintSnapshots[tokenId] = MintSnapshot({
             totalWealthUSD: totalValueUSD,
             wealthTier: tier,
-            ethBalance: msg.sender.balance,
-            usdtBalance: IERC20(USDT).balanceOf(msg.sender),
-            usdcBalance: IERC20(USDC).balanceOf(msg.sender),
+            solBalance: IERC20(SOL).balanceOf(msg.sender),
             timestamp: block.timestamp
         });
 
         ownerToToken[msg.sender] = tokenId;
 
         emit NFTMinted(msg.sender, tokenId, totalValueUSD, tier, specialItem);
-        emit WealthCalculated(msg.sender, ethValueUSD, usdtValueUSD, usdcValueUSD, totalValueUSD, tier);
+        emit WealthCalculated(msg.sender, solValueUSD, totalValueUSD, tier);
 
         return tokenId;
     }
@@ -372,16 +313,14 @@ contract MinecraftPFPWithWealth is ERC721URIStorage, Ownable {
         uint256 totalWealthUSD,
         uint8 wealthTier,
         uint8 specialItem,
-        uint256 ethValueUSD,
-        uint256 usdtValueUSD,
-        uint256 usdcValueUSD
+        uint256 solValueUSD
     ) {
         traits = owner.generateTraits();
-        (ethValueUSD, usdtValueUSD, usdcValueUSD, totalWealthUSD) = calculateTotalWealth(owner);
+        (solValueUSD, totalWealthUSD) = calculateTotalWealth(owner);
         wealthTier = getWealthTier(totalWealthUSD);
         specialItem = getSpecialItemFromWealth(wealthTier, owner);
 
-        return (traits, totalWealthUSD, wealthTier, specialItem, ethValueUSD, usdtValueUSD, usdcValueUSD);
+        return (traits, totalWealthUSD, wealthTier, specialItem, solValueUSD);
     }
 
     /**

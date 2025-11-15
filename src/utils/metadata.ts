@@ -15,9 +15,7 @@ import {
  * @param wealthTier 자산 등급
  * @param specialItem 특별 아이템 ID
  * @param totalWealthUSD 총 자산 (USD)
- * @param ethValueUSD ETH 가치 (USD)
- * @param usdtValueUSD USDT 가치 (USD)
- * @param usdcValueUSD USDC 가치 (USD)
+ * @param solValueUSD SOL 가치 (USD)
  * @param gifCID GIF 파일 IPFS CID
  * @param mintTimestamp 민팅 시각 (Unix timestamp)
  * @param contractAddress 컨트랙트 주소
@@ -29,9 +27,7 @@ export function generateMetadata(
     wealthTier: WealthTier,
     specialItem: number,
     totalWealthUSD: number,
-    ethValueUSD: number,
-    usdtValueUSD: number,
-    usdcValueUSD: number,
+    solValueUSD: number,
     gifCID: string,
     mintTimestamp: number,
     contractAddress: string,
@@ -74,18 +70,8 @@ export function generateMetadata(
             display_type: 'number',
         },
         {
-            trait_type: 'ETH Value (USD)',
-            value: Math.floor(ethValueUSD),
-            display_type: 'number',
-        },
-        {
-            trait_type: 'USDT Value (USD)',
-            value: Math.floor(usdtValueUSD),
-            display_type: 'number',
-        },
-        {
-            trait_type: 'USDC Value (USD)',
-            value: Math.floor(usdcValueUSD),
+            trait_type: 'SOL Value (USD)',
+            value: Math.floor(solValueUSD),
             display_type: 'number',
         },
 

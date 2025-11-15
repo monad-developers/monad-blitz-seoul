@@ -32,9 +32,7 @@ export const MinecraftPFPABI = [
             { name: 'totalWealthUSD', type: 'uint256' },
             { name: 'wealthTier', type: 'uint8' },
             { name: 'specialItem', type: 'uint8' },
-            { name: 'ethValueUSD', type: 'uint256' },
-            { name: 'usdtValueUSD', type: 'uint256' },
-            { name: 'usdcValueUSD', type: 'uint256' },
+            { name: 'solValueUSD', type: 'uint256' },
         ],
     },
     {

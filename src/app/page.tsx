@@ -59,15 +59,13 @@ export default function Home() {
 
     // 컨트랙트 데이터가 있으면 사용, 없으면 로컬 계산값 사용
     if (previewData && address) {
-      const [contractTraits, totalWealthUSD, wealthTier, specialItem, ethValueUSD, usdtValueUSD, usdcValueUSD] = previewData;
+      const [contractTraits, totalWealthUSD, wealthTier, specialItem, solValueUSD] = previewData;
 
       setWealthData({
         wealthTier: Number(wealthTier),
         specialItem: Number(specialItem),
         totalWealthUSD: Number(totalWealthUSD) / 1e8, // 8 decimals to USD
-        ethValueUSD: Number(ethValueUSD) / 1e8,
-        usdtValueUSD: Number(usdtValueUSD) / 1e8,
-        usdcValueUSD: Number(usdcValueUSD) / 1e8,
+        solValueUSD: Number(solValueUSD) / 1e8,
       });
     } else {
       // 기본값 사용 (개발 모드 또는 지갑 미연결 시)
@@ -75,9 +73,7 @@ export default function Home() {
         wealthTier: WealthTier.NONE,
         specialItem: 0,
         totalWealthUSD: 0,
-        ethValueUSD: 0,
-        usdtValueUSD: 0,
-        usdcValueUSD: 0,
+        solValueUSD: 0,
       });
     }
   }, [address, previewData, contractAddress]);
@@ -156,9 +152,7 @@ export default function Home() {
                   wealthTier={wealthData.wealthTier}
                   specialItem={wealthData.specialItem}
                   totalWealthUSD={wealthData.totalWealthUSD}
-                  ethValueUSD={wealthData.ethValueUSD}
-                  usdtValueUSD={wealthData.usdtValueUSD}
-                  usdcValueUSD={wealthData.usdcValueUSD}
+                  solValueUSD={wealthData.solValueUSD}
                   isLoading={isConnected && isLoading}
                 />
 
@@ -167,9 +161,7 @@ export default function Home() {
                     wealthTier={wealthData.wealthTier}
                     specialItem={wealthData.specialItem}
                     totalWealthUSD={wealthData.totalWealthUSD}
-                    ethValueUSD={wealthData.ethValueUSD}
-                    usdtValueUSD={wealthData.usdtValueUSD}
-                    usdcValueUSD={wealthData.usdcValueUSD}
+                    solValueUSD={wealthData.solValueUSD}
                   />
                 ) : (
                   <div className="bg-[#8B7355] border-4 border-t-[#FFFFFF] border-l-[#FFFFFF] border-r-[#555555] border-b-[#555555] p-6 text-center">

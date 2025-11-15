@@ -12,9 +12,7 @@ interface MintButtonProps {
     wealthTier: WealthTier;
     specialItem: number;
     totalWealthUSD: number;
-    ethValueUSD: number;
-    usdtValueUSD: number;
-    usdcValueUSD: number;
+    solValueUSD: number;
     disabled?: boolean;
 }
 
@@ -22,9 +20,7 @@ export function MintButton({
     wealthTier,
     specialItem,
     totalWealthUSD,
-    ethValueUSD,
-    usdtValueUSD,
-    usdcValueUSD,
+    solValueUSD,
     disabled,
 }: MintButtonProps) {
     const { address, isConnected } = useAccount();
@@ -52,9 +48,7 @@ export function MintButton({
                 wealthTier,
                 specialItem,
                 totalWealthUSD,
-                ethValueUSD,
-                usdtValueUSD,
-                usdcValueUSD,
+                solValueUSD,
                 tokenId: 0, // 실제로는 컨트랙트에서 자동 증가
                 contractAddress: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '',
             });

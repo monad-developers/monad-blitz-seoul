@@ -6,6 +6,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { executeMintPipeline } from '@/lib/mintPipeline';
 import { WealthTier } from '@/types';
 import { MinecraftPFPABI } from '@/lib/contractABI';
+import { MinecraftButton } from './minecraft/MinecraftButton';
 
 interface MintButtonProps {
     wealthTier: WealthTier;
@@ -89,10 +90,12 @@ export function MintButton({
 
     if (isSuccess) {
         return (
-            <div className="text-center">
-                <p className="text-green-600 font-bold mb-2">✅ 민팅 성공!</p>
-                <p className="text-sm text-gray-600">
-                    트랜잭션: {hash?.slice(0, 10)}...{hash?.slice(-8)}
+            <div className="bg-[#8B7355] border-4 border-t-[#FFFFFF] border-l-[#FFFFFF] border-r-[#555555] border-b-[#555555] p-6 text-center">
+                <p className="minecraft-font text-[#55FF55] text-lg mb-2 minecraft-text-shadow">
+                    ✅ 민팅 성공!
+                </p>
+                <p className="minecraft-font text-white text-xs">
+                    TX: {hash?.slice(0, 10)}...{hash?.slice(-8)}
                 </p>
             </div>
         );
@@ -100,10 +103,12 @@ export function MintButton({
 
     return (
         <div className="space-y-4">
-            <button
+            <MinecraftButton
                 onClick={handleMint}
                 disabled={disabled || isMinting || isConfirming}
-                className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white font-bold py-3 px-6 rounded-lg transition-colors"
+                variant="primary"
+                size="lg"
+                className="w-full"
             >
                 {isMinting || isConfirming ? (
                     <span className="flex items-center justify-center">
@@ -111,15 +116,17 @@ export function MintButton({
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                         </svg>
-                        {isConfirming ? '트랜잭션 확인 중...' : '민팅 중...'}
+                        {isConfirming ? 'TX 확인 중...' : '민팅 중...'}
                     </span>
                 ) : (
                     'NFT 민팅하기'
                 )}
-            </button>
+            </MinecraftButton>
 
             {mintStatus && (
-                <p className="text-sm text-center text-gray-600">{mintStatus}</p>
+                <p className="minecraft-font text-center text-white text-xs minecraft-text-shadow">
+                    {mintStatus}
+                </p>
             )}
         </div>
     );

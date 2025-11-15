@@ -3,6 +3,7 @@
 import { SkinTraits, COLOR_FAMILY_NAMES } from '@/lib/traitGenerator';
 import { getStyleName } from '@/lib/traitStyles';
 import { WEALTH_TIER_NAMES, SPECIAL_ITEMS, WealthTier } from '@/types';
+import { MinecraftCard } from './minecraft/MinecraftCard';
 
 interface TraitPreviewProps {
     traits: SkinTraits;
@@ -24,84 +25,88 @@ export function TraitPreview({
     usdcValueUSD,
 }: TraitPreviewProps) {
     return (
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-6">
-            <h2 className="text-2xl font-bold mb-4">NFT 속성</h2>
+        <MinecraftCard title="NFT 속성" className="bg-[#8B7355]">
+            <div className="space-y-6">
+                {/* 기본 속성 */}
+                <div className="space-y-4">
+                    <h3 className="minecraft-font text-white text-base minecraft-text-shadow border-b-2 border-[#555555] pb-2">
+                        기본 외형
+                    </h3>
 
-            {/* 기본 속성 */}
-            <div className="space-y-4">
-                <h3 className="text-lg font-semibold border-b pb-2">기본 외형</h3>
+                    <TraitItem
+                        label="모자"
+                        style={getStyleName('hat', traits.hatStyle)}
+                        color={COLOR_FAMILY_NAMES[traits.hatColor as keyof typeof COLOR_FAMILY_NAMES]}
+                        opacity={traits.hatOpacity}
+                    />
 
-                <TraitItem
-                    label="모자"
-                    style={getStyleName('hat', traits.hatStyle)}
-                    color={COLOR_FAMILY_NAMES[traits.hatColor as keyof typeof COLOR_FAMILY_NAMES]}
-                    opacity={traits.hatOpacity}
-                />
+                    <TraitItem
+                        label="옷"
+                        style={getStyleName('clothes', traits.clothesStyle)}
+                        color={COLOR_FAMILY_NAMES[traits.clothesColor as keyof typeof COLOR_FAMILY_NAMES]}
+                        opacity={traits.clothesOpacity}
+                    />
 
-                <TraitItem
-                    label="옷"
-                    style={getStyleName('clothes', traits.clothesStyle)}
-                    color={COLOR_FAMILY_NAMES[traits.clothesColor as keyof typeof COLOR_FAMILY_NAMES]}
-                    opacity={traits.clothesOpacity}
-                />
+                    <TraitItem
+                        label="신발"
+                        style={getStyleName('shoes', traits.shoesStyle)}
+                        color={COLOR_FAMILY_NAMES[traits.shoesColor as keyof typeof COLOR_FAMILY_NAMES]}
+                        opacity={traits.shoesOpacity}
+                    />
 
-                <TraitItem
-                    label="신발"
-                    style={getStyleName('shoes', traits.shoesStyle)}
-                    color={COLOR_FAMILY_NAMES[traits.shoesColor as keyof typeof COLOR_FAMILY_NAMES]}
-                    opacity={traits.shoesOpacity}
-                />
+                    <TraitItem
+                        label="바지"
+                        style={getStyleName('pants', traits.pantsStyle)}
+                        color={COLOR_FAMILY_NAMES[traits.pantsColor as keyof typeof COLOR_FAMILY_NAMES]}
+                        opacity={traits.pantsOpacity}
+                    />
 
-                <TraitItem
-                    label="바지"
-                    style={getStyleName('pants', traits.pantsStyle)}
-                    color={COLOR_FAMILY_NAMES[traits.pantsColor as keyof typeof COLOR_FAMILY_NAMES]}
-                    opacity={traits.pantsOpacity}
-                />
-
-                <TraitItem
-                    label="피부톤"
-                    style={getStyleName('skin', traits.skinTone)}
-                    color={`명암: ${traits.skinShade}`}
-                />
-            </div>
-
-            {/* Wealth 정보 */}
-            <div className="space-y-4">
-                <h3 className="text-lg font-semibold border-b pb-2">자산 정보</h3>
-
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Wealth Tier</p>
-                        <p className="text-lg font-bold">{WEALTH_TIER_NAMES[wealthTier]}</p>
-                    </div>
-
-                    <div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400">Special Item</p>
-                        <p className="text-lg font-bold">{SPECIAL_ITEMS[specialItem]}</p>
-                    </div>
+                    <TraitItem
+                        label="피부톤"
+                        style={getStyleName('skin', traits.skinTone)}
+                        color={`명암: ${traits.skinShade}`}
+                    />
                 </div>
 
-                <div className="bg-gray-100 dark:bg-gray-700 rounded p-4 space-y-2">
-                    <div className="flex justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">ETH 가치:</span>
-                        <span className="font-semibold">${ethValueUSD.toLocaleString()}</span>
+                {/* Wealth 정보 */}
+                <div className="space-y-4">
+                    <h3 className="minecraft-font text-white text-base minecraft-text-shadow border-b-2 border-[#555555] pb-2">
+                        자산 정보
+                    </h3>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-[#3C3C3C] border-2 border-t-[#1C1C1C] border-l-[#1C1C1C] border-r-[#5C5C5C] border-b-[#5C5C5C] p-3">
+                            <p className="minecraft-font text-[#AAAAAA] text-xs">Wealth Tier</p>
+                            <p className="minecraft-font text-[#FFD700] text-sm minecraft-text-shadow">{WEALTH_TIER_NAMES[wealthTier]}</p>
+                        </div>
+
+                        <div className="bg-[#3C3C3C] border-2 border-t-[#1C1C1C] border-l-[#1C1C1C] border-r-[#5C5C5C] border-b-[#5C5C5C] p-3">
+                            <p className="minecraft-font text-[#AAAAAA] text-xs">Special Item</p>
+                            <p className="minecraft-font text-[#55FF55] text-sm minecraft-text-shadow">{SPECIAL_ITEMS[specialItem]}</p>
+                        </div>
                     </div>
-                    <div className="flex justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">USDT 가치:</span>
-                        <span className="font-semibold">${usdtValueUSD.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between">
-                        <span className="text-sm text-gray-600 dark:text-gray-400">USDC 가치:</span>
-                        <span className="font-semibold">${usdcValueUSD.toLocaleString()}</span>
-                    </div>
-                    <div className="flex justify-between pt-2 border-t border-gray-300 dark:border-gray-600">
-                        <span className="font-bold">총 자산:</span>
-                        <span className="font-bold text-green-600">${totalWealthUSD.toLocaleString()}</span>
+
+                    <div className="bg-[#3C3C3C] border-2 border-t-[#1C1C1C] border-l-[#1C1C1C] border-r-[#5C5C5C] border-b-[#5C5C5C] p-4 space-y-2">
+                        <div className="flex justify-between">
+                            <span className="minecraft-font text-[#AAAAAA] text-xs">ETH:</span>
+                            <span className="minecraft-font text-white text-xs">${ethValueUSD.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="minecraft-font text-[#AAAAAA] text-xs">USDT:</span>
+                            <span className="minecraft-font text-white text-xs">${usdtValueUSD.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="minecraft-font text-[#AAAAAA] text-xs">USDC:</span>
+                            <span className="minecraft-font text-white text-xs">${usdcValueUSD.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between pt-2 border-t-2 border-[#555555]">
+                            <span className="minecraft-font text-white text-sm">총 자산:</span>
+                            <span className="minecraft-font text-[#55FF55] text-sm minecraft-text-shadow">${totalWealthUSD.toLocaleString()}</span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </MinecraftCard>
     );
 }
 
@@ -117,13 +122,13 @@ function TraitItem({
     opacity?: number;
 }) {
     return (
-        <div className="flex justify-between items-center">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{label}:</span>
+        <div className="flex justify-between items-center bg-[#8B8B8B] border-2 border-t-[#373737] border-l-[#373737] border-r-[#DFDFDF] border-b-[#DFDFDF] p-2">
+            <span className="minecraft-font text-white text-xs">{label}:</span>
             <div className="text-right">
-                <p className="font-semibold">{style}</p>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
+                <p className="minecraft-font text-white text-xs">{style}</p>
+                <p className="minecraft-font text-[#AAAAAA] text-[10px]">
                     {color}
-                    {opacity && ` (투명도: ${opacity})`}
+                    {opacity && ` (${opacity})`}
                 </p>
             </div>
         </div>

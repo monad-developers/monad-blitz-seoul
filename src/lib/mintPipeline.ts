@@ -53,7 +53,7 @@ export async function executeMintPipeline(
 
         console.log('🎬 3. 3D 씬 설정 중...');
         const renderCanvas = document.createElement('canvas');
-        const { scene, camera, renderer, mesh } = createMinecraftScene(renderCanvas, 512, 512);
+        const { scene, camera, renderer, mesh } = createMinecraftScene(renderCanvas, textureCanvas, 512, 512);
 
         console.log('📹 4. 애니메이션 프레임 캡처 중...');
         const frames = await captureAnimationFrames(scene, camera, renderer, mesh, 60);
@@ -119,7 +119,7 @@ export async function executePreviewPipeline(
 
         console.log('🎬 3D 씬 설정 중...');
         const renderCanvas = document.createElement('canvas');
-        const { scene, camera, renderer, mesh } = createMinecraftScene(renderCanvas, 512, 512);
+        const { scene, camera, renderer, mesh } = createMinecraftScene(renderCanvas, textureCanvas, 512, 512);
 
         console.log('📹 애니메이션 프레임 캡처 중...');
         const frames = await captureAnimationFrames(scene, camera, renderer, mesh, 60);

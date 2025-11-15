@@ -128,7 +128,7 @@ function TraitItem({
             <div className="text-center space-y-1">
                 <p className="minecraft-font text-white text-xs mb-2">{label}</p>
                 <p className="minecraft-font text-[#FFD700] text-xs minecraft-text-shadow">{style}</p>
-                <p className="minecraft-font text-[#AAAAAA] text-[10px]">
+                <p className="minecraft-font text-white text-xs minecraft-text-shadow">
                     {color}
                     {opacity && ` (${opacity})`}
                 </p>

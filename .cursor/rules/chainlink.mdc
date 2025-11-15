@@ -1,0 +1,29 @@
+---
+alwaysApply: false
+---
+## Data Feeds (Price Feed Addresses)
+- BTC / USD: 0x2Cd9D7E85494F68F5aF08EF96d6FD5e8F71B4d31
+- ETH / USD: 0x0c76859E85727683Eeba0C70Bc2e0F5781337818
+- LINK / USD: 0x4682035965Cd2B88759193ee2660d8A0766e1391
+- USDC / USD: 0x70BB0758a38ae43418ffcEd9A25273dd4e804D15
+- USDT / USD: 0x14eE6bE30A91989851Dc23203E41C804D4D71441
+
+## [CCIP](https://docs.chain.link/ccip/directory/testnet/chain/monad-testnet)
+- Router: 0x5f16e51e3Dcb255480F090157DD01bA962a53E54
+- Chain Selector: 2183018362218727504
+- RMN: 0xaBe6C62737539bEA929647187C3bF13455B33c84
+- Token admin registry: 0x9f4fa39d257cBe5A69F4E4A22a3E8bf62CAF5218
+- Registry module owner: 0x4b90270eAca902fBb9B3bbFd185F82A137a29739
+
+### Fee tokens
+- Link: 0x6fE981Dbd557f81ff66836af0932cba535Cbc343
+- WMON: 0x760AfE86e5de5fa0Ee542fc7B7B713e1c5425701
+- MON2: native gas token
+
+### lanes
+lane status: https://ccip.chain.link/status?networkType=testnet
+lanes On/Off Ramp addresses: https://docs.chain.link/ccip/directory/testnet/chain/monad-testnet
+
+## Data Streams (Testnet Crypto Streams)
+- [Crypto Streams](https://docs.chain.link/data-streams/crypto-streams?page=1&testnetPage=1)
+

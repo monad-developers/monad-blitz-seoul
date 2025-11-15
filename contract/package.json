@@ -1,0 +1,30 @@
+{
+  "name": "contract",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:v1": "NODE_TLS_REJECT_UNAUTHORIZED=0 hardhat run scripts/deploy-oxgame.ts --network monad",
+    "deploy:v2": "NODE_TLS_REJECT_UNAUTHORIZED=0 hardhat run scripts/deploy-oxgame-v2.ts --network monad",
+    "deploy:local": "NODE_TLS_REJECT_UNAUTHORIZED=0 hardhat run scripts/deploy-oxgame-v2.ts --network hardhat",
+    "verify:v1": "NODE_TLS_REJECT_UNAUTHORIZED=0 hardhat verify --network monad",
+    "verify:v2": "NODE_TLS_REJECT_UNAUTHORIZED=0 hardhat verify --network monad",
+    "node": "hardhat node"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@types/node": "^22.0.0",
+    "dotenv": "^16.4.5",
+    "hardhat": "^2.22.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.5.0"
+  },
+  "dependencies": {
+    "@chainlink/contracts": "^1.5.0"
+  }
+}

@@ -53,10 +53,10 @@ export async function executeMintPipeline(
         console.log('🎬 3. 3D 씬 설정 중...');
         const renderCanvas = document.createElement('canvas');
         const GIF_SIZE = 384; // Preview와 동일한 크기
-        const { scene, camera, renderer, mesh } = createMinecraftScene(renderCanvas, textureCanvas, GIF_SIZE, GIF_SIZE);
+        const viewer = await createMinecraftScene(renderCanvas, textureCanvas, GIF_SIZE, GIF_SIZE);
 
         console.log('📹 4. 애니메이션 프레임 캡처 중...');
-        const frames = await captureAnimationFrames(scene, camera, renderer, mesh, 60);
+        const frames = await captureAnimationFrames(viewer, 60);
 
         console.log('🎞️ 5. GIF 생성 중...');
         const gifBlob = await generateGIF(frames, GIF_SIZE, GIF_SIZE, 5);
@@ -83,7 +83,7 @@ export async function executeMintPipeline(
         const metadataUri = getIPFSUri(metadataCID);
 
         console.log('🧹 9. 리소스 정리 중...');
-        disposeScene(scene, renderer);
+        disposeScene(viewer);
 
         console.log('✅ 민팅 파이프라인 완료!');
 
@@ -119,16 +119,16 @@ export async function executePreviewPipeline(
         console.log('🎬 3D 씬 설정 중...');
         const renderCanvas = document.createElement('canvas');
         const GIF_SIZE = 384; // Preview와 동일한 크기
-        const { scene, camera, renderer, mesh } = createMinecraftScene(renderCanvas, textureCanvas, GIF_SIZE, GIF_SIZE);
+        const viewer = await createMinecraftScene(renderCanvas, textureCanvas, GIF_SIZE, GIF_SIZE);
 
         console.log('📹 애니메이션 프레임 캡처 중...');
-        const frames = await captureAnimationFrames(scene, camera, renderer, mesh, 60);
+        const frames = await captureAnimationFrames(viewer, 60);
 
         console.log('🎞️ GIF 생성 중...');
         const gifBlob = await generateGIF(frames, GIF_SIZE, GIF_SIZE, 5);
 
         console.log('🧹 리소스 정리 중...');
-        disposeScene(scene, renderer);
+        disposeScene(viewer);
 
         console.log('✅ 미리보기 완료!');
 

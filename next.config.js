@@ -8,6 +8,11 @@ const nextConfig = {
   },
 
   webpack: (config, { isServer }) => {
+    // MetaMask SDK의 React Native 관련 경고 무시
+    config.ignoreWarnings = [
+      ...(config.ignoreWarnings || []),
+      { module: /node_modules\/@metamask\/sdk/ },
+    ];
     config.externals.push('pino-pretty', 'lokijs', 'encoding');
 
     // 클라이언트 사이드에서 서버 전용 라이브러리 완전 제외
@@ -16,6 +21,7 @@ const nextConfig = {
         ...config.resolve.fallback,
         '@napi-rs/canvas': false,
         canvas: false,
+        '@react-native-async-storage/async-storage': false,
       };
 
       // 모든 canvas 관련 패키지를 클라이언트 번들에서 제외

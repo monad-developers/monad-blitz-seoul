@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import { executePreviewPipeline } from '@/lib/mintPipeline';
+import { blobToBase64 } from '@/lib/gifGenerator';
 import { MinecraftCard } from '@/components/minecraft/MinecraftCard';
 import { MinecraftButton } from '@/components/minecraft/MinecraftButton';
 
@@ -18,6 +20,7 @@ export default function GIFCaptureTestPage() {
         size: string;
         generationTime: string;
     } | null>(null);
+    const [gifBlob, setGifBlob] = useState<Blob | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const handleCapture = async () => {
@@ -27,29 +30,27 @@ export default function GIFCaptureTestPage() {
             setError(null);
             setGifPreview(null);
             setGifInfo(null);
+            setGifBlob(null);
 
-            const response = await fetch(`/api/test/gif-capture?address=${address}`);
+            const startTime = Date.now();
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'GIF 캡처 실패');
-            }
+            // 클라이언트에서 직접 GIF 생성
+            const { gifBlob: generatedGif } = await executePreviewPipeline(address);
 
-            // 응답 헤더에서 정보 추출
-            const size = response.headers.get('X-GIF-Size') || 'unknown';
-            const generationTime = response.headers.get('X-Generation-Time') || 'unknown';
+            const endTime = Date.now();
+            const duration = ((endTime - startTime) / 1000).toFixed(2);
 
             setGifInfo({
-                size: `${(parseInt(size) / 1024).toFixed(2)} KB`,
-                generationTime,
+                size: `${(generatedGif.size / 1024).toFixed(2)} KB`,
+                generationTime: `${duration}s`,
             });
 
-            // Blob을 Blob URL로 변환
-            const blob = await response.blob();
-            const blobUrl = URL.createObjectURL(blob);
-            setGifPreview(blobUrl);
+            // Base64로 변환하여 미리보기 표시
+            const base64 = await blobToBase64(generatedGif);
+            setGifPreview(base64);
+            setGifBlob(generatedGif);
 
-            setStatus(`✅ GIF 캡처 완료! (${size} bytes)`);
+            setStatus(`✅ GIF 캡처 완료! (${generatedGif.size} bytes)`);
         } catch (err) {
             const errorMsg = err instanceof Error ? err.message : '알 수 없는 오류';
             setError(errorMsg);
@@ -60,13 +61,14 @@ export default function GIFCaptureTestPage() {
         }
     };
 
-    const handleDownload = async () => {
-        try {
-            const response = await fetch(`/api/test/gif-capture?address=${address}`);
-            if (!response.ok) throw new Error('다운로드 실패');
+    const handleDownload = () => {
+        if (!gifBlob) {
+            setError('다운로드할 GIF가 없습니다. 먼저 캡처를 실행하세요.');
+            return;
+        }
 
-            const blob = await response.blob();
-            const url = URL.createObjectURL(blob);
+        try {
+            const url = URL.createObjectURL(gifBlob);
             const a = document.createElement('a');
             a.href = url;
             a.download = `minecraft-pfp-${address.slice(2, 10)}.gif`;
@@ -77,7 +79,7 @@ export default function GIFCaptureTestPage() {
 
             setStatus('✅ GIF 다운로드 완료');
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'download 실패');
+            setError(err instanceof Error ? err.message : '다운로드 실패');
             setStatus('❌ 다운로드 실패');
         }
     };

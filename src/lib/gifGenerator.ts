@@ -63,7 +63,7 @@ export async function generateGIF(
 
         // Uint8Array를 Blob으로 변환
         const buffer = gif.bytes();
-        const blob = new Blob([buffer], { type: 'image/gif' });
+        const blob = new Blob([buffer.buffer as ArrayBuffer], { type: 'image/gif' });
 
         console.log('GIF 생성 완료!', blob.size, 'bytes');
 

@@ -1,10 +1,9 @@
 /**
  * Minecraft Skin Renderer
  *
- * Three.js를 사용하여 64x64 Minecraft 스킨을 3D 모델로 렌더링
+ * skinview3d를 사용하여 64x64 Minecraft 스킨을 3D 모델로 렌더링
  */
 
-import * as THREE from 'three';
 import { SkinTraits } from './traitGenerator';
 import { getColorFromFamily } from './traitStyles';
 
@@ -269,19 +268,14 @@ function adjustBrightness(hex: string, percent: number): string {
 }
 
 /**
- * Three.js 씬 생성
+ * skinview3d를 사용한 씬 생성
  */
-export function createMinecraftScene(
+export async function createMinecraftScene(
     renderCanvas: HTMLCanvasElement,
     textureCanvas: HTMLCanvasElement,
     width: number = 512,
     height: number = 512
-): {
-    scene: THREE.Scene;
-    camera: THREE.PerspectiveCamera;
-    renderer: THREE.WebGLRenderer;
-    mesh: THREE.Mesh;
-} {
+): Promise<any> {
     // 입력 유효성 검사
     if (!renderCanvas || !textureCanvas) {
         throw new Error('렌더링 캔버스와 텍스처 캔버스가 모두 필요합니다.');
@@ -291,60 +285,39 @@ export function createMinecraftScene(
         throw new Error('너비와 높이는 양수여야 합니다.');
     }
 
-    // Scene
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0x87ceeb); // 하늘색 배경
+    // skinview3d 동적 로드
+    const skinview3d = await import('skinview3d');
 
-    // Camera
-    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
-    camera.position.set(0, 1.5, 4);
-    camera.lookAt(0, 1, 0);
-
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({
+    // 텍스처를 Data URL로 변환
+    const skinDataUrl = textureCanvas.toDataURL('image/png');
+    
+    // SkinViewer 생성
+    const viewer = new skinview3d.SkinViewer({
         canvas: renderCanvas,
-        antialias: true,
-        alpha: true,
+        width,
+        height,
+        skin: skinDataUrl,
     });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(window.devicePixelRatio);
 
-    // 조명
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-    scene.add(ambientLight);
+    // 카메라 설정
+    viewer.zoom = 0.7;
+    viewer.fov = 70;
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(5, 10, 7.5);
-    scene.add(directionalLight);
+    // 배경색 설정
+    viewer.background = 0x87ceeb; // 하늘색
 
-    // Minecraft 캐릭터 모델 생성 (간단한 박스 모델)
-    const geometry = new THREE.BoxGeometry(1, 2, 1);
-    const texture = new THREE.CanvasTexture(textureCanvas);
-    texture.magFilter = THREE.NearestFilter; // 픽셀 아트 스타일 유지
-    texture.minFilter = THREE.NearestFilter;
-
-    const material = new THREE.MeshStandardMaterial({
-        map: texture,
-    });
-    const mesh = new THREE.Mesh(geometry, material);
-    mesh.position.y = 1;
-    scene.add(mesh);
-
-    return { scene, camera, renderer, mesh };
+    return viewer;
 }
 
 /**
- * 애니메이션 프레임 캡처
+ * 애니메이션 프레임 캡처 (skinview3d 사용)
  */
 export async function captureAnimationFrames(
-    scene: THREE.Scene,
-    camera: THREE.PerspectiveCamera,
-    renderer: THREE.WebGLRenderer,
-    mesh: THREE.Mesh,
+    viewer: any,
     frameCount: number = 60
 ): Promise<ImageData[]> {
     const frames: ImageData[] = [];
-    const canvas = renderer.domElement;
+    const canvas = viewer.canvas;
 
     // WebGL 캔버스에서 이미지 데이터를 추출하기 위한 임시 2D 캔버스 생성
     const tempCanvas = document.createElement('canvas');
@@ -358,10 +331,11 @@ export async function captureAnimationFrames(
 
     for (let i = 0; i < frameCount; i++) {
         // 회전 애니메이션
-        mesh.rotation.y = (i / frameCount) * Math.PI * 2;
+        const angle = (i / frameCount) * Math.PI * 2;
+        viewer.playerObject.rotation.y = angle;
 
         // 렌더링
-        renderer.render(scene, camera);
+        viewer.render();
 
         // WebGL 캔버스를 DataURL로 변환 후 이미지로 로드
         const dataUrl = canvas.toDataURL('image/png');
@@ -391,20 +365,10 @@ export async function captureAnimationFrames(
 }
 
 /**
- * 씬 정리
+ * 씬 정리 (skinview3d 사용)
  */
-export function disposeScene(
-    scene: THREE.Scene,
-    renderer: THREE.WebGLRenderer
-) {
-    scene.traverse((object) => {
-        if (object instanceof THREE.Mesh) {
-            object.geometry.dispose();
-            if (object.material instanceof THREE.Material) {
-                object.material.dispose();
-            }
-        }
-    });
-
-    renderer.dispose();
+export function disposeScene(viewer: any) {
+    if (viewer && viewer.dispose) {
+        viewer.dispose();
+    }
 }

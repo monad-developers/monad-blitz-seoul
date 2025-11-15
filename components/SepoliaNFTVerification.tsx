@@ -233,7 +233,9 @@ export function SepoliaNFTVerification({ onMessageSent }: SepoliaNFTVerification
         const messageIdToUse = ccipMessageId || bridgeHash;
 
         setStatus('ccip-sent');
-        onMessageSent?.(messageIdToUse);
+        if (messageIdToUse) {
+          onMessageSent?.(messageIdToUse);
+        }
 
         // DB에 기록
         if (address && selectedNFT) {
@@ -253,7 +255,9 @@ export function SepoliaNFTVerification({ onMessageSent }: SepoliaNFTVerification
       } catch (error) {
         console.error('Failed to extract CCIP messageId from receipt:', error);
         setStatus('ccip-sent');
-        onMessageSent?.(bridgeHash);
+        if (bridgeHash) {
+          onMessageSent?.(bridgeHash);
+        }
       }
     }
   }, [isBridgeSuccess, bridgeReceipt]);

@@ -14,7 +14,9 @@
     "deploy:monad": "hardhat run scripts/deploy.ts --network monadTestnet",
     "verify:monad": "hardhat verify --network monadTestnet",
     "deploy:sepolia": "hardhat run scripts/deploy.ts --network sepolia",
-    "verify:sepolia": "hardhat verify --network sepolia"
+    "verify:sepolia": "hardhat verify --network sepolia",
+    "migrate:ccip-message-ids": "tsx scripts/migrate-ccip-message-ids.ts",
+    "add:ccip-record": "tsx scripts/add-ccip-record-from-tx.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.69.0",
@@ -64,6 +66,8 @@
     "postcss": "^8.4.0",
     "solidity-coverage": "^0.8.0",
     "tailwindcss": "^3.4.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.6",
     "typescript": "^5.3.0"
   },
   "packageManager": "pnpm@10.12.4"

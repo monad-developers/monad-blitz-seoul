@@ -34,28 +34,28 @@ export function TraitPreview({
                 <TraitItem
                     label="모자"
                     style={getStyleName('hat', traits.hatStyle)}
-                    color={COLOR_FAMILY_NAMES[traits.hatColor]}
+                    color={COLOR_FAMILY_NAMES[traits.hatColor as keyof typeof COLOR_FAMILY_NAMES]}
                     opacity={traits.hatOpacity}
                 />
 
                 <TraitItem
                     label="옷"
                     style={getStyleName('clothes', traits.clothesStyle)}
-                    color={COLOR_FAMILY_NAMES[traits.clothesColor]}
+                    color={COLOR_FAMILY_NAMES[traits.clothesColor as keyof typeof COLOR_FAMILY_NAMES]}
                     opacity={traits.clothesOpacity}
                 />
 
                 <TraitItem
                     label="신발"
                     style={getStyleName('shoes', traits.shoesStyle)}
-                    color={COLOR_FAMILY_NAMES[traits.shoesColor]}
+                    color={COLOR_FAMILY_NAMES[traits.shoesColor as keyof typeof COLOR_FAMILY_NAMES]}
                     opacity={traits.shoesOpacity}
                 />
 
                 <TraitItem
                     label="바지"
                     style={getStyleName('pants', traits.pantsStyle)}
-                    color={COLOR_FAMILY_NAMES[traits.pantsColor]}
+                    color={COLOR_FAMILY_NAMES[traits.pantsColor as keyof typeof COLOR_FAMILY_NAMES]}
                     opacity={traits.pantsOpacity}
                 />
 

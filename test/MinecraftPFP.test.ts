@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
-import { MinecraftPFPWithWealth, TraitGenerator } from '../typechain-types';
+import { MinecraftPFPWithWealth } from '../typechain-types';
 import { SignerWithAddress } from '@nomicfoundation/hardhat-ethers/signers';
 
 describe('MinecraftPFPWithWealth', function () {

@@ -1,35 +1,65 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useAccount } from 'wagmi';
+import { useAccount, useReadContract } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { generateTraits } from '@/lib/traitGenerator';
 import { TraitPreview } from '@/components/TraitPreview';
 import { MintButton } from '@/components/MintButton';
+import { SkinRenderer3D } from '@/components/SkinRenderer3D';
 import { WealthTier } from '@/types';
+import { MinecraftPFPABI } from '@/lib/contractABI';
 
 export default function Home() {
   const { address, isConnected } = useAccount();
   const [traits, setTraits] = useState<any>(null);
   const [wealthData, setWealthData] = useState<any>(null);
 
+  // 컨트랙트 주소 가져오기
+  const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}` | undefined;
+
+  // 컨트랙트에서 previewMint 호출
+  const { data: previewData, isError, isLoading } = useReadContract({
+    address: contractAddress,
+    abi: MinecraftPFPABI,
+    functionName: 'previewMint',
+    args: address ? [address] : undefined,
+    query: {
+      enabled: !!address && !!contractAddress,
+    },
+  });
+
   useEffect(() => {
     if (address) {
-      // Generate traits
+      // Generate traits (로컬에서도 생성하여 빠른 UI 표시)
       const generatedTraits = generateTraits(address);
       setTraits(generatedTraits);
 
-      // Mock wealth data (실제로는 컨트랙트에서 조회)
-      setWealthData({
-        wealthTier: WealthTier.BRONZE,
-        specialItem: 1,
-        totalWealthUSD: 1500,
-        ethValueUSD: 1000,
-        usdtValueUSD: 300,
-        usdcValueUSD: 200,
-      });
+      // 컨트랙트 데이터가 있으면 사용, 없으면 로컬 계산값 사용
+      if (previewData) {
+        const [contractTraits, totalWealthUSD, wealthTier, specialItem, ethValueUSD, usdtValueUSD, usdcValueUSD] = previewData;
+
+        setWealthData({
+          wealthTier: Number(wealthTier),
+          specialItem: Number(specialItem),
+          totalWealthUSD: Number(totalWealthUSD) / 1e8, // 8 decimals to USD
+          ethValueUSD: Number(ethValueUSD) / 1e8,
+          usdtValueUSD: Number(usdtValueUSD) / 1e8,
+          usdcValueUSD: Number(usdcValueUSD) / 1e8,
+        });
+      } else if (!contractAddress) {
+        // 컨트랙트가 배포되지 않았을 때 기본값 사용 (개발 모드)
+        setWealthData({
+          wealthTier: WealthTier.NONE,
+          specialItem: 0,
+          totalWealthUSD: 0,
+          ethValueUSD: 0,
+          usdtValueUSD: 0,
+          usdcValueUSD: 0,
+        });
+      }
     }
-  }, [address]);
+  }, [address, previewData, contractAddress]);
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800 p-8">
@@ -50,19 +80,41 @@ export default function Home() {
         </div>
 
         {/* Main Content */}
-        {isConnected && address && traits && wealthData ? (
-          <div className="grid md:grid-cols-2 gap-8">
-            {/* Left: 3D Preview */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
-              <h2 className="text-2xl font-bold mb-4">미리보기</h2>
-              <div className="aspect-square bg-gradient-to-br from-blue-100 to-purple-100 dark:from-gray-700 dark:to-gray-600 rounded-lg flex items-center justify-center">
-                <p className="text-gray-500">3D 렌더링 영역</p>
-                {/* 실제 구현 시 Three.js 캔버스가 들어갈 위치 */}
+        {isConnected && address ? (
+          <>
+            {/* 로딩 상태 */}
+            {isLoading && (
+              <div className="text-center py-20">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                <p className="mt-4 text-gray-600 dark:text-gray-400">데이터 로딩 중...</p>
               </div>
-              <p className="mt-4 text-sm text-center text-gray-600 dark:text-gray-400">
-                주소: {address.slice(0, 6)}...{address.slice(-4)}
-              </p>
-            </div>
+            )}
+
+            {/* 에러 상태 */}
+            {isError && !contractAddress && (
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6 text-center">
+                <p className="text-yellow-800 dark:text-yellow-200">
+                  ⚠️ 컨트랙트가 아직 배포되지 않았습니다. 개발 모드로 실행 중입니다.
+                </p>
+              </div>
+            )}
+
+            {/* 데이터 준비 완료 */}
+            {traits && wealthData && (
+              <div className="grid md:grid-cols-2 gap-8">
+                {/* Left: 3D Preview */}
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+                  <h2 className="text-2xl font-bold mb-4">미리보기</h2>
+                  <div className="flex items-center justify-center">
+                    <SkinRenderer3D traits={traits} width={512} height={512} />
+                  </div>
+                  <p className="mt-4 text-sm text-center text-gray-600 dark:text-gray-400">
+                    주소: {address.slice(0, 6)}...{address.slice(-4)}
+                  </p>
+                  <p className="mt-2 text-xs text-center text-gray-500 dark:text-gray-500">
+                    ↻ 자동 회전 애니메이션
+                  </p>
+                </div>
 
             {/* Right: Traits & Mint */}
             <div className="space-y-6">
@@ -86,6 +138,8 @@ export default function Home() {
               />
             </div>
           </div>
+            )}
+          </>
         ) : (
           <div className="text-center py-20">
             <p className="text-xl text-gray-600 dark:text-gray-400">

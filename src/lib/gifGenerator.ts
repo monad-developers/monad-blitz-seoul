@@ -23,12 +23,12 @@ export async function generateGIF(
     fps: number = 30
 ): Promise<Blob> {
     return new Promise((resolve, reject) => {
+        // gif.js는 workerScript를 지정하지 않으면 자동으로 인라인 워커 사용
         const gif = new GIF({
             workers: 2,
             quality: 10,
             width,
             height,
-            workerScript: '/gif.worker.js',
         });
 
         const delay = 1000 / fps;

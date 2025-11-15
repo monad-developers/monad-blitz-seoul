@@ -5,6 +5,7 @@ import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagm
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { executeMintPipeline } from '@/lib/mintPipeline';
 import { WealthTier } from '@/types';
+import { MinecraftPFPABI } from '@/lib/contractABI';
 
 interface MintButtonProps {
     wealthTier: WealthTier;
@@ -62,17 +63,13 @@ export function MintButton({
             // 2. 스마트 컨트랙트 mint 호출
             const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`;
 
+            if (!contractAddress) {
+                throw new Error('컨트랙트 주소가 설정되지 않았습니다');
+            }
+
             writeContract({
                 address: contractAddress,
-                abi: [
-                    {
-                        name: 'mint',
-                        type: 'function',
-                        stateMutability: 'nonpayable',
-                        inputs: [{ name: 'ipfsUri', type: 'string' }],
-                        outputs: [{ name: 'tokenId', type: 'uint256' }],
-                    },
-                ],
+                abi: MinecraftPFPABI,
                 functionName: 'mint',
                 args: [result.metadataUri],
             });

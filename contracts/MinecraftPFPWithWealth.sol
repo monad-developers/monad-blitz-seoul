@@ -4,7 +4,7 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 import "./TraitGenerator.sol";
 
 /**
@@ -320,7 +320,7 @@ contract MinecraftPFPWithWealth is ERC721URIStorage, Ownable {
     ) {
         traits = owner.generateTraits();
         (ethValueUSD, usdtValueUSD, usdcValueUSD, totalWealthUSD) = calculateTotalWealth(owner);
-        wealthTier = getWealthTier(totalValueUSD);
+        wealthTier = getWealthTier(totalWealthUSD);
         specialItem = getSpecialItemFromWealth(wealthTier, owner);
 
         return (traits, totalWealthUSD, wealthTier, specialItem, ethValueUSD, usdtValueUSD, usdcValueUSD);

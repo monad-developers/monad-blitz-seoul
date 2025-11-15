@@ -38,22 +38,22 @@ export function generateMetadata(
     const attributes: NFTAttribute[] = [
         // Hat
         { trait_type: 'Hat Style', value: traits.hatStyle },
-        { trait_type: 'Hat Color', value: COLOR_FAMILY_NAMES[traits.hatColor] },
+        { trait_type: 'Hat Color', value: COLOR_FAMILY_NAMES[traits.hatColor as keyof typeof COLOR_FAMILY_NAMES] },
         { trait_type: 'Hat Opacity', value: traits.hatOpacity },
 
         // Clothes
         { trait_type: 'Clothes Style', value: traits.clothesStyle },
-        { trait_type: 'Clothes Color', value: COLOR_FAMILY_NAMES[traits.clothesColor] },
+        { trait_type: 'Clothes Color', value: COLOR_FAMILY_NAMES[traits.clothesColor as keyof typeof COLOR_FAMILY_NAMES] },
         { trait_type: 'Clothes Opacity', value: traits.clothesOpacity },
 
         // Shoes
         { trait_type: 'Shoes Style', value: traits.shoesStyle },
-        { trait_type: 'Shoes Color', value: COLOR_FAMILY_NAMES[traits.shoesColor] },
+        { trait_type: 'Shoes Color', value: COLOR_FAMILY_NAMES[traits.shoesColor as keyof typeof COLOR_FAMILY_NAMES] },
         { trait_type: 'Shoes Opacity', value: traits.shoesOpacity },
 
         // Pants
         { trait_type: 'Pants Style', value: traits.pantsStyle },
-        { trait_type: 'Pants Color', value: COLOR_FAMILY_NAMES[traits.pantsColor] },
+        { trait_type: 'Pants Color', value: COLOR_FAMILY_NAMES[traits.pantsColor as keyof typeof COLOR_FAMILY_NAMES] },
         { trait_type: 'Pants Opacity', value: traits.pantsOpacity },
 
         // Skin

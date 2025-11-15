@@ -1,0 +1,87 @@
+/**
+ * MinecraftPFPWithWealth Contract ABI
+ */
+
+export const MinecraftPFPABI = [
+    {
+        name: 'previewMint',
+        type: 'function',
+        stateMutability: 'view',
+        inputs: [{ name: 'owner', type: 'address' }],
+        outputs: [
+            {
+                name: 'traits',
+                type: 'tuple',
+                components: [
+                    { name: 'hatStyle', type: 'uint8' },
+                    { name: 'hatColor', type: 'uint8' },
+                    { name: 'hatOpacity', type: 'uint8' },
+                    { name: 'clothesStyle', type: 'uint8' },
+                    { name: 'clothesColor', type: 'uint8' },
+                    { name: 'clothesOpacity', type: 'uint8' },
+                    { name: 'shoesStyle', type: 'uint8' },
+                    { name: 'shoesColor', type: 'uint8' },
+                    { name: 'shoesOpacity', type: 'uint8' },
+                    { name: 'pantsStyle', type: 'uint8' },
+                    { name: 'pantsColor', type: 'uint8' },
+                    { name: 'pantsOpacity', type: 'uint8' },
+                    { name: 'skinTone', type: 'uint8' },
+                    { name: 'skinShade', type: 'uint8' },
+                ],
+            },
+            { name: 'totalWealthUSD', type: 'uint256' },
+            { name: 'wealthTier', type: 'uint8' },
+            { name: 'specialItem', type: 'uint8' },
+            { name: 'ethValueUSD', type: 'uint256' },
+            { name: 'usdtValueUSD', type: 'uint256' },
+            { name: 'usdcValueUSD', type: 'uint256' },
+        ],
+    },
+    {
+        name: 'mint',
+        type: 'function',
+        stateMutability: 'nonpayable',
+        inputs: [{ name: 'ipfsUri', type: 'string' }],
+        outputs: [{ name: 'tokenId', type: 'uint256' }],
+    },
+    {
+        name: 'ownerToToken',
+        type: 'function',
+        stateMutability: 'view',
+        inputs: [{ name: 'owner', type: 'address' }],
+        outputs: [{ name: 'tokenId', type: 'uint256' }],
+    },
+    {
+        name: 'getTokenInfo',
+        type: 'function',
+        stateMutability: 'view',
+        inputs: [{ name: 'tokenId', type: 'uint256' }],
+        outputs: [
+            { name: 'owner', type: 'address' },
+            {
+                name: 'traits',
+                type: 'tuple',
+                components: [
+                    { name: 'hatStyle', type: 'uint8' },
+                    { name: 'hatColor', type: 'uint8' },
+                    { name: 'hatOpacity', type: 'uint8' },
+                    { name: 'clothesStyle', type: 'uint8' },
+                    { name: 'clothesColor', type: 'uint8' },
+                    { name: 'clothesOpacity', type: 'uint8' },
+                    { name: 'shoesStyle', type: 'uint8' },
+                    { name: 'shoesColor', type: 'uint8' },
+                    { name: 'shoesOpacity', type: 'uint8' },
+                    { name: 'pantsStyle', type: 'uint8' },
+                    { name: 'pantsColor', type: 'uint8' },
+                    { name: 'pantsOpacity', type: 'uint8' },
+                    { name: 'skinTone', type: 'uint8' },
+                    { name: 'skinShade', type: 'uint8' },
+                ],
+            },
+            { name: 'totalWealthUSD', type: 'uint256' },
+            { name: 'wealthTier', type: 'uint8' },
+            { name: 'specialItem', type: 'uint8' },
+            { name: 'mintTimestamp', type: 'uint256' },
+        ],
+    },
+] as const;

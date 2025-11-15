@@ -1,19 +1,19 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useAccount, useReadContract } from 'wagmi';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { generateTraits } from '@/lib/traitGenerator';
-import { TraitPreview } from '@/components/TraitPreview';
-import { MintButton } from '@/components/MintButton';
+import {useEffect, useState} from 'react';
+import {useAccount, useReadContract} from 'wagmi';
+import {ConnectButton} from '@rainbow-me/rainbowkit';
+import {generateTraits} from '@/lib/traitGenerator';
+import {TraitPreview} from '@/components/TraitPreview';
+import {MintButton} from '@/components/MintButton';
 import dynamic from 'next/dynamic';
+import {WealthTier} from '@/types';
+import {MinecraftPFPABI} from '@/lib/contractABI';
 
 const MinecraftSkinViewer = dynamic(
   () => import('@/components/MinecraftSkinViewer').then((mod) => mod.MinecraftSkinViewer),
   { ssr: false }
 );
-import { WealthTier } from '@/types';
-import { MinecraftPFPABI } from '@/lib/contractABI';
 
 export default function Home() {
   const { address, isConnected } = useAccount();
@@ -105,7 +105,6 @@ export default function Home() {
         <div className="flex justify-center">
           <ConnectButton />
         </div>
-
         {/* Main Content */}
         {traits && wealthData && (
           <>
@@ -115,14 +114,6 @@ export default function Home() {
                 <p className="minecraft-font text-white text-sm minecraft-text-shadow">
                   💡 미리보기 모드입니다. 지갑을 연결하면 자신의 주소로 생성된 NFT를 확인할 수 있습니다.
                 </p>
-              </div>
-            )}
-
-            {/* 로딩 상태 */}
-            {isConnected && isLoading && (
-              <div className="text-center py-20">
-                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-[#55FF55]"></div>
-                <p className="mt-4 minecraft-font text-white minecraft-text-shadow">데이터 로딩 중...</p>
               </div>
             )}
 
@@ -168,6 +159,7 @@ export default function Home() {
                   ethValueUSD={wealthData.ethValueUSD}
                   usdtValueUSD={wealthData.usdtValueUSD}
                   usdcValueUSD={wealthData.usdcValueUSD}
+                  isLoading={isConnected && isLoading}
                 />
 
                 {isConnected ? (

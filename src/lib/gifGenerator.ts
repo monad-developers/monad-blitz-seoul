@@ -1,11 +1,10 @@
 /**
  * GIF Generator
  *
- * 캡처된 프레임들을 GIF로 인코딩
+ * 캡처된 프레임들을 GIF로 인코딩 (gifenc 사용)
  */
 
-// @ts-ignore - gif.js는 TypeScript 정의가 없음
-import GIF from 'gif.js';
+import { GIFEncoder, quantize, applyPalette } from 'gifenc';
 
 /**
  * 프레임들을 GIF로 인코딩
@@ -22,35 +21,57 @@ export async function generateGIF(
     height: number = 512,
     fps: number = 30
 ): Promise<Blob> {
-    return new Promise((resolve, reject) => {
-        // gif.js는 workerScript를 지정하지 않으면 자동으로 인라인 워커 사용
-        const gif = new GIF({
-            workers: 2,
-            quality: 10,
-            width,
-            height,
-        });
+    console.log(`GIF 생성 시작: ${frames.length} 프레임, ${width}x${height}, ${fps}fps`);
 
-        const delay = 1000 / fps;
+    try {
+        // GIF 인코더 생성
+        const gif = GIFEncoder();
 
-        // 모든 프레임 추가
-        frames.forEach((frame) => {
-            gif.addFrame(frame, { delay });
-        });
+        const delay = Math.floor(1000 / fps); // ms 단위
 
-        // GIF 렌더링 완료 이벤트
-        gif.on('finished', (blob: Blob) => {
-            resolve(blob);
-        });
+        console.log('프레임 인코딩 중...');
 
-        // 에러 처리
-        gif.on('error', (error: Error) => {
-            reject(error);
-        });
+        for (let i = 0; i < frames.length; i++) {
+            const frame = frames[i];
 
-        // 렌더링 시작
-        gif.render();
-    });
+            // 진행 상황 로그
+            if (i % 10 === 0) {
+                console.log(`프레임 ${i}/${frames.length} 인코딩 중... (${((i / frames.length) * 100).toFixed(1)}%)`);
+            }
+
+            // ImageData에서 RGBA 데이터 추출
+            const { data } = frame;
+
+            // 색상 양자화 (256색 팔레트로 변환)
+            const palette = quantize(data, 256);
+
+            // 팔레트 적용하여 인덱스 배열 생성
+            const index = applyPalette(data, palette);
+
+            // GIF에 프레임 추가
+            gif.writeFrame(index, width, height, {
+                palette,
+                delay,
+                transparent: false,
+            });
+        }
+
+        console.log('모든 프레임 인코딩 완료');
+
+        // GIF 마무리
+        gif.finish();
+
+        // Uint8Array를 Blob으로 변환
+        const buffer = gif.bytes();
+        const blob = new Blob([buffer], { type: 'image/gif' });
+
+        console.log('GIF 생성 완료!', blob.size, 'bytes');
+
+        return blob;
+    } catch (error) {
+        console.error('GIF 생성 중 에러:', error);
+        throw error;
+    }
 }
 
 /**

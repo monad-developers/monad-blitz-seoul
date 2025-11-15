@@ -1,0 +1,10 @@
+{
+  "sepolia": {
+    "verifier": "0xBC202e1664DA265d3dCea3d4060D49CC0d6e0B08",
+    "ccipRouter": "0x0BF3dE8c5D3e8A2B34D2BEeB17ABfCeBaf363A59",
+    "supportedNFT": "0x583aeA758A94d74bA997326634B23a2Ea6f4e005",
+    "chainSelector": "16015286601757825753"
+  },
+  "timestamp": "2025-11-15T07:14:02.485Z",
+  "network": "sepolia"
+}

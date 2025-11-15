@@ -21,6 +21,7 @@ import {
  * @param gifCID GIF 파일 IPFS CID
  * @param mintTimestamp 민팅 시각 (Unix timestamp)
  * @param contractAddress 컨트랙트 주소
+ * @param hasCCIPAttestation CCIP 크로스체인 검증 여부
  */
 export function generateMetadata(
     tokenId: number,
@@ -33,7 +34,8 @@ export function generateMetadata(
     usdcValueUSD: number,
     gifCID: string,
     mintTimestamp: number,
-    contractAddress: string
+    contractAddress: string,
+    hasCCIPAttestation: boolean = false
 ): NFTMetadata {
     const attributes: NFTAttribute[] = [
         // Hat
@@ -101,10 +103,33 @@ export function generateMetadata(
         },
     ];
 
+    // CCIP 크로스체인 검증 속성 추가
+    if (hasCCIPAttestation) {
+        attributes.push(
+            {
+                trait_type: 'CCIP Verified',
+                value: 'Yes',
+            },
+            {
+                trait_type: 'Cross-Chain NFT Holder',
+                value: 'Ethereum Sepolia',
+            },
+            {
+                trait_type: 'Special Trait',
+                value: 'Golden Crown',
+            },
+            {
+                trait_type: 'Rarity',
+                value: 'Legendary',
+            }
+        );
+    }
+
     return {
         name: `Minecraft PFP #${tokenId}`,
-        description:
-            'Dynamic Minecraft-style PFP NFT with wealth-based traits. Generated deterministically from wallet address with special items based on portfolio value at mint time.',
+        description: hasCCIPAttestation
+            ? 'A unique Minecraft-style PFP NFT with special cross-chain verified traits, featuring a golden crown earned by proving NFT ownership on Ethereum Sepolia.'
+            : 'Dynamic Minecraft-style PFP NFT with wealth-based traits. Generated deterministically from wallet address with special items based on portfolio value at mint time.',
         image: `ipfs://${gifCID}`,
         animation_url: `ipfs://${gifCID}`,
         attributes,

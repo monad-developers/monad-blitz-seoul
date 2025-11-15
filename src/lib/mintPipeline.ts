@@ -21,6 +21,7 @@ export interface MintPipelineOptions {
     usdcValueUSD: number;
     tokenId: number;
     contractAddress: string;
+    hasCCIPAttestation?: boolean; // CCIP 크로스체인 검증 플래그
 }
 
 export interface MintPipelineResult {
@@ -59,7 +60,7 @@ export async function executeMintPipeline(
         const frames = await captureAnimationFrames(scene, camera, renderer, mesh, 60);
 
         console.log('🎞️ 5. GIF 생성 중...');
-        const gifBlob = await generateGIF(frames, 512, 512, 30);
+        const gifBlob = await generateGIF(frames, 512, 512, 5);
 
         console.log('☁️ 6. GIF IPFS 업로드 중...');
         const gifCID = await uploadGIFToIPFS(gifBlob, `minecraft-pfp-${options.tokenId}.gif`);
@@ -76,7 +77,8 @@ export async function executeMintPipeline(
             options.usdcValueUSD,
             gifCID,
             Math.floor(Date.now() / 1000),
-            options.contractAddress
+            options.contractAddress,
+            options.hasCCIPAttestation || false
         );
 
         console.log('☁️ 8. 메타데이터 IPFS 업로드 중...');
@@ -125,7 +127,7 @@ export async function executePreviewPipeline(
         const frames = await captureAnimationFrames(scene, camera, renderer, mesh, 60);
 
         console.log('🎞️ GIF 생성 중...');
-        const gifBlob = await generateGIF(frames, 512, 512, 30);
+        const gifBlob = await generateGIF(frames, 512, 512, 5);
 
         console.log('🧹 리소스 정리 중...');
         disposeScene(scene, renderer);

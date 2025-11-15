@@ -5,10 +5,10 @@
 import { getDefaultConfig } from '@rainbow-me/rainbowkit';
 import { mainnet } from 'wagmi/chains';
 import type { Chain } from 'wagmi/chains';
-import { monadTestnet } from './chains';
+import { monadTestnet, sepolia } from './chains';
 
-// Monad Testnet을 기본으로 사용
-const chains: readonly [Chain, ...Chain[]] = [monadTestnet, mainnet];
+// Monad Testnet과 Sepolia를 지원
+const chains: readonly [Chain, ...Chain[]] = [monadTestnet, sepolia, mainnet];
 
 let cachedConfig: ReturnType<typeof getDefaultConfig> | null = null;
 

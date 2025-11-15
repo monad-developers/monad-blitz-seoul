@@ -1,7 +1,7 @@
-import { ethers } from 'hardhat';
-import fs from 'fs';
-import path from 'path';
-import { getMonadDeployConfig, validateMonadTokens } from '../src/config/monad';
+const { ethers } = require('hardhat');
+const fs = require('fs');
+const path = require('path');
+const { getMonadDeployConfig, validateMonadTokens } = require('../src/config/monad');
 
 async function main() {
     console.log('🚀 MinecraftPFPWithWealth 배포 시작...\n');
@@ -19,11 +19,11 @@ async function main() {
     console.log(`💰 Balance: ${ethers.formatEther(balance)} ETH\n`);
 
     // Price Feed 주소 설정 (네트워크별)
-    let ethUsdFeed: string;
-    let usdtUsdFeed: string;
-    let usdcUsdFeed: string;
-    let usdt: string;
-    let usdc: string;
+    let ethUsdFeed;
+    let usdtUsdFeed;
+    let usdcUsdFeed;
+    let usdt;
+    let usdc;
 
     if (network.chainId === 1n) {
         // Ethereum Mainnet

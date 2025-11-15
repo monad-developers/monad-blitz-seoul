@@ -1,0 +1,14 @@
+{
+  "network": "sepolia",
+  "chainId": "11155111",
+  "contract": "0x583aeA758A94d74bA997326634B23a2Ea6f4e005",
+  "deployer": "0x481C6192D483409eC2220e579938c61c12cFB402",
+  "timestamp": "2025-11-15T06:59:06.724Z",
+  "contractDetails": {
+    "name": "Monad Penguins",
+    "symbol": "MPEN",
+    "maxSupply": "1000",
+    "mintPrice": "0.001",
+    "baseTokenURI": "ipfs://QmTempBaseURI/"
+  }
+}

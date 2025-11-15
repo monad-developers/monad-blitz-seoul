@@ -40,9 +40,18 @@ export async function uploadGIFToIPFS(
         const upload = await pinata.upload.file(file);
 
         return upload.IpfsHash;
-    } catch (error) {
+    } catch (error: any) {
         console.error('GIF IPFS 업로드 실패:', error);
-        throw new Error('GIF IPFS 업로드에 실패했습니다');
+
+        // Pinata API 권한 에러 확인
+        if (error?.response?.data?.error?.reason === 'NO_SCOPES_FOUND') {
+            throw new Error(
+                'Pinata API 키에 파일 업로드 권한이 없습니다. ' +
+                'Pinata 대시보드에서 pinFileToIPFS 권한이 있는 새 API 키를 생성하세요.'
+            );
+        }
+
+        throw new Error(`GIF IPFS 업로드 실패: ${error.message || '알 수 없는 오류'}`);
     }
 }
 
@@ -61,9 +70,18 @@ export async function uploadMetadataToIPFS(
         const upload = await pinata.upload.json(metadata);
 
         return upload.IpfsHash;
-    } catch (error) {
+    } catch (error: any) {
         console.error('메타데이터 IPFS 업로드 실패:', error);
-        throw new Error('메타데이터 IPFS 업로드에 실패했습니다');
+
+        // Pinata API 권한 에러 확인
+        if (error?.response?.data?.error?.reason === 'NO_SCOPES_FOUND') {
+            throw new Error(
+                'Pinata API 키에 JSON 업로드 권한이 없습니다. ' +
+                'Pinata 대시보드에서 pinJSONToIPFS 권한이 있는 새 API 키를 생성하세요.'
+            );
+        }
+
+        throw new Error(`메타데이터 IPFS 업로드 실패: ${error.message || '알 수 없는 오류'}`);
     }
 }
 

@@ -1,0 +1,10 @@
+{
+  "monad": {
+    "receiver": "0xB79029a5aC6E65EcCE13de7595c9ea958B2BaD3A",
+    "ccipRouter": "0x5f16e51e3Dcb255480F090157DD01bA962a53E54",
+    "minecraftPFP": "0x8C26aeBd1cc9084c3c2898b93461A215b789A59A",
+    "chainSelector": "2183018362218727504"
+  },
+  "timestamp": "2025-11-15T07:23:31.555Z",
+  "network": "monad"
+}

@@ -5,12 +5,14 @@
 Minecraft 스타일의 PFP (Profile Picture) NFT 프로젝트로, 주소 기반 결정론적 속성 생성과 자산 등급 기반 특별 아이템을 제공합니다.
 
 ### 주요 기능
-- ✅ Ethereum 주소 기반 결정론적 트레잇 생성
-- ✅ Chainlink Price Feed를 통한 실시간 자산 가치 계산
-- ✅ 자산 등급(Wealth Tier)에 따른 특별 아이템 부여
-- ✅ 3D 모델 렌더링 및 애니메이션 GIF 생성
-- ✅ IPFS를 통한 탈중앙화 스토리지
-- ✅ OpenSea 호환 메타데이터
+- ✅ **AI 기반 스킨 생성**: Claude Haiku 4.5를 사용한 픽셀 아트 스킨 자동 생성
+- ✅ **Ethereum 주소 기반 결정론적 트레잇 생성**
+- ✅ **Chainlink Price Feed를 통한 실시간 자산 가치 계산**
+- ✅ **자산 등급(Wealth Tier)에 따른 특별 아이템 부여**
+- ✅ **CCIP 크로스체인 검증**: Sepolia-Monad 간 NFT 소유권 검증
+- ✅ **Supabase 데이터베이스**: 스킨 데이터 저장 및 캐싱
+- ✅ **3D 모델 렌더링**: skinview3d를 통한 Minecraft 스킨 뷰어
+- ✅ **OpenSea 호환 메타데이터**
 
 ---
 
@@ -22,46 +24,65 @@ graph TB
         A[page.tsx<br/>메인 UI]
         B[MintButton<br/>민팅 버튼]
         C[TraitPreview<br/>속성 미리보기]
-        D[SkinRenderer3D<br/>3D 렌더러]
+        D[MinecraftSkinViewer<br/>3D 스킨 뷰어]
+        E[SepoliaNFTVerification<br/>CCIP 검증 UI]
+    end
+
+    subgraph "API Routes"
+        F[/api/traits<br/>Trait 조회]
+        G[/api/skin<br/>스킨 생성]
+        H[/api/dev<br/>개발 도구]
     end
 
     subgraph "Library Layer"
-        E[traitGenerator.ts<br/>트레잇 생성]
-        F[skinRenderer.ts<br/>3D 렌더링]
-        G[mintPipeline.ts<br/>민팅 파이프라인]
-        H[gifGenerator.ts<br/>GIF 생성]
-        I[ipfs.ts<br/>IPFS 업로드]
-        J[metadata.ts<br/>메타데이터 생성]
+        I[traitGenerator.ts<br/>트레잇 생성]
+        J[aiSkinGenerator.ts<br/>AI 스킨 생성]
+        K[skinRenderer.ts<br/>3D 렌더링]
+        L[mintPipeline.ts<br/>민팅 파이프라인]
+        M[db/supabase.ts<br/>DB 클라이언트]
     end
 
     subgraph "Smart Contract Layer - Solidity"
-        K[MinecraftPFPWithWealth.sol<br/>메인 NFT 컨트랙트]
-        L[TraitGenerator.sol<br/>트레잇 라이브러리]
+        N[MinecraftPFPWithWealth.sol<br/>메인 NFT 컨트랙트]
+        O[TraitGenerator.sol<br/>트레잇 라이브러리]
+        P[NFTOwnershipVerifier.sol<br/>Sepolia CCIP 발신]
+        Q[MonadCCIPReceiver.sol<br/>Monad CCIP 수신]
     end
 
     subgraph "External Services"
-        M[Chainlink Price Feeds<br/>가격 데이터]
-        N[IPFS/Pinata<br/>파일 저장]
-        O[Monad Testnet<br/>블록체인]
+        R[Anthropic Claude API<br/>AI 스킨 생성]
+        S[Supabase<br/>데이터베이스]
+        T[Chainlink Price Feeds<br/>가격 데이터]
+        U[Chainlink CCIP<br/>크로스체인 메시징]
+        V[Monad Testnet<br/>블록체인]
     end
 
     A --> B
     A --> C
     A --> D
-    B --> G
-    C --> E
-    D --> F
-    G --> E
-    G --> F
-    G --> H
-    G --> I
+    A --> E
+    A --> F
+    B --> L
+    C --> I
+    D --> K
+    E --> P
+    F --> I
     G --> J
-    F --> H
-    I --> N
-    K --> L
-    K --> M
-    B --> K
-    K --> O
+    G --> M
+    L --> I
+    L --> J
+    L --> K
+    L --> M
+    J --> R
+    M --> S
+    N --> O
+    N --> T
+    P --> U
+    Q --> U
+    B --> N
+    E --> P
+    N --> V
+    Q --> V
 ```
 
 ---
@@ -137,13 +158,14 @@ graph LR
 sequenceDiagram
     actor User
     participant UI as Frontend UI
-    participant Pipeline as mintPipeline
+    participant API as API Routes
     participant Trait as traitGenerator
-    participant Renderer as skinRenderer
-    participant GIF as gifGenerator
-    participant IPFS as IPFS/Pinata
+    participant AI as aiSkinGenerator
+    participant DB as Supabase
+    participant Claude as Claude API
     participant Contract as Smart Contract
     participant Chainlink as Price Feeds
+    participant CCIP as CCIP Router
 
     User->>UI: 지갑 연결
     UI->>Contract: previewMint(address)
@@ -153,41 +175,40 @@ sequenceDiagram
     Contract->>Contract: Wealth Tier 결정
     Contract-->>UI: 미리보기 데이터
 
-    UI->>Trait: generateTraits(address)
-    Trait-->>UI: SkinTraits 반환
-    UI->>Renderer: 3D 렌더링
-    Renderer-->>UI: 3D 모델 표시
+    UI->>API: GET /api/traits/[address]
+    API->>Trait: generateTraits(address)
+    Trait-->>API: SkinTraits 반환
+    API-->>UI: Traits JSON
+
+    UI->>API: GET /api/skin/[address]
+    API->>DB: 캐시된 스킨 조회
+
+    alt 캐시 존재
+        DB-->>API: 저장된 스킨 데이터
+    else 캐시 없음
+        API->>AI: generateAISkin(traits)
+        AI->>Claude: 색상 스킴 생성 요청
+        Claude-->>AI: ColorScheme JSON
+        AI->>AI: 64x64 Canvas 렌더링
+        AI->>AI: 디더링 픽셀 아트 적용
+        AI-->>API: Base64 PNG 스킨
+        API->>DB: 스킨 데이터 저장
+    end
+
+    API-->>UI: 스킨 데이터
+    UI->>UI: MinecraftSkinViewer로 3D 표시
+
+    User->>UI: CCIP 검증 (선택)
+    UI->>Contract: NFTOwnershipVerifier.verifyAndSend()
+    Contract->>CCIP: ccipSend(message)
+    CCIP-->>Contract: messageId
+    CCIP->>Contract: MonadCCIPReceiver.ccipReceive()
+    Contract->>Contract: attestation 기록
 
     User->>UI: 민팅 버튼 클릭
-
-    UI->>Pipeline: executeMintPipeline()
-
-    Pipeline->>Trait: generateTraits(address)
-    Trait-->>Pipeline: SkinTraits
-
-    Pipeline->>Renderer: createSkinTexture(traits)
-    Renderer-->>Pipeline: 텍스처 캔버스
-
-    Pipeline->>Renderer: createMinecraftScene()
-    Renderer-->>Pipeline: 3D Scene
-
-    Pipeline->>Renderer: captureAnimationFrames()
-    Renderer-->>Pipeline: 60 프레임
-
-    Pipeline->>GIF: generateGIF(frames)
-    GIF-->>Pipeline: GIF Blob
-
-    Pipeline->>IPFS: uploadGIFToIPFS(blob)
-    IPFS-->>Pipeline: GIF CID
-
-    Pipeline->>Pipeline: generateMetadata()
-    Pipeline->>IPFS: uploadMetadataToIPFS()
-    IPFS-->>Pipeline: Metadata CID
-
-    Pipeline-->>UI: metadataUri
-
-    UI->>Contract: mint(metadataUri)
+    UI->>Contract: mint(address)
     Contract->>Contract: 자산 스냅샷 저장
+    Contract->>Contract: CCIP attestation 확인
     Contract->>Contract: NFT 발행
     Contract-->>UI: 트랜잭션 해시
 
@@ -214,29 +235,42 @@ flowchart TD
     F --> H
     G --> H
 
-    A --> I{Chainlink Price Feeds}
-    I -->|ETH/USD| J[자산 가치 계산]
-    I -->|USDT/USD| J
-    I -->|USDC/USD| J
+    H --> I{Supabase<br/>캐시 확인}
+    I -->|캐시 존재| J[저장된 스킨 반환]
+    I -->|캐시 없음| K[AI 스킨 생성]
 
-    J --> K{Wealth Tier<br/>결정}
-    K -->|Tier 0-5| L[Special Item<br/>할당]
+    K --> L[Trait → 프롬프트 변환]
+    L --> M[Claude API 호출]
+    M --> N[ColorScheme JSON]
+    N --> O[64x64 Canvas 렌더링]
+    O --> P[디더링 픽셀 아트]
+    P --> Q[Base64 PNG 스킨]
+    Q --> R[Supabase 저장]
+    R --> J
 
-    H --> M[skinRenderer.ts]
-    M --> N[64x64 텍스처<br/>생성]
-    N --> O[Three.js<br/>3D 모델]
-    O --> P[60 프레임<br/>캡처]
-    P --> Q[GIF 생성<br/>512x512]
+    A --> S{Chainlink Price Feeds}
+    S -->|ETH/USD| T[자산 가치 계산]
+    S -->|USDT/USD| T
+    S -->|USDC/USD| T
 
-    Q --> R[IPFS 업로드]
-    H --> S[메타데이터 생성]
-    L --> S
-    K --> S
-    S --> R
+    T --> U{Wealth Tier<br/>결정}
+    U -->|Tier 0-5| V[Special Item<br/>할당]
 
-    R --> T[ipfs:// URI]
-    T --> U[Smart Contract<br/>mint 호출]
-    U --> V[NFT 발행]
+    J --> W[MinecraftSkinViewer<br/>3D 표시]
+
+    A --> X{CCIP 검증}
+    X -->|Sepolia NFT 소유| Y[NFTOwnershipVerifier]
+    Y --> Z[CCIP 메시지 전송]
+    Z --> AA[MonadCCIPReceiver]
+    AA --> AB[Attestation 기록]
+
+    AB --> AC[Golden Crown 부여]
+    AC --> J
+
+    W --> AD[Smart Contract<br/>mint 호출]
+    V --> AD
+    AB --> AD
+    AD --> AE[NFT 발행]
 ```
 
 ---
@@ -351,50 +385,88 @@ graph TD
 
 ```
 minecraft-pfp/
-├── contracts/                      # 스마트 컨트랙트
-│   ├── MinecraftPFPWithWealth.sol  # 메인 NFT 컨트랙트
-│   └── TraitGenerator.sol          # 트레잇 생성 라이브러리
+├── contracts/                          # 스마트 컨트랙트
+│   ├── MinecraftPFPWithWealth.sol      # 메인 NFT 컨트랙트
+│   ├── TraitGenerator.sol              # 트레잇 생성 라이브러리
+│   ├── sepolia/
+│   │   └── NFTOwnershipVerifier.sol    # CCIP 발신자 (Sepolia)
+│   └── monad/
+│       └── MonadCCIPReceiver.sol       # CCIP 수신자 (Monad)
 │
-├── scripts/                        # 배포 스크립트
-│   └── deploy.ts                   # 컨트랙트 배포 스크립트
+├── scripts/                            # 배포 스크립트
+│   ├── deploy.js                       # 메인 컨트랙트 배포
+│   └── deploy-ccip.js                  # CCIP 컨트랙트 배포
+│
+├── deployments/                        # 배포 정보 JSON
+│   ├── ccip-sepolia.json
+│   └── monad-penguins_sepolia_*.json
+│
+├── components/                         # 외부 컴포넌트 (CCIP UI 등)
+│   ├── CCIPStatusMonitor.tsx
+│   └── SepoliaNFTVerification.tsx
 │
 ├── src/
-│   ├── app/                        # Next.js 앱 라우터
-│   │   ├── page.tsx                # 메인 페이지
-│   │   ├── layout.tsx              # 레이아웃
-│   │   └── providers.tsx           # Web3 프로바이더 설정
+│   ├── app/                           # Next.js 앱 라우터
+│   │   ├── api/                       # API Routes
+│   │   │   ├── traits/[address]/route.ts    # Trait 조회
+│   │   │   ├── skin/[address]/route.ts      # AI 스킨 생성
+│   │   │   └── dev/delete-skin/[address]/   # 개발 도구
+│   │   ├── page.tsx                   # 메인 페이지
+│   │   ├── layout.tsx                 # 레이아웃
+│   │   └── providers.tsx              # Web3 프로바이더 설정
 │   │
-│   ├── components/                 # React 컴포넌트
-│   │   ├── MintButton.tsx          # 민팅 버튼 컴포넌트
-│   │   ├── TraitPreview.tsx        # 트레잇 미리보기
-│   │   └── SkinRenderer3D.tsx      # 3D 렌더러 컴포넌트
+│   ├── components/                    # React 컴포넌트
+│   │   ├── minecraft/                 # Minecraft UI 시스템
+│   │   │   ├── BGPattern.tsx          # 배경 패턴
+│   │   │   ├── MinecraftButton.tsx    # 버튼 스타일
+│   │   │   └── MinecraftCard.tsx      # 카드 스타일
+│   │   ├── MintButton.tsx             # 민팅 버튼
+│   │   ├── TraitPreview.tsx           # 트레잇 미리보기
+│   │   ├── MinecraftSkinViewer.tsx    # 3D 스킨 뷰어
+│   │   └── SkinRenderer3D.tsx         # Three.js 렌더러
 │   │
-│   ├── lib/                        # 핵심 라이브러리
-│   │   ├── traitGenerator.ts       # 주소 기반 트레잇 생성
-│   │   ├── skinRenderer.ts         # 3D 모델 렌더링
-│   │   ├── mintPipeline.ts         # 민팅 프로세스 관리
-│   │   ├── gifGenerator.ts         # GIF 생성
-│   │   ├── ipfs.ts                 # IPFS 업로드
-│   │   ├── traitStyles.ts          # 트레잇 스타일 정의
-│   │   ├── contractABI.ts          # 컨트랙트 ABI
-│   │   ├── wagmi.ts                # Wagmi 설정
-│   │   └── chains.ts               # 체인 설정
+│   ├── lib/                           # 핵심 라이브러리
+│   │   ├── traitGenerator.ts          # 주소 기반 트레잇 생성
+│   │   ├── aiSkinGenerator.ts         # AI 스킨 생성 (Claude API)
+│   │   ├── skinRenderer.ts            # 3D 모델 렌더링
+│   │   ├── mintPipeline.ts            # 민팅 프로세스 관리
+│   │   ├── gifGenerator.ts            # GIF 생성
+│   │   ├── ipfs.ts                    # IPFS 업로드
+│   │   ├── traitStyles.ts             # 트레잇 스타일 정의
+│   │   ├── contractABI.ts             # 컨트랙트 ABI
+│   │   ├── wagmi.ts                   # Wagmi 설정
+│   │   ├── chains.ts                  # 체인 설정
+│   │   ├── utils.ts                   # 유틸리티 함수
+│   │   └── db/                        # Supabase 데이터베이스
+│   │       ├── client.ts              # DB 클라이언트
+│   │       ├── supabase.ts            # Supabase 초기화
+│   │       └── migrations/            # 마이그레이션 스크립트
 │   │
-│   ├── types/                      # TypeScript 타입 정의
-│   │   └── index.ts                # 공통 타입
+│   ├── types/                         # TypeScript 타입 정의
+│   │   └── index.ts                   # 공통 타입
 │   │
-│   ├── utils/                      # 유틸리티 함수
-│   │   └── metadata.ts             # 메타데이터 생성
+│   ├── utils/                         # 유틸리티 함수
+│   │   └── metadata.ts                # 메타데이터 생성
 │   │
-│   └── config/                     # 설정 파일
-│       └── monad.ts                # Monad 네트워크 설정
+│   └── config/                        # 설정 파일
+│       └── monad.ts                   # Monad 네트워크 설정
 │
-├── test/                           # 테스트
-│   └── MinecraftPFP.test.ts        # 컨트랙트 테스트
+├── claudedocs/                        # Claude 관련 문서
+│   ├── supabase-setup-guide.md
+│   ├── db-setup-guide.md
+│   └── CCIP_CROSSCHAIN_IMPLEMENTATION_PLAN.md
 │
-├── hardhat.config.ts               # Hardhat 설정
-├── package.json                    # 패키지 의존성
-└── tsconfig.json                   # TypeScript 설정
+├── docs/                              # 기술 문서
+│   ├── ARCHITECTURE.md
+│   ├── CROSSCHAIN_NFT.md
+│   └── SKIN_GENERATION.md
+│
+├── test/                              # 테스트
+│   └── MinecraftPFP.test.ts           # 컨트랙트 테스트
+│
+├── hardhat.config.ts                  # Hardhat 설정
+├── package.json                       # 패키지 의존성
+└── tsconfig.json                      # TypeScript 설정
 ```
 
 ---
@@ -415,12 +487,70 @@ minecraft-pfp/
 
 **호출자**:
 - `page.tsx`: 미리보기용
-- `mintPipeline.ts`: 민팅 시
+- `/api/traits/[address]`: API 라우트
+- `aiSkinGenerator.ts`: AI 프롬프트 생성
 - `TraitPreview.tsx`: UI 표시
 
 ---
 
-### 2. skinRenderer.ts
+### 2. aiSkinGenerator.ts ✨
+
+**목적**: Claude Haiku 4.5 AI를 사용하여 Trait 기반 픽셀 아트 스킨 자동 생성
+
+**주요 함수**:
+- `generateAISkin(traits, apiKey, hasCCIPAttestation)`: AI 스킨 생성 파이프라인
+- `traitsToPrompt(traits)`: Trait를 AI 프롬프트로 변환
+- `generateColorScheme(prompt, apiKey)`: Claude API로 색상 스킴 생성
+- `renderSkinFromColorScheme(colorScheme)`: 64x64 Canvas 렌더링
+- `renderGoldenCrown(ctx)`: CCIP attestation용 황금 왕관 렌더링
+- `fillRectWithDithering()`: 디더링 픽셀 아트 효과
+
+**특징**:
+- **서버 전용**: API 키 보안을 위해 API Routes에서만 실행
+- **UV 매핑 정확도**: 64x64 Minecraft 텍스처 레이아웃 완벽 지원
+- **디더링 효과**: 하이라이트/쉐도우 색상으로 3D 깊이감 표현
+- **CCIP 통합**: attestation 보유자에게 Golden Crown 추가
+
+**의존성**:
+- `@anthropic-ai/sdk`: Claude API 클라이언트
+- `@napi-rs/canvas`: 서버사이드 Canvas API
+- `traitGenerator`: Trait 데이터 및 스타일
+
+**호출자**:
+- `/api/skin/[address]`: 스킨 생성 API
+
+---
+
+### 3. db/supabase.ts 💾
+
+**목적**: Supabase 데이터베이스 클라이언트 및 스킨 데이터 관리
+
+**주요 함수**:
+- `getSkinByAddress(address)`: 주소로 스킨 조회 (캐시)
+- `saveSkin(address, skinData)`: 스킨 데이터 저장
+- `deleteSkin(address)`: 스킨 삭제 (개발용)
+
+**스키마**:
+```sql
+CREATE TABLE skins (
+  id SERIAL PRIMARY KEY,
+  address TEXT UNIQUE NOT NULL,
+  skin_data TEXT NOT NULL,  -- Base64 PNG
+  created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+**의존성**:
+- `@supabase/supabase-js`: Supabase 클라이언트
+- 환경변수: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+
+**호출자**:
+- `/api/skin/[address]`: 캐시 조회 및 저장
+- `/api/dev/delete-skin/[address]`: 삭제 (개발용)
+
+---
+
+### 4. skinRenderer.ts
 
 **목적**: Three.js를 사용하여 마인크래프트 스킨 텍스처 생성 및 3D 렌더링
 
@@ -441,7 +571,7 @@ minecraft-pfp/
 
 ---
 
-### 3. mintPipeline.ts
+### 5. mintPipeline.ts
 
 **목적**: 전체 민팅 프로세스를 순차적으로 실행하는 오케스트레이터
 
@@ -470,7 +600,7 @@ minecraft-pfp/
 
 ---
 
-### 4. gifGenerator.ts
+### 6. gifGenerator.ts
 
 **목적**: 캡처된 프레임들을 GIF로 인코딩
 
@@ -487,7 +617,7 @@ minecraft-pfp/
 
 ---
 
-### 5. ipfs.ts
+### 7. ipfs.ts
 
 **목적**: Pinata를 통한 IPFS 업로드 및 조회
 
@@ -507,7 +637,7 @@ minecraft-pfp/
 
 ---
 
-### 6. MinecraftPFPWithWealth.sol
+### 8. MinecraftPFPWithWealth.sol
 
 **목적**: ERC721 NFT 컨트랙트 + 자산 기반 특별 아이템
 
@@ -531,7 +661,7 @@ minecraft-pfp/
 
 ---
 
-### 7. TraitGenerator.sol
+### 9. TraitGenerator.sol
 
 **목적**: 주소 기반 결정론적 트레잇 생성 (온체인)
 
@@ -546,32 +676,88 @@ minecraft-pfp/
 
 ---
 
+### 10. NFTOwnershipVerifier.sol (Sepolia) 🌉
+
+**목적**: Sepolia에서 NFT 소유권을 검증하고 CCIP 메시지를 Monad로 전송
+
+**주요 기능**:
+- `verifyAndSend(nftContract, monadAddress)`: NFT 소유 확인 후 CCIP 메시지 전송
+- `_buildCCIPMessage(monadAddress)`: CCIP 메시지 구성
+- `withdrawToken(beneficiary, token)`: LINK 토큰 인출
+
+**CCIP 설정**:
+- Router: Sepolia CCIP Router
+- Destination: Monad Testnet Chain Selector
+- Fees: LINK 토큰으로 결제
+
+**의존성**:
+- `@chainlink/contracts-ccip`: CCIP 인터페이스
+- LINK 토큰 (Sepolia)
+
+---
+
+### 11. MonadCCIPReceiver.sol (Monad) 🌉
+
+**목적**: Monad에서 CCIP 메시지를 수신하고 attestation 기록
+
+**주요 기능**:
+- `ccipReceive(message)`: CCIP 메시지 수신 및 attestation 저장
+- `hasAttestation(address)`: 주소의 attestation 여부 확인
+- `getAttestationTimestamp(address)`: attestation 시점 조회
+
+**스토리지**:
+```solidity
+mapping(address => bool) public attestations;
+mapping(address => uint256) public attestationTimestamps;
+```
+
+**의존성**:
+- `@chainlink/contracts-ccip`: CCIPReceiver 베이스
+- `@openzeppelin/contracts`: Ownable
+
+**특전**:
+- Golden Crown: AI 스킨 생성 시 황금 왕관 렌더링
+
+---
+
 ## 기술 스택
+
+### AI & Backend
+- **AI Engine**: Anthropic Claude Haiku 4.5 (AI 스킨 생성)
+- **Database**: Supabase (PostgreSQL)
+- **Server-side Rendering**: @napi-rs/canvas (Node.js Canvas API)
+- **Runtime**: Next.js API Routes (서버리스)
 
 ### Frontend
 - **Framework**: Next.js 14 (App Router)
 - **UI Library**: React 18
-- **Styling**: Tailwind CSS
-- **3D Rendering**: Three.js + @react-three/fiber
-- **State Management**: React Hooks
+- **Styling**: Tailwind CSS + clsx + tailwind-merge
+- **3D Rendering**: Three.js, @react-three/fiber, @react-three/drei
+- **Minecraft Viewer**: skinview3d
+- **State Management**: TanStack Query (React Query)
 
 ### Web3
 - **Wallet Connection**: RainbowKit 2.0
 - **Contract Interaction**: Wagmi 2.0, Viem 2.0
-- **Blockchain**: Monad Testnet (EVM-compatible)
+- **Networks**:
+  - Monad Testnet (메인)
+  - Ethereum Sepolia Testnet (CCIP)
 
 ### Smart Contracts
 - **Language**: Solidity 0.8.20
 - **Framework**: Hardhat
-- **Libraries**: OpenZeppelin Contracts 5.0
+- **Libraries**:
+  - OpenZeppelin Contracts 5.0
+  - Chainlink Contracts (Price Feeds, CCIP)
 - **Oracle**: Chainlink Price Feeds
+- **Cross-chain**: Chainlink CCIP
 
 ### Storage
-- **Decentralized Storage**: IPFS
-- **Provider**: Pinata
+- **Database**: Supabase (스킨 캐싱)
+- **File Storage**: Supabase Storage (옵션)
 
 ### Media Processing
-- **Image Processing**: Canvas API
+- **Image Processing**: @napi-rs/canvas (서버), Canvas API (클라이언트)
 - **GIF Encoding**: gif.js
 - **3D Graphics**: Three.js
 
@@ -581,21 +767,30 @@ minecraft-pfp/
 
 ```env
 # Blockchain
-PRIVATE_KEY=                        # 배포자 개인 키
-MONAD_TESTNET_RPC_URL=              # Monad Testnet RPC
-SEPOLIA_RPC_URL=                    # Sepolia RPC (테스트용)
-MAINNET_RPC_URL=                    # Mainnet RPC (프로덕션)
+PRIVATE_KEY=                              # 배포자 개인 키
+MONAD_TESTNET_RPC_URL=                    # Monad Testnet RPC
+SEPOLIA_RPC_URL=                          # Sepolia RPC (CCIP용)
+
+# AI
+ANTHROPIC_API_KEY=                        # Anthropic Claude API 키
+
+# Database (Supabase)
+NEXT_PUBLIC_SUPABASE_URL=                 # Supabase 프로젝트 URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=            # Supabase 익명 키
+SUPABASE_SERVICE_ROLE_KEY=                # Supabase 서비스 롤 키 (서버 전용)
+
+# Contract Addresses
+NEXT_PUBLIC_CONTRACT_ADDRESS=             # MinecraftPFP 컨트랙트 (Monad)
+NEXT_PUBLIC_SEPOLIA_VERIFIER_ADDRESS=     # NFTOwnershipVerifier (Sepolia)
+NEXT_PUBLIC_MONAD_RECEIVER_ADDRESS=       # MonadCCIPReceiver (Monad)
 
 # Contract Verification
-MONAD_API_KEY=                      # Monad Explorer API 키
-ETHERSCAN_API_KEY=                  # Etherscan API 키
+MONAD_API_KEY=                            # Monad Explorer API 키
+ETHERSCAN_API_KEY=                        # Etherscan API 키
 
-# IPFS
-NEXT_PUBLIC_PINATA_JWT=             # Pinata JWT 토큰
-NEXT_PUBLIC_PINATA_GATEWAY=         # Pinata 게이트웨이 URL
-
-# Deployed Contract
-NEXT_PUBLIC_CONTRACT_ADDRESS=       # 배포된 컨트랙트 주소
+# CCIP (선택)
+SEPOLIA_CCIP_ROUTER=                      # Sepolia CCIP Router 주소
+MONAD_CHAIN_SELECTOR=                     # Monad Chain Selector
 ```
 
 ---

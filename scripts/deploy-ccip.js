@@ -1,6 +1,6 @@
-import { ethers } from "hardhat";
-import * as fs from "fs";
-import * as path from "path";
+const { ethers } = require("hardhat");
+const fs = require("fs");
+const path = require("path");
 
 /**
  * CCIP 컨트랙트 배포 스크립트
@@ -12,23 +12,6 @@ import * as path from "path";
  * 4. 신뢰할 수 있는 Verifier 설정
  * 5. MinecraftPFP에 CCIPReceiver 연결
  */
-
-interface DeploymentInfo {
-  sepolia: {
-    verifier: string;
-    ccipRouter: string;
-    supportedNFT: string;
-    chainSelector: string;
-  };
-  monad: {
-    receiver: string;
-    ccipRouter: string;
-    minecraftPFP: string;
-    chainSelector: string;
-  };
-  timestamp: string;
-  network: string;
-}
 
 async function main() {
   console.log("🚀 CCIP Deployment Starting...\n");
@@ -43,10 +26,10 @@ async function main() {
 
   // 환경 변수 확인
   const SEPOLIA_CCIP_ROUTER = process.env.SEPOLIA_CCIP_ROUTER;
-  const MONAD_CCIP_ROUTER = process.env.MONAD_CCIP_ROUTER;
-  const SEPOLIA_NFT_CONTRACT = process.env.SEPOLIA_NFT_CONTRACT;
+  const MONAD_CCIP_ROUTER = process.env.NEXT_PUBLIC_MONAD_CCIP_ROUTER;
+  const SEPOLIA_NFT_CONTRACT = process.env.NEXT_PUBLIC_SEPOLIA_NFT_CONTRACT;
   const SEPOLIA_CHAIN_SELECTOR = process.env.SEPOLIA_CHAIN_SELECTOR;
-  const MONAD_CHAIN_SELECTOR = process.env.MONAD_CHAIN_SELECTOR;
+  const MONAD_CHAIN_SELECTOR = process.env.NEXT_PUBLIC_MONAD_CHAIN_SELECTOR;
   const MINECRAFT_PFP_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 
   // Sepolia에 배포하는 경우
@@ -55,7 +38,7 @@ async function main() {
       throw new Error("SEPOLIA_CCIP_ROUTER not set in environment");
     }
     if (!SEPOLIA_NFT_CONTRACT) {
-      throw new Error("SEPOLIA_NFT_CONTRACT not set in environment");
+      throw new Error("NEXT_PUBLIC_SEPOLIA_NFT_CONTRACT not set in environment");
     }
 
     console.log("========================================");
@@ -82,7 +65,7 @@ async function main() {
     console.log(`✅ NFT ${SEPOLIA_NFT_CONTRACT} added\n`);
 
     // 배포 정보 저장
-    const deployment: Partial<DeploymentInfo> = {
+    const deployment = {
       sepolia: {
         verifier: verifierAddress,
         ccipRouter: SEPOLIA_CCIP_ROUTER,
@@ -102,7 +85,7 @@ async function main() {
     console.log("1. Update .env with:");
     console.log(`   NEXT_PUBLIC_SEPOLIA_VERIFIER_ADDRESS=${verifierAddress}`);
     console.log("2. Deploy MonadCCIPReceiver to Monad Testnet");
-    console.log("3. Run: npx hardhat run scripts/deploy-ccip.ts --network monad\n");
+    console.log("3. Run: npx hardhat run scripts/deploy-ccip.js --network monad\n");
   }
 
   // Monad에 배포하는 경우
@@ -170,7 +153,7 @@ async function main() {
     console.log(`✅ CCIPReceiver connected\n`);
 
     // 배포 정보 저장
-    const deployment: Partial<DeploymentInfo> = {
+    const deployment = {
       monad: {
         receiver: receiverAddress,
         ccipRouter: MONAD_CCIP_ROUTER,
@@ -201,7 +184,7 @@ async function main() {
 /**
  * 배포 정보 저장
  */
-function saveDeployment(deployment: Partial<DeploymentInfo>, network: string) {
+function saveDeployment(deployment, network) {
   const deploymentsDir = path.join(__dirname, "..", "deployments");
 
   // deployments 디렉토리가 없으면 생성
@@ -216,7 +199,7 @@ function saveDeployment(deployment: Partial<DeploymentInfo>, network: string) {
 /**
  * 배포 정보 로드
  */
-function loadDeployment(network: string): Partial<DeploymentInfo> | null {
+function loadDeployment(network) {
   const deploymentsDir = path.join(__dirname, "..", "deployments");
   const filename = path.join(deploymentsDir, `ccip-${network}.json`);
 

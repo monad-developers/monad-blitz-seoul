@@ -534,11 +534,62 @@ function renderSkinFromColorScheme(colorScheme: ColorScheme): string {
 }
 
 /**
+ * 골든 크라운 렌더링 함수
+ * CCIP 크로스체인 attestation을 가진 사용자를 위한 특수 시각 요소
+ */
+function renderGoldenCrown(ctx: any) {
+    const GOLD = '#FFD700';
+    const DARK_GOLD = '#DAA520';
+    const LIGHT_GOLD = '#FFEC8B';
+
+    // Minecraft UV 좌표: Head Overlay (40, 8) ~ (48, 16)
+    const crownPixels = [
+        // 하단 (y=15)
+        { x: 41, y: 15, color: DARK_GOLD },
+        { x: 42, y: 15, color: GOLD },
+        { x: 43, y: 15, color: GOLD },
+        { x: 44, y: 15, color: GOLD },
+        { x: 45, y: 15, color: GOLD },
+        { x: 46, y: 15, color: DARK_GOLD },
+
+        // 중간 (y=14)
+        { x: 41, y: 14, color: GOLD },
+        { x: 42, y: 14, color: LIGHT_GOLD },
+        { x: 43, y: 14, color: GOLD },
+        { x: 44, y: 14, color: GOLD },
+        { x: 45, y: 14, color: LIGHT_GOLD },
+        { x: 46, y: 14, color: GOLD },
+
+        // 윗부분 (y=13)
+        { x: 42, y: 13, color: GOLD },
+        { x: 43, y: 13, color: LIGHT_GOLD },
+        { x: 44, y: 13, color: LIGHT_GOLD },
+        { x: 45, y: 13, color: GOLD },
+
+        // 뾰족한 부분 (y=12)
+        { x: 42, y: 12, color: LIGHT_GOLD },
+        { x: 45, y: 12, color: LIGHT_GOLD },
+
+        // 정상 (y=11)
+        { x: 42, y: 11, color: GOLD },
+        { x: 45, y: 11, color: GOLD },
+    ];
+
+    crownPixels.forEach(({ x, y, color }) => {
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, 1, 1);
+    });
+
+    console.log('✨ Golden Crown rendered at Head Overlay');
+}
+
+/**
  * AI 기반 스킨 생성 메인 함수
  */
 export async function generateAISkin(
     traits: SkinTraits,
-    apiKey: string
+    apiKey: string,
+    hasCCIPAttestation: boolean = false
 ): Promise<string> {
     if (!apiKey) {
         throw new Error('ANTHROPIC_API_KEY is not configured');
@@ -557,9 +608,44 @@ export async function generateAISkin(
         const skinDataUrl = renderSkinFromColorScheme(colorScheme);
         console.log('[AI Skin] Skin texture rendered successfully');
 
+        // 4. CCIP 특수 요소 렌더링
+        if (hasCCIPAttestation) {
+            console.log('🌟 Rendering CCIP special visual: Golden Crown');
+
+            // Base64 데이터를 Canvas로 다시 로드하여 수정
+            const img = await loadImageFromDataUrl(skinDataUrl);
+            const canvas = createCanvas(64, 64);
+            const ctx = canvas.getContext('2d');
+
+            // 기존 스킨 그리기
+            ctx.drawImage(img, 0, 0);
+
+            // 골든 크라운 추가
+            renderGoldenCrown(ctx);
+
+            // 새로운 Base64로 변환
+            const buffer = canvas.toBuffer('image/png');
+            return `data:image/png;base64,${buffer.toString('base64')}`;
+        }
+
         return skinDataUrl;
     } catch (error) {
         console.error('[AI Skin] Generation failed:', error);
         throw error;
     }
+}
+
+/**
+ * Data URL로부터 이미지 로드 헬퍼 함수
+ */
+async function loadImageFromDataUrl(dataUrl: string): Promise<any> {
+    const { Image } = await import('@napi-rs/canvas');
+    const img = new Image();
+
+    // Base64 데이터 추출
+    const base64Data = dataUrl.replace(/^data:image\/png;base64,/, '');
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    img.src = buffer;
+    return img;
 }

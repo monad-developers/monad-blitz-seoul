@@ -2,7 +2,7 @@
 
 ## 문제 설명
 
-기존 코드에서는 CCIP 메시지 전송 후 **트랜잭션 해시**를 CCIP messageId로 저장했습니다. 하지만 실제 CCIP messageId는 **CCIP Router의 CCIPSent 이벤트**에서 발생하는 별도의 값입니다.
+기존 코드에서는 CCIP 메시지 전송 후 **트랜잭션 해시**를 CCIP messageId로 저장했습니다. 하지만 실제 CCIP messageId는 **CCIP Router의 CCIPSendRequested 이벤트**에서 발생하는 별도의 값입니다.
 
 ### 차이점
 - **트랜잭션 해시**: 0x로 시작하고 64자 (Sepolia에서 발생)
@@ -23,8 +23,8 @@ pnpm add:ccip-record
 **대화형 프로세스:**
 1. Sepolia 트랜잭션 해시 입력
 2. 트랜잭션 정보 자동 추출:
-   - ✅ CCIP messageId (CCIPSent 이벤트에서)
-   - ✅ Attestation ID (함수 input에서)
+   - ✅ CCIP messageId (CCIPSendRequested 이벤트에서)
+   - ✅ Attestation ID (AttestationBridged 이벤트에서)
    - ✅ Monad Address (트랜잭션 from 주소)
 3. 수동 입력 필요:
    - 📝 Sepolia NFT 컨트랙트 주소
@@ -44,7 +44,8 @@ $ pnpm add:ccip-record
    To: 0xABCD...
 
 📋 Receipt 조회 중...
-✅ CCIPSent 이벤트 found
+✅ AttestationBridged 이벤트 found
+   Attestation ID: 0x5678...
    Message ID: 0x1a2b3c4d...
    Receiver: 0xXYZ...
 
@@ -82,7 +83,7 @@ pnpm migrate:ccip-message-ids
 이 스크립트는:
 1. 데이터베이스의 모든 `ccip_attestations` 레코드를 조회
 2. 각 트랜잭션 해시를 사용하여 Sepolia RPC에서 receipt 조회
-3. CCIPSent 이벤트에서 실제 CCIP messageId 추출
+3. CCIPSendRequested 이벤트에서 실제 CCIP messageId 추출
 4. 데이터베이스의 `ccip_message_id` 컬럼 업데이트
 
 ### 3. 진행 상황 확인 (마이그레이션 스크립트)
@@ -138,7 +139,7 @@ curl "http://localhost:3000/api/ccip/monitor/0x<실제_CCIP_messageId>"
 
 ### 2. SepoliaNFTVerification.tsx 수정
 - **이전**: `bridgeHash`를 CCIP messageId로 직접 사용
-- **이후**: CCIPSent 이벤트에서 실제 CCIP messageId 추출 후 저장
+- **이후**: CCIPSendRequested 이벤트에서 실제 CCIP messageId 추출 후 저장
 
 ### 3. 마이그레이션 스크립트 추가
 - `scripts/migrate-ccip-message-ids.ts`: 기존 데이터 자동 업데이트
@@ -149,7 +150,7 @@ curl "http://localhost:3000/api/ccip/monitor/0x<실제_CCIP_messageId>"
 - **원인**: RPC 노드 지연 또는 트랜잭션이 삭제됨
 - **해결**: 나중에 다시 실행하거나 RPC URL 확인
 
-### "CCIPSent 이벤트를 찾을 수 없습니다"
+### "CCIPSendRequested 이벤트를 찾을 수 없습니다"
 - **원인**: 컨트랙트 배포 후 트랜잭션이 실패한 경우
 - **해결**: 트랜잭션 receipt 수동 확인 후 messageId 직접 입력
 

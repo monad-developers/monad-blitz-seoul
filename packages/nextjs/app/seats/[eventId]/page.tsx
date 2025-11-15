@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Event, Seat } from "../../../types/ticket";
+import { EventUI, Seat } from "../../../types/ticket";
 import { EventRepository } from "../../../repositories/EventRepository";
 import { SeatRepository } from "../../../repositories/SeatRepository";
+import { formatEther } from "viem";
 import { SeatMap } from "../../../components/ticketing/SeatMap";
 import { ArrowLeftIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
@@ -14,7 +15,7 @@ export default function SeatsPage() {
   const router = useRouter();
   const eventId = params.eventId as string;
 
-  const [event, setEvent] = useState<Event | null>(null);
+  const [event, setEvent] = useState<EventUI | null>(null);
   const [seats, setSeats] = useState<Seat[]>([]);
   const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,8 +72,10 @@ export default function SeatsPage() {
     }
   };
 
-  const selectedSeatObjects = seats.filter(seat => selectedSeats.includes(seat.id));
-  const totalPrice = selectedSeatObjects.reduce((sum, seat) => sum + seat.price, 0);
+  const selectedSeatObjects = seats.filter(seat => selectedSeats.includes(seat.seatId));
+  const totalPrice = selectedSeatObjects.reduce((sum, seat) => {
+    return sum + parseFloat(formatEther(seat.price));
+  }, 0);
 
   if (loading) {
     return (
@@ -100,10 +103,10 @@ export default function SeatsPage() {
         </div>
 
         <div className="mb-8 glass-card p-6">
-          <h1 className="text-4xl font-bold mb-2 monad-gradient-text">{event.title}</h1>
+          <h1 className="text-4xl font-bold mb-2 monad-gradient-text">{event.name}</h1>
           <p className="text-base-content/80 font-mono text-sm">{event.location}</p>
           <p className="text-sm text-base-content/60 font-mono">
-            {new Date(event.date).toLocaleDateString("ko-KR", {
+            {new Date(Number(event.eventDate) * 1000).toLocaleDateString("ko-KR", {
               year: "numeric",
               month: "long",
               day: "numeric",
@@ -129,11 +132,11 @@ export default function SeatsPage() {
                   <div className="space-y-2">
                     <div className="max-h-60 overflow-y-auto space-y-1">
                       {selectedSeatObjects.map(seat => (
-                        <div key={seat.id} className="flex justify-between text-sm glass-button p-2 rounded">
-                          <span className="font-mono">
-                            {seat.section}-{seat.row}-{seat.number}
+                        <div key={seat.seatId} className="flex justify-between text-sm glass-button p-2 rounded">
+                          <span className="font-mono">{seat.seatId}</span>
+                          <span className="font-semibold font-mono">
+                            {parseFloat(formatEther(seat.price)).toFixed(4)} ETH
                           </span>
-                          <span className="font-semibold font-mono">{seat.price} ETH</span>
                         </div>
                       ))}
                     </div>

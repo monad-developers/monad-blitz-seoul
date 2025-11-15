@@ -1,105 +1,179 @@
-import { Event } from "../types/ticket";
+import { EventUI } from "../types/ticket";
+import deployedContracts from "../contracts/deployedContracts";
+import { createPublicClient, http, formatEther } from "viem";
+import { hardhat } from "viem/chains";
 
-const MOCK_EVENTS: Event[] = [
+// Hardcoded UI enhancements for events
+const EVENT_UI_DATA: Record<
+  string,
   {
-    id: "evt-001",
-    title: "Monad Developer Conference 2025",
-    description: "Join us for the biggest Monad developer conference of the year. Learn about the latest developments in blockchain technology.",
-    date: "2025-12-15T19:00:00Z",
-    location: "Seoul Convention Center",
-    imageUrl: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800",
-    price: 0.05,
-    totalSeats: 500,
-    availableSeats: 342,
-    category: "Conference",
-  },
-  {
-    id: "evt-002",
-    title: "K-POP Live Concert: NOVA",
-    description: "Experience the electrifying performance of NOVA, the hottest K-POP group of 2025.",
-    date: "2025-11-20T18:00:00Z",
-    location: "Olympic Stadium",
+    description: string;
+    location: string;
+    imageUrl: string;
+    category: string;
+  }
+> = {
+  "BTS World Tour - Seoul": {
+    description: "Experience the electrifying performance of BTS, the biggest K-POP group in the world.",
+    location: "Olympic Stadium, Seoul",
     imageUrl: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800",
-    price: 0.08,
-    totalSeats: 1000,
-    availableSeats: 156,
     category: "Concert",
   },
-  {
-    id: "evt-003",
-    title: "Web3 Gaming Summit",
-    description: "Explore the future of gaming with blockchain technology. Network with industry leaders.",
-    date: "2025-11-25T10:00:00Z",
-    location: "COEX Hall A",
-    imageUrl: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800",
-    price: 0.03,
-    totalSeats: 300,
-    availableSeats: 287,
-    category: "Gaming",
+  "IU Love Poem Concert": {
+    description: "Join IU for an intimate concert featuring her greatest hits and new songs.",
+    location: "KSPO Dome, Seoul",
+    imageUrl: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800",
+    category: "Concert",
   },
-  {
-    id: "evt-004",
-    title: "NFT Art Exhibition",
-    description: "Discover the most innovative NFT artworks from renowned digital artists worldwide.",
-    date: "2025-12-01T14:00:00Z",
-    location: "Seoul Art Museum",
-    imageUrl: "https://images.unsplash.com/photo-1536924940846-227afb31e2a5?w=800",
-    price: 0.02,
-    totalSeats: 200,
-    availableSeats: 95,
-    category: "Art",
+  "Monad Rock Festival 2025": {
+    description: "Three days of non-stop rock music featuring the best bands from around the world.",
+    location: "Nanji Hangang Park, Seoul",
+    imageUrl: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800",
+    category: "Festival",
   },
-  {
-    id: "evt-005",
-    title: "DeFi Investment Workshop",
-    description: "Learn advanced DeFi strategies from top traders and protocol developers.",
-    date: "2025-11-30T13:00:00Z",
-    location: "Gangnam Business Center",
-    imageUrl: "https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800",
-    price: 0.04,
-    totalSeats: 150,
-    availableSeats: 78,
-    category: "Workshop",
+  "Monad Jazz Night": {
+    description: "An intimate evening of smooth jazz in a cozy venue with world-class musicians.",
+    location: "Blue Note Seoul",
+    imageUrl: "https://images.unsplash.com/photo-1415201364774-f6f0bb35f28f?w=800",
+    category: "Concert",
   },
-  {
-    id: "evt-006",
-    title: "Blockchain Security Conference",
-    description: "Deep dive into blockchain security, smart contract auditing, and best practices.",
-    date: "2025-12-10T09:00:00Z",
-    location: "Tech Hub Seoul",
-    imageUrl: "https://images.unsplash.com/photo-1563986768609-322da13575f3?w=800",
-    price: 0.06,
-    totalSeats: 400,
-    availableSeats: 221,
+  "Monad Developer Conference 2025": {
+    description: "Join us for the biggest Monad developer conference. Learn about blockchain technology and network with industry leaders.",
+    location: "COEX Convention Center, Seoul",
+    imageUrl: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800",
     category: "Conference",
   },
-];
+};
+
+// Get the contract ABI and address
+const getContractConfig = () => {
+  const chainId = hardhat.id;
+  const contracts = deployedContracts as any;
+
+  if (!contracts[chainId]?.MonadTicketSale) {
+    throw new Error("MonadTicketSale contract not found in deployedContracts");
+  }
+
+  return {
+    address: contracts[chainId].MonadTicketSale.address as `0x${string}`,
+    abi: contracts[chainId].MonadTicketSale.abi,
+  };
+};
+
+// Create a public client for reading contract data
+const publicClient = createPublicClient({
+  chain: hardhat,
+  transport: http(),
+});
 
 export class EventRepository {
-  static async getAllEvents(): Promise<Event[]> {
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 300));
-    return [...MOCK_EVENTS];
+  static async getAllEvents(): Promise<EventUI[]> {
+    try {
+      const { address, abi } = getContractConfig();
+
+      // Call getAllEvents from contract
+      const events = (await publicClient.readContract({
+        address,
+        abi,
+        functionName: "getAllEvents",
+      })) as any[];
+
+      // Transform contract events to UI events with hardcoded data
+      const eventsUI: EventUI[] = await Promise.all(
+        events.map(async event => {
+          // Get tiers to find minimum price
+          const tiers = (await publicClient.readContract({
+            address,
+            abi,
+            functionName: "getEventTiers",
+            args: [event.eventId],
+          })) as any[];
+
+          const minPriceBigInt = tiers.reduce((min, tier) => (tier.price < min ? tier.price : min), tiers[0]?.price || 0n);
+          const minPrice = parseFloat(formatEther(minPriceBigInt));
+
+          const uiData = EVENT_UI_DATA[event.name] || {
+            description: "An amazing event you won't want to miss!",
+            location: "Seoul, South Korea",
+            imageUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800",
+            category: "Event",
+          };
+
+          return {
+            ...event,
+            ...uiData,
+            minPrice,
+          };
+        }),
+      );
+
+      return eventsUI;
+    } catch (error) {
+      console.error("Failed to fetch events from contract:", error);
+      // Return empty array on error
+      return [];
+    }
   }
 
-  static async getEventById(id: string): Promise<Event | null> {
-    await new Promise(resolve => setTimeout(resolve, 200));
-    return MOCK_EVENTS.find(event => event.id === id) || null;
+  static async getEventById(id: string): Promise<EventUI | null> {
+    try {
+      const eventId = BigInt(id);
+      const { address, abi } = getContractConfig();
+
+      const event = (await publicClient.readContract({
+        address,
+        abi,
+        functionName: "events",
+        args: [eventId],
+      })) as any;
+
+      if (!event || event.eventId === 0n) {
+        return null;
+      }
+
+      // Get tiers to find minimum price
+      const tiers = (await publicClient.readContract({
+        address,
+        abi,
+        functionName: "getEventTiers",
+        args: [eventId],
+      })) as any[];
+
+      const minPriceBigInt = tiers.reduce((min, tier) => (tier.price < min ? tier.price : min), tiers[0]?.price || 0n);
+      const minPrice = parseFloat(formatEther(minPriceBigInt));
+
+      const uiData = EVENT_UI_DATA[event.name] || {
+        description: "An amazing event you won't want to miss!",
+        location: "Seoul, South Korea",
+        imageUrl: "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=800",
+        category: "Event",
+      };
+
+      return {
+        ...event,
+        ...uiData,
+        minPrice,
+      };
+    } catch (error) {
+      console.error("Failed to fetch event:", error);
+      return null;
+    }
   }
 
-  static async getEventsByCategory(category: string): Promise<Event[]> {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    return MOCK_EVENTS.filter(event => event.category === category);
+  static async getEventsByCategory(category: string): Promise<EventUI[]> {
+    const allEvents = await this.getAllEvents();
+    return allEvents.filter(event => event.category === category);
   }
 
-  static async searchEvents(query: string): Promise<Event[]> {
-    await new Promise(resolve => setTimeout(resolve, 300));
+  static async searchEvents(query: string): Promise<EventUI[]> {
+    const allEvents = await this.getAllEvents();
     const lowerQuery = query.toLowerCase();
-    return MOCK_EVENTS.filter(
+    return allEvents.filter(
       event =>
-        event.title.toLowerCase().includes(lowerQuery) ||
+        event.name.toLowerCase().includes(lowerQuery) ||
         event.description.toLowerCase().includes(lowerQuery) ||
-        event.category.toLowerCase().includes(lowerQuery),
+        event.category.toLowerCase().includes(lowerQuery) ||
+        event.location.toLowerCase().includes(lowerQuery),
     );
   }
 }

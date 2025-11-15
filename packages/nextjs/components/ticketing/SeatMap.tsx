@@ -27,7 +27,7 @@ export const SeatMap = ({ seats, selectedSeats, onSeatSelect }: SeatMapProps) =>
   );
 
   const getSeatColor = (seat: Seat) => {
-    if (selectedSeats.includes(seat.id)) {
+    if (selectedSeats.includes(seat.seatId)) {
       return "monad-gradient text-white hover:monad-glow";
     }
     if (seat.status === "sold") {
@@ -41,7 +41,7 @@ export const SeatMap = ({ seats, selectedSeats, onSeatSelect }: SeatMapProps) =>
 
   const handleSeatClick = (seat: Seat) => {
     if (seat.status === "available") {
-      onSeatSelect(seat.id);
+      onSeatSelect(seat.seatId);
     }
   };
 
@@ -123,11 +123,11 @@ export const SeatMap = ({ seats, selectedSeats, onSeatSelect }: SeatMapProps) =>
                           .sort((a, b) => a.number - b.number)
                           .map(seat => (
                             <button
-                              key={seat.id}
+                              key={seat.seatId}
                               onClick={() => handleSeatClick(seat)}
                               disabled={seat.status !== "available"}
                               className={`w-8 h-8 rounded text-xs font-bold font-mono transition-all ${getSeatColor(seat)}`}
-                              title={`Section ${seat.section}, Row ${seat.row}, Seat ${seat.number} - ${seat.price} ETH`}
+                              title={`${seat.seatId}`}
                             >
                               {seat.number}
                             </button>

@@ -1,16 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Event } from "../../types/ticket";
+import { EventUI } from "../../types/ticket";
 import { EventRepository } from "../../repositories/EventRepository";
 import { EventCard } from "../../components/ticketing/EventCard";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 
-const CATEGORIES = ["All", "Conference", "Concert", "Gaming", "Art", "Workshop"];
+const CATEGORIES = ["All", "Conference", "Concert", "Festival"];
 
 export default function EventsPage() {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
+  const [events, setEvents] = useState<EventUI[]>([]);
+  const [filteredEvents, setFilteredEvents] = useState<EventUI[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");

@@ -1,97 +1,122 @@
 import { Seat, Reservation } from "../types/ticket";
+import deployedContracts from "../contracts/deployedContracts";
+import { createPublicClient, http, formatEther } from "viem";
+import { hardhat } from "viem/chains";
 
-const MOCK_SEATS: Record<string, Seat[]> = {};
+// Get the contract ABI and address
+const getContractConfig = () => {
+  const chainId = hardhat.id;
+  const contracts = deployedContracts as any;
 
-const generateSeatsForEvent = (eventId: string, totalSeats: number): Seat[] => {
-  if (MOCK_SEATS[eventId]) {
-    return MOCK_SEATS[eventId];
+  if (!contracts[chainId]?.MonadTicketSale) {
+    throw new Error("MonadTicketSale contract not found in deployedContracts");
   }
 
-  const seats: Seat[] = [];
-  const sections = ["VIP", "A", "B", "C"];
-  const seatsPerSection = Math.ceil(totalSeats / sections.length);
-  const prices: Record<string, number> = {
-    VIP: 0.1,
-    A: 0.08,
-    B: 0.05,
-    C: 0.03,
+  return {
+    address: contracts[chainId].MonadTicketSale.address as `0x${string}`,
+    abi: contracts[chainId].MonadTicketSale.abi,
   };
+};
 
-  let seatId = 1;
+// Create a public client for reading contract data
+const publicClient = createPublicClient({
+  chain: hardhat,
+  transport: http(),
+});
 
-  sections.forEach(section => {
-    const rowsInSection = Math.ceil(seatsPerSection / 10);
+// Parse seat ID to extract section, row, and number
+// Format: "VIP-A01", "STD-B02", etc.
+const parseSeatId = (seatId: string): { section: string; row: number; number: number } => {
+  // Extract section (e.g., "VIP", "STD", "ECO")
+  const parts = seatId.split("-");
+  const section = parts[0] || "A";
 
-    for (let row = 1; row <= rowsInSection; row++) {
-      for (let num = 1; num <= 10; num++) {
-        if (seatId > totalSeats) break;
+  // Extract row and number from second part (e.g., "A01" -> row: A=1, num: 01)
+  const seatPart = parts[1] || "A01";
+  const rowLetter = seatPart.charAt(0);
+  const row = rowLetter.charCodeAt(0) - 64; // A=1, B=2, etc.
+  const number = parseInt(seatPart.substring(1)) || 1;
 
-        const randomStatus = Math.random();
-        let status: "available" | "reserved" | "sold" = "available";
-
-        if (randomStatus < 0.2) {
-          status = "sold";
-        } else if (randomStatus < 0.3) {
-          status = "reserved";
-        }
-
-        seats.push({
-          id: `${eventId}-seat-${seatId}`,
-          eventId,
-          section,
-          row,
-          number: num,
-          price: prices[section],
-          status,
-        });
-
-        seatId++;
-      }
-    }
-  });
-
-  MOCK_SEATS[eventId] = seats;
-  return seats;
+  return { section, row, number };
 };
 
 const MOCK_RESERVATIONS: Map<string, Reservation> = new Map();
 
 export class SeatRepository {
   static async getSeatsByEventId(eventId: string): Promise<Seat[]> {
-    await new Promise(resolve => setTimeout(resolve, 300));
+    try {
+      const eventIdBigInt = BigInt(eventId);
+      const { address, abi } = getContractConfig();
 
-    if (!MOCK_SEATS[eventId]) {
-      generateSeatsForEvent(eventId, 500);
+      // Get all seats with status from contract
+      const result = (await publicClient.readContract({
+        address,
+        abi,
+        functionName: "getEventAllSeatsWithStatus",
+        args: [eventIdBigInt],
+      })) as any;
+
+      const [seatIds, tokenIds, owners, availabilities, prices, tierIds] = result;
+
+      // Transform to Seat objects
+      const seats: Seat[] = seatIds.map((seatId: string, index: number) => {
+        const { section, row, number } = parseSeatId(seatId);
+        const owner = owners[index] as string;
+        const isAvailable = availabilities[index] as boolean;
+
+        // Determine status based on owner
+        let status: "available" | "reserved" | "sold" = "available";
+        if (!isAvailable) {
+          status = "sold";
+        }
+
+        return {
+          seatId,
+          tokenId: tokenIds[index],
+          eventId: eventIdBigInt,
+          tierId: tierIds[index],
+          owner,
+          isAvailable,
+          price: prices[index],
+          section,
+          row,
+          number,
+          status,
+        };
+      });
+
+      return seats;
+    } catch (error) {
+      console.error("Failed to fetch seats from contract:", error);
+      return [];
     }
-
-    return [...MOCK_SEATS[eventId]];
   }
 
   static async getSeatsBySection(eventId: string, section: string): Promise<Seat[]> {
-    await new Promise(resolve => setTimeout(resolve, 200));
     const seats = await this.getSeatsByEventId(eventId);
     return seats.filter(seat => seat.section === section);
   }
 
   static async reserveSeats(eventId: string, seatIds: string[]): Promise<Reservation> {
+    // This is a mock reservation system
+    // In a real implementation, this would interact with the contract
     await new Promise(resolve => setTimeout(resolve, 500));
 
     const seats = await this.getSeatsByEventId(eventId);
-    const selectedSeats = seats.filter(seat => seatIds.includes(seat.id) && seat.status === "available");
+    const selectedSeats = seats.filter(seat => seatIds.includes(seat.seatId) && seat.status === "available");
 
     if (selectedSeats.length !== seatIds.length) {
       throw new Error("Some seats are no longer available");
     }
 
-    selectedSeats.forEach(seat => {
-      seat.status = "reserved";
-    });
+    const totalPrice = selectedSeats.reduce((sum, seat) => {
+      return sum + parseFloat(formatEther(seat.price));
+    }, 0);
 
-    const totalPrice = selectedSeats.reduce((sum, seat) => sum + seat.price, 0);
     const reservation: Reservation = {
       id: `rsv-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       eventId,
-      seats: selectedSeats,
+      seats: selectedSeats as any, // Type mismatch with old Seat interface
       totalPrice,
       createdAt: new Date(),
       expiresAt: new Date(Date.now() + 10 * 60 * 1000), // 10 minutes
@@ -113,16 +138,6 @@ export class SeatRepository {
     const reservation = MOCK_RESERVATIONS.get(reservationId);
     if (!reservation) {
       return false;
-    }
-
-    const seats = MOCK_SEATS[reservation.eventId];
-    if (seats) {
-      reservation.seats.forEach(reservedSeat => {
-        const seat = seats.find(s => s.id === reservedSeat.id);
-        if (seat && seat.status === "reserved") {
-          seat.status = "available";
-        }
-      });
     }
 
     MOCK_RESERVATIONS.delete(reservationId);

@@ -1,6 +1,7 @@
 import { ethers } from 'hardhat';
 import fs from 'fs';
 import path from 'path';
+import { getMonadDeployConfig, validateMonadTokens } from '../src/config/monad';
 
 async function main() {
     console.log('🚀 MinecraftPFPWithWealth 배포 시작...\n');
@@ -40,6 +41,26 @@ async function main() {
         usdcUsdFeed = '0xA2F78ab2355fe2f984D808B5CeE7FD0A93D5270E';
         usdt = '0x7169D38820dfd117C3FA1f22a697dBA58d90BA06';
         usdc = '0x94a9D9AC8a22534E3FaCa9F4e7F2E2cf85d5E4C8';
+    } else if (network.chainId === 10143n) {
+        // Monad Testnet
+        console.log('🔷 Monad Testnet - Chainlink Price Feeds 사용\n');
+
+        // Config에서 설정 가져오기
+        const config = getMonadDeployConfig();
+
+        ethUsdFeed = config.ethUsdFeed;
+        usdtUsdFeed = config.usdtUsdFeed;
+        usdcUsdFeed = config.usdcUsdFeed;
+        usdt = config.usdt;
+        usdc = config.usdc;
+
+        // 토큰 주소 검증
+        const validation = validateMonadTokens();
+        if (!validation.valid) {
+            console.log('⚠️  경고: 토큰 주소 설정 필요\n');
+            validation.errors.forEach(error => console.log(`   - ${error}`));
+            console.log('\n   src/config/monad.ts 파일을 확인하세요.\n');
+        }
     } else {
         throw new Error(`❌ 지원하지 않는 네트워크: ${network.name} (Chain ID: ${network.chainId})`);
     }

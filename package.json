@@ -11,6 +11,8 @@
     "typecheck": "tsc --noEmit",
     "compile": "hardhat compile",
     "test:contracts": "hardhat test",
+    "deploy:monad": "hardhat run scripts/deploy.ts --network monadTestnet",
+    "verify:monad": "hardhat verify --network monadTestnet",
     "deploy:sepolia": "hardhat run scripts/deploy.ts --network sepolia",
     "verify:sepolia": "hardhat verify --network sepolia"
   },

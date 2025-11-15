@@ -19,6 +19,12 @@ const config: HardhatUserConfig = {
         enabled: process.env.FORKING === 'true',
       },
     },
+    monadTestnet: {
+      url: process.env.MONAD_TESTNET_RPC_URL || 'https://testnet-rpc.monad.xyz',
+      chainId: 10143,
+      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      gasPrice: 'auto',
+    },
     sepolia: {
       url: process.env.SEPOLIA_RPC_URL || '',
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
@@ -29,7 +35,21 @@ const config: HardhatUserConfig = {
     },
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: {
+      monadTestnet: process.env.MONAD_API_KEY || 'placeholder',
+      sepolia: process.env.ETHERSCAN_API_KEY || '',
+      mainnet: process.env.ETHERSCAN_API_KEY || '',
+    },
+    customChains: [
+      {
+        network: 'monadTestnet',
+        chainId: 10143,
+        urls: {
+          apiURL: 'https://testnet.monadscan.com/api',
+          browserURL: 'https://testnet.monadscan.com',
+        },
+      },
+    ],
   },
   paths: {
     sources: './contracts',

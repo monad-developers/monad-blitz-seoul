@@ -33,39 +33,41 @@ export function TraitPreview({
                         기본 외형
                     </h3>
 
-                    <TraitItem
-                        label="모자"
-                        style={getStyleName('hat', traits.hatStyle)}
-                        color={COLOR_FAMILY_NAMES[traits.hatColor as keyof typeof COLOR_FAMILY_NAMES]}
-                        opacity={traits.hatOpacity}
-                    />
+                    <div className="grid grid-cols-3 gap-3">
+                        <TraitItem
+                            label="모자"
+                            style={getStyleName('hat', traits.hatStyle)}
+                            color={COLOR_FAMILY_NAMES[traits.hatColor as keyof typeof COLOR_FAMILY_NAMES]}
+                            opacity={traits.hatOpacity}
+                        />
 
-                    <TraitItem
-                        label="옷"
-                        style={getStyleName('clothes', traits.clothesStyle)}
-                        color={COLOR_FAMILY_NAMES[traits.clothesColor as keyof typeof COLOR_FAMILY_NAMES]}
-                        opacity={traits.clothesOpacity}
-                    />
+                        <TraitItem
+                            label="옷"
+                            style={getStyleName('clothes', traits.clothesStyle)}
+                            color={COLOR_FAMILY_NAMES[traits.clothesColor as keyof typeof COLOR_FAMILY_NAMES]}
+                            opacity={traits.clothesOpacity}
+                        />
 
-                    <TraitItem
-                        label="신발"
-                        style={getStyleName('shoes', traits.shoesStyle)}
-                        color={COLOR_FAMILY_NAMES[traits.shoesColor as keyof typeof COLOR_FAMILY_NAMES]}
-                        opacity={traits.shoesOpacity}
-                    />
+                        <TraitItem
+                            label="신발"
+                            style={getStyleName('shoes', traits.shoesStyle)}
+                            color={COLOR_FAMILY_NAMES[traits.shoesColor as keyof typeof COLOR_FAMILY_NAMES]}
+                            opacity={traits.shoesOpacity}
+                        />
 
-                    <TraitItem
-                        label="바지"
-                        style={getStyleName('pants', traits.pantsStyle)}
-                        color={COLOR_FAMILY_NAMES[traits.pantsColor as keyof typeof COLOR_FAMILY_NAMES]}
-                        opacity={traits.pantsOpacity}
-                    />
+                        <TraitItem
+                            label="바지"
+                            style={getStyleName('pants', traits.pantsStyle)}
+                            color={COLOR_FAMILY_NAMES[traits.pantsColor as keyof typeof COLOR_FAMILY_NAMES]}
+                            opacity={traits.pantsOpacity}
+                        />
 
-                    <TraitItem
-                        label="피부톤"
-                        style={getStyleName('skin', traits.skinTone)}
-                        color={`명암: ${traits.skinShade}`}
-                    />
+                        <TraitItem
+                            label="피부톤"
+                            style={getStyleName('skin', traits.skinTone)}
+                            color={`명암: ${traits.skinShade}`}
+                        />
+                    </div>
                 </div>
 
                 {/* Wealth 정보 */}
@@ -122,10 +124,10 @@ function TraitItem({
     opacity?: number;
 }) {
     return (
-        <div className="flex justify-between items-center bg-[#8B8B8B] border-2 border-t-[#373737] border-l-[#373737] border-r-[#DFDFDF] border-b-[#DFDFDF] p-2">
-            <span className="minecraft-font text-white text-xs">{label}:</span>
-            <div className="text-right">
-                <p className="minecraft-font text-white text-xs">{style}</p>
+        <div className="bg-[#8B8B8B] border-2 border-t-[#373737] border-l-[#373737] border-r-[#DFDFDF] border-b-[#DFDFDF] p-3">
+            <div className="text-center space-y-1">
+                <p className="minecraft-font text-white text-xs mb-2">{label}</p>
+                <p className="minecraft-font text-[#FFD700] text-xs minecraft-text-shadow">{style}</p>
                 <p className="minecraft-font text-[#AAAAAA] text-[10px]">
                     {color}
                     {opacity && ` (${opacity})`}

@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.69.0",
+    "@chainlink/contracts-ccip": "^1.6.3",
     "@napi-rs/canvas": "^0.1.82",
     "@rainbow-me/rainbowkit": "^2.0.0",
     "@react-three/drei": "^9.96.0",

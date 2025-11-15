@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { useAccount, useWriteContract, useWaitForTransactionReceipt } from 'wagmi';
+import { useAccount, useWriteContract, useWaitForTransactionReceipt, useSignMessage } from 'wagmi';
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { executeMintPipeline } from '@/lib/mintPipeline';
+import { prepareUploadSignature } from '@/lib/signature';
 import { WealthTier } from '@/types';
 import { MinecraftPFPABI } from '@/lib/contractABI';
 import { MinecraftButton } from './minecraft/MinecraftButton';
@@ -31,6 +32,7 @@ export function MintButton({
     const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({
         hash,
     });
+    const { signMessageAsync } = useSignMessage();
 
     const handleMint = async () => {
         if (!address || !isConnected) {
@@ -40,9 +42,9 @@ export function MintButton({
 
         try {
             setIsMinting(true);
-            setMintStatus('민팅 준비 중...');
+            setMintStatus('GIF 생성 중...');
 
-            // 1. GIF 생성 및 IPFS 업로드
+            // 1. GIF 생성 및 메타데이터 준비
             const result = await executeMintPipeline({
                 address,
                 wealthTier,
@@ -53,9 +55,39 @@ export function MintButton({
                 contractAddress: process.env.NEXT_PUBLIC_CONTRACT_ADDRESS || '',
             });
 
+            setMintStatus('서명 요청 중...');
+
+            // 2. 지갑 서명 생성
+            const { message, timestamp } = prepareUploadSignature(address);
+            const signature = await signMessageAsync({ message });
+
+            setMintStatus('IPFS 업로드 중...');
+
+            // 3. 서버 API를 통한 IPFS 업로드
+            const formData = new FormData();
+            formData.append('signature', signature);
+            formData.append('message', message);
+            formData.append('address', address);
+            formData.append('timestamp', timestamp.toString());
+            formData.append('gifBlob', result.gifBlob, 'avatar.gif');
+            formData.append('metadata', JSON.stringify(result.metadata));
+
+            const uploadResponse = await fetch('/api/upload-gif', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!uploadResponse.ok) {
+                const errorData = await uploadResponse.json();
+                throw new Error(`IPFS 업로드 실패: ${errorData.error || '알 수 없는 오류'}`);
+            }
+
+            const { metadataCid } = await uploadResponse.json();
+            const metadataUri = `ipfs://${metadataCid}`;
+
             setMintStatus('트랜잭션 전송 중...');
 
-            // 2. 스마트 컨트랙트 mint 호출
+            // 4. 스마트 컨트랙트 mint 호출
             const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS as `0x${string}`;
 
             if (!contractAddress) {
@@ -66,7 +98,7 @@ export function MintButton({
                 address: contractAddress,
                 abi: MinecraftPFPABI,
                 functionName: 'mint',
-                args: [result.metadataUri],
+                args: [metadataUri],
             });
 
             setMintStatus('트랜잭션 대기 중...');

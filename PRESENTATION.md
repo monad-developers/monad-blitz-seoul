@@ -16,7 +16,7 @@ aspectRatio: '16/9'
 canvasWidth: 980
 ---
 
-# 🎮 Minecraft PFP NFT
+# 🎮 NadCraft PFP NFT: https://nadcraft.vercel.app
 ## AI + Chainlink로 만드는 재미있는 크로스체인 NFT
 
 **Monad Blitz Hackathon 2025**
@@ -27,20 +27,6 @@ canvasWidth: 980
 
 > "당신의 지갑 주소로 생성된 고유한 Minecraft 캐릭터 NFT에,
 > **Chainlink CCIP**로 다른 체인의 NFT를 검증하면 **황금 왕관**을 씌워드립니다!"
-
----
-
-## 💡 프로젝트 배경
-
-### 기존 PFP NFT의 문제점
-- ❌ 랜덤 생성 → 동일 지갑으로 다른 NFT 발행 가능
-- ❌ 단일 체인에 갇힌 정체성
-- ❌ 정적인 메타데이터
-
-### 우리의 솔루션
-- ✅ **결정론적 생성**: 같은 주소 = 같은 캐릭터
-- ✅ **크로스체인 검증**: Chainlink CCIP로 다른 체인 자산 증명
-- ✅ **동적 특전**: 자산 등급에 따른 특별 아이템
 
 ---
 
@@ -511,7 +497,7 @@ mindmap
 - attestation 기반 특전 시스템 구현
 
 ### 2. **Chainlink Data Feeds 실시간 통합**
-- 3개 토큰(ETH/USDT/USDC) 가격 조회
+- SOL 가격 조회
 - 동적 Wealth Tier 계산
 
 ### 3. **AI + Blockchain 결합**

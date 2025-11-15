@@ -131,3 +131,13 @@ export interface NFTCreator {
     address: string;
     share: number;
 }
+
+/**
+ * IPFS 업로드 서명 검증
+ */
+export interface UploadSignature {
+    message: string;
+    signature: `0x${string}`;
+    address: `0x${string}`;
+    timestamp: number;
+}

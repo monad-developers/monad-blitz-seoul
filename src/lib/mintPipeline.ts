@@ -2,14 +2,14 @@
  * Mint Pipeline
  *
  * 전체 NFT 민팅 프로세스 통합
+ * (IPFS 업로드는 서버 API를 통해 수행)
  */
 
 import { SkinTraits, generateTraits } from './traitGenerator';
 import { createSkinTexture, createMinecraftScene, captureAnimationFrames, disposeScene } from './skinRenderer';
 import { generateGIF } from './gifGenerator';
-import { uploadGIFToIPFS, uploadMetadataToIPFS, getIPFSUri } from './ipfs';
 import { generateMetadata } from '../utils/metadata';
-import { WealthTier } from '../types';
+import { WealthTier, NFTMetadata } from '../types';
 
 export interface MintPipelineOptions {
     address: string;
@@ -24,9 +24,8 @@ export interface MintPipelineOptions {
 
 export interface MintPipelineResult {
     traits: SkinTraits;
-    gifCID: string;
-    metadataCID: string;
-    metadataUri: string;
+    gifBlob: Blob;
+    metadata: NFTMetadata;
 }
 
 /**
@@ -36,9 +35,9 @@ export interface MintPipelineResult {
  * 2. 3D 모델 렌더링
  * 3. 애니메이션 프레임 캡처
  * 4. GIF 생성
- * 5. IPFS 업로드 (GIF)
- * 6. 메타데이터 생성
- * 7. IPFS 업로드 (메타데이터)
+ * 5. 메타데이터 준비
+ *
+ * Note: IPFS 업로드는 MintButton에서 서버 API를 통해 수행
  */
 export async function executeMintPipeline(
     options: MintPipelineOptions
@@ -90,10 +89,8 @@ export async function executeMintPipeline(
         console.log('🎞️ 5. GIF 생성 중...');
         const gifBlob = await generateGIF(frames, GIF_SIZE, GIF_SIZE, 5);
 
-        console.log('☁️ 6. GIF IPFS 업로드 중...');
-        const gifCID = await uploadGIFToIPFS(gifBlob, `minecraft-pfp-${options.tokenId}.gif`);
-
-        console.log('📝 7. 메타데이터 생성 중...');
+        console.log('📝 6. 메타데이터 준비 중...');
+        // GIF CID는 서버 업로드 후 받으므로 임시로 빈 값 사용
         const metadata = generateMetadata(
             options.tokenId,
             traits,
@@ -101,26 +98,21 @@ export async function executeMintPipeline(
             options.specialItem,
             options.totalWealthUSD,
             options.solValueUSD,
-            gifCID,
+            '', // GIF CID는 서버에서 업로드 후 설정됨
             Math.floor(Date.now() / 1000),
             options.contractAddress,
             options.hasCCIPAttestation || false
         );
 
-        console.log('☁️ 8. 메타데이터 IPFS 업로드 중...');
-        const metadataCID = await uploadMetadataToIPFS(metadata);
-        const metadataUri = getIPFSUri(metadataCID);
-
-        console.log('🧹 9. 리소스 정리 중...');
+        console.log('🧹 7. 리소스 정리 중...');
         disposeScene(viewer);
 
-        console.log('✅ 민팅 파이프라인 완료!');
+        console.log('✅ 민팅 파이프라인 완료! (IPFS 업로드는 서버에서 수행)');
 
         return {
             traits,
-            gifCID,
-            metadataCID,
-            metadataUri,
+            gifBlob,
+            metadata,
         };
     } catch (error) {
         console.error('❌ 민팅 파이프라인 실패:', error);

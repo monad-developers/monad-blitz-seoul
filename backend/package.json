@@ -1,0 +1,33 @@
+{
+  "name": "oxgame-backend",
+  "version": "1.0.0",
+  "description": "OXGame Oracle Backend (POC)",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/main.js",
+    "dev": "ts-node-dev --respawn --transpile-only src/main.ts",
+    "lint": "eslint \"{src,test}/**/*.ts\""
+  },
+  "dependencies": {
+    "@chainlink/data-streams-sdk": "^1.0.5",
+    "@nestjs/common": "^10.0.0",
+    "@nestjs/core": "^10.0.0",
+    "@nestjs/platform-express": "^10.0.0",
+    "@nestjs/platform-socket.io": "^10.0.0",
+    "@nestjs/schedule": "^4.0.0",
+    "@nestjs/websockets": "^10.0.0",
+    "axios": "^1.6.0",
+    "dotenv": "^16.4.5",
+    "ethers": "^6.13.0",
+    "reflect-metadata": "^0.2.0",
+    "rxjs": "^7.8.0",
+    "socket.io": "^4.7.0",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.5.0"
+  }
+}

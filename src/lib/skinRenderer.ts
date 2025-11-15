@@ -288,9 +288,13 @@ export async function createMinecraftScene(
     // skinview3d 동적 로드
     const skinview3d = await import('skinview3d');
 
+    // 캔버스 크기를 명시적으로 설정 (devicePixelRatio 고려)
+    renderCanvas.width = width;
+    renderCanvas.height = height;
+
     // 텍스처를 Data URL로 변환
     const skinDataUrl = textureCanvas.toDataURL('image/png');
-    
+
     // SkinViewer 생성
     const viewer = new skinview3d.SkinViewer({
         canvas: renderCanvas,
@@ -299,8 +303,11 @@ export async function createMinecraftScene(
         skin: skinDataUrl,
     });
 
-    // 카메라 설정
-    viewer.zoom = 0.7;
+    // 렌더러의 픽셀 비율을 1로 고정 (devicePixelRatio 무시)
+    viewer.renderer.setPixelRatio(1);
+
+    // 카메라 설정 - 전신이 보이도록 줌 아웃
+    viewer.zoom = 0.5;
     viewer.fov = 70;
 
     // 배경색 설정

@@ -1,6 +1,6 @@
 # Minecraft PFP NFT - Chainlink 통합 프로젝트
 
-> **해커톤 심사역님께**: 이 프로젝트는 **Chainlink Price Feeds**와 **Chainlink CCIP**를 핵심 기능으로 활용하여, Minecraft 스타일 PFP NFT에 실시간 자산 기반 특성과 크로스체인 검증 시스템을 구현했습니다.
+> 이 프로젝트는 **Chainlink Price Feeds**와 **Chainlink CCIP**를 핵심 기능으로 활용하여, Minecraft 스타일 PFP NFT에 실시간 자산 기반 특성과 크로스체인 검증 시스템을 구현했습니다.
 
 ## 🎯 Chainlink 통합 개요
 

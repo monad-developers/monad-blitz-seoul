@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-rgb: 15, 23, 42;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+/* Minecraft 픽셀 스타일 */
+.minecraft-font {
+  font-family: 'Courier New', 'Courier', monospace;
+  font-weight: bold;
+  image-rendering: pixelated;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.minecraft-bg {
+  background: linear-gradient(135deg, #2C1810 0%, #3D2817 25%, #4A3520 50%, #3D2817 75%, #2C1810 100%);
+}
+
+.minecraft-text-shadow {
+  text-shadow: 2px 2px 0px rgba(0, 0, 0, 0.8);
+}

@@ -1,0 +1,16 @@
+{
+  "network": "monadTestnet",
+  "chainId": "10143",
+  "contract": "0x8C26aeBd1cc9084c3c2898b93461A215b789A59A",
+  "deployer": "0x481C6192D483409eC2220e579938c61c12cFB402",
+  "timestamp": "2025-11-15T07:21:28.357Z",
+  "priceFeeds": {
+    "ethUsd": "0x0c76859E85727683Eeba0C70Bc2e0F5781337818",
+    "usdtUsd": "0x14eE6bE30A91989851Dc23203E41C804D4D71441",
+    "usdcUsd": "0x70BB0758a38ae43418ffcEd9A25273dd4e804D15"
+  },
+  "tokens": {
+    "usdt": "0x88b8E2161DEDC77EF4ab7585569D2415a1C1055D",
+    "usdc": "0xf817257fed379853cDe0fa4F97AB987181B1E5Ea"
+  }
+}
